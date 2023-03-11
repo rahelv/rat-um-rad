@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.example.gui.javafx;
+package ch.unibas.dmi.dbis.cs108.rat_um_rad.gui.javafx;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -7,7 +7,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
- * This is an example JavaFX-Application.
+ * This is the Rat um Rad JavaFX-Application.
  */
 public class GUI extends Application {
 
