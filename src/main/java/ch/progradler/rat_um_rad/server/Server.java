@@ -5,11 +5,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    public void start() {
+    public void start(int port) {
         try {
-            ServerSocket serverSocket = new ServerSocket(8090);
+            ServerSocket serverSocket = new ServerSocket(port);
             ConnectionPool cp = new ConnectionPool();
-            System.out.println("Server listening on port 8090");
+            System.out.format("Server listening on port %d", port);
             //TODO: create connection pool
             while (true) { //keeps running = keeps accepting clients
                 Socket socket = serverSocket.accept();
