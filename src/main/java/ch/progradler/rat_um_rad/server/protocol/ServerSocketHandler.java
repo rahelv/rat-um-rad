@@ -1,6 +1,6 @@
-package ch.progradler.rat_um_rad.server;
+package ch.progradler.rat_um_rad.server.protocol;
 
-import ch.progradler.rat_um_rad.shared.Message;
+import ch.progradler.rat_um_rad.shared.models.Message;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

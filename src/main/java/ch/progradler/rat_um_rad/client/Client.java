@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.client;
 
-import ch.progradler.rat_um_rad.shared.Message;
+import ch.progradler.rat_um_rad.client.protocol.ListenerThread;
+import ch.progradler.rat_um_rad.shared.models.Message;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
