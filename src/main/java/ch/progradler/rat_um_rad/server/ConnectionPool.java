@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConnectionPool {
-    private List<ServerSocketHandler> connections = new ArrayList<>(); //TODO: use arraylist or is another type better ? --> sets ??
+    private final List<ServerSocketHandler> connections = new ArrayList<>(); //TODO: use arraylist or is another type better ? --> sets ??
 
     public void addConnection(ServerSocketHandler ssh) {
         connections.add(ssh);
     }
 
     public void broadcast(Message msg) {
-        for(ServerSocketHandler connection : connections) {
-            if(!connection.getClientName().equals(msg.getUsername())) { //so it doesn't send the message back to yourself
+        for (ServerSocketHandler connection : connections) {
+            if (!connection.getClientName().equals(msg.getUsername())) { //so it doesn't send the message back to yourself
                 connection.sendMessageToClient(msg);
             }
         }
@@ -22,6 +22,7 @@ public class ConnectionPool {
 
 
     public void removeConnection(ServerSocketHandler ssh) {
+        // TODO: might not work, possibly have to search by username
         connections.remove(ssh);
     }
 }

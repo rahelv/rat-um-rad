@@ -11,6 +11,9 @@ public class Message implements Serializable { //TODO: remove Serializable and w
         this.username = username;
     }
 
+    /**
+     * // TODO: A GUI class should do this stuff
+     */
     public String getMessageAndUsername() { //gets the message String how it should be written
         return username + ": " + message;
     }
@@ -22,7 +25,7 @@ public class Message implements Serializable { //TODO: remove Serializable and w
     //TODO: test if there's problems with the usage of getMessage, when writing new methods.
 
     /**
-     *
+     * // TODO: as class for de- and encoding should do this stuff
      * @return String encoded in our network protocol
      */
     public String encode() {

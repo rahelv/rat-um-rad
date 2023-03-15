@@ -7,7 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ServerSocketHandler implements Runnable{
+public class ServerSocketHandler implements Runnable {
     private Socket socket;
     private ObjectInputStream in; //TODO: implement using inputStream
     private ObjectOutputStream out; //TODO: implement using own serialization
