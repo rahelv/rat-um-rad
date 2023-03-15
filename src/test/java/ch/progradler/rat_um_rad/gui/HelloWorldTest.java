@@ -1,5 +1,6 @@
-package ch.unibas.dmi.dbis.cs108.rat_um_rad;
+package ch.progradler.rat_um_rad.gui;
 
+import ch.progradler.rat_um_rad.HelloWorld;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

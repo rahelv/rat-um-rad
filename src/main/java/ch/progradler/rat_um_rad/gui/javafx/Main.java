@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.rat_um_rad.gui.javafx;
+package ch.progradler.rat_um_rad.gui.javafx;
 
 import javafx.application.Application;
 

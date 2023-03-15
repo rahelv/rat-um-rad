@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.rat_um_rad.gui.swing;
+package ch.progradler.rat_um_rad.gui.swing;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
