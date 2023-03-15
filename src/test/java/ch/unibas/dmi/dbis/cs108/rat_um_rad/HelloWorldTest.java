@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.example;
+package ch.unibas.dmi.dbis.cs108.rat_um_rad;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

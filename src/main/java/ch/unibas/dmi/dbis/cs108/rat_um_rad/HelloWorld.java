@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.example;
+package ch.unibas.dmi.dbis.cs108.rat_um_rad;
 
 /**
  * A simple HelloWorld class.

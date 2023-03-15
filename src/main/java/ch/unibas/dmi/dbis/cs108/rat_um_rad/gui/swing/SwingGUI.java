@@ -1,10 +1,10 @@
-package ch.unibas.dmi.dbis.cs108.example.gui.swing;
+package ch.unibas.dmi.dbis.cs108.rat_um_rad.gui.swing;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 /**
- * This is an example Swing Application
+ * This is the Rat um Rad Swing Application
  */
 public class SwingGUI {
 
