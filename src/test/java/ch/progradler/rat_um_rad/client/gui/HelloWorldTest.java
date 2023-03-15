@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.gui;
+package ch.progradler.rat_um_rad.client.gui;
 
 import ch.progradler.rat_um_rad.HelloWorld;
 import org.junit.jupiter.api.AfterEach;

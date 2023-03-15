@@ -10,8 +10,7 @@ public class CalculatorTest {
     public void testAdd() {
         int a = 5;
         int b = 3;
-        int result;
-        result = Calculator.add(a, b);
+        int result = Calculator.add(a, b);
         assertEquals(8, result);
     }
 }

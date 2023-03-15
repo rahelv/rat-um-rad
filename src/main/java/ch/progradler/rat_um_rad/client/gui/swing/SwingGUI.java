@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.gui.swing;
+package ch.progradler.rat_um_rad.client.gui.swing;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;

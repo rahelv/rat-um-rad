@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.gui.javafx;
+package ch.progradler.rat_um_rad.client.gui.javafx;
 
 import javafx.application.Application;
 
