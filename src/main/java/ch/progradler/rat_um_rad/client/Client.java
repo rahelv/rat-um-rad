@@ -1,53 +1,52 @@
 package ch.progradler.rat_um_rad.client;
 
-import ch.progradler.rat_um_rad.client.protocol.ListenerThread;
-import ch.progradler.rat_um_rad.shared.models.Message;
+import ch.progradler.rat_um_rad.client.command_line.CommandHandler;
+import ch.progradler.rat_um_rad.client.command_line.CommandReader;
+import ch.progradler.rat_um_rad.client.protocol.ServerListenerThread;
+import ch.progradler.rat_um_rad.client.protocol.ServerOutputSocket;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
-import java.util.Scanner;
+import java.net.UnknownHostException;
+
+import static ch.progradler.rat_um_rad.Main.DEFAULT_PORT;
+import static ch.progradler.rat_um_rad.Main.LOCAL_HOST;
+
 
 public class Client {
 
+    public static void main(String[] args) {
+
+        Client client = new Client();
+        client.start(LOCAL_HOST, DEFAULT_PORT);
+    }
+
     public void start(String host, int port) {
+        System.out.format("Starting Client on %s %d\n", host, port);
         try {
             Socket socket = new Socket(host, port);
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
-            Scanner scanner = new Scanner(System.in);
-
-            String username = requestUsername(out, scanner);
-
-            ListenerThread listener = new ListenerThread(socket);
+            ServerListenerThread listener = new ServerListenerThread(socket);
             Thread t = new Thread(listener);
             t.start();
 
-            while (true) {
-                readMessages(out, scanner, username);
-                //TODO: implement QUIT case
-            }
+            ServerOutputSocket serverOutputSocket = new ServerOutputSocket(socket);
+            CommandReader commandReader = new CommandReader();
+            CommandHandler commandHandler = new CommandHandler(commandReader, serverOutputSocket);
+            commandHandler.startListening();
+
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            System.out.println("Failed to connect socket. Is the server running on the same port?");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Failed to connect socket");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    private void readMessages(ObjectOutputStream out, Scanner scanner, String username) throws IOException {
-        System.out.println("Enter your message: ");
-        String msg = scanner.nextLine();
-        Message m = new Message(msg, username);
-        out.writeObject(m);
-    }
-
-    /**
-     * TODO: move to different class
-     */
-    private String requestUsername(ObjectOutputStream out, Scanner scanner) throws IOException {
-        // TODO: validate username
-        System.out.println("Please insert your username: ");
-        String username = scanner.nextLine();
-        out.writeObject(username); //TODO: sanitize username
-        return username;
     }
 }
 
