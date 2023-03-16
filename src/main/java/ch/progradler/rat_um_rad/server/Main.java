@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Server running...");
         Server server = new Server();
-        server.start(ch.progradler.rat_um_rad.Main.defaultPort);
+        server.start(ch.progradler.rat_um_rad.Main.DEFAULT_PORT);
         System.out.println("Server stopped!");
     }
 }

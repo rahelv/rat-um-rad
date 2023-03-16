@@ -4,22 +4,64 @@ import ch.progradler.rat_um_rad.client.Client;
 import ch.progradler.rat_um_rad.server.Server;
 
 public class Main {
-    public static int defaultPort = 8090;
-    public static String localhost = "localhost";
+    public static final int DEFAULT_PORT = 8090;
+    public static final String LOCAL_HOST = "localhost";
 
+    private static final String SERVER_COMMAND = "server";
+    private static final String CLIENT_COMMAND = "client";
 
     public static void main(String[] args) {
-        // TODO: use port and client host from args
-
-        System.out.println(args[0]); // TODO: remove
-        if (args[0].equals("server")) {
-            Server server = new Server();
-            server.start(defaultPort);
-        } else if (args[0].equals("client")) {
-            Client client = new Client();
-            client.start(localhost, defaultPort);
-        } else {
-            System.out.println("Invalid command to start application!");
+        if (args.length == 0) {
+            printInvalidArgsAndExit();
         }
+
+        String serverOrClient = args[0];
+        System.out.println(args[0]); // TODO: remove
+
+        int port = getPort(args);
+        if (serverOrClient.equals(SERVER_COMMAND)) {
+            startServer(port);
+        } else if (serverOrClient.equals(CLIENT_COMMAND)) {
+            startClient(args, port);
+        } else {
+            printInvalidArgsAndExit();
+        }
+    }
+
+    private static void startServer(int port) {
+        Server server = new Server();
+        server.start(port);
+    }
+
+    private static void startClient(String[] args, int port) {
+        String host = getHost(args);
+        Client client = new Client();
+        client.start(host, port);
+    }
+
+    private static int getPort(String[] args) {
+        if (args.length < 2) {
+            return DEFAULT_PORT;
+        } else {
+            try {
+                return Integer.parseInt(args[2]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                return DEFAULT_PORT;
+            }
+        }
+    }
+
+    private static String getHost(String[] args) {
+        if (args.length < 1) {
+            return LOCAL_HOST;
+        } else {
+            return args[1]; // TODO: validate?
+        }
+    }
+
+    private static void printInvalidArgsAndExit() {
+        System.out.println("Invalid arguments to start application!");
+        System.exit(0);
     }
 }
