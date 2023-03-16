@@ -40,11 +40,11 @@ public class Main {
     }
 
     private static int getPort(String[] args) {
-        if (args.length < 3) {
+        if (args.length < 2) {
             return DEFAULT_PORT;
         } else {
             try {
-                return Integer.parseInt(args[2]);
+                return Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
                 return DEFAULT_PORT;
@@ -53,10 +53,10 @@ public class Main {
     }
 
     private static String getHost(String[] args) {
-        if (args.length < 2) {
+        if (args.length < 3) {
             return LOCAL_HOST;
         } else {
-            return args[1]; // TODO: validate?
+            return args[2]; // TODO: validate?
         }
     }
 
