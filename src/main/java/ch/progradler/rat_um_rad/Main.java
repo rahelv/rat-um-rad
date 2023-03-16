@@ -40,7 +40,7 @@ public class Main {
     }
 
     private static int getPort(String[] args) {
-        if (args.length < 2) {
+        if (args.length < 3) {
             return DEFAULT_PORT;
         } else {
             try {
@@ -53,7 +53,7 @@ public class Main {
     }
 
     private static String getHost(String[] args) {
-        if (args.length < 1) {
+        if (args.length < 2) {
             return LOCAL_HOST;
         } else {
             return args[1]; // TODO: validate?
@@ -62,6 +62,7 @@ public class Main {
 
     private static void printInvalidArgsAndExit() {
         System.out.println("Invalid arguments to start application!");
+        System.out.println("Please provide an argument for whether you want to start the server or client and a port and host.");
         System.exit(0);
     }
 }
