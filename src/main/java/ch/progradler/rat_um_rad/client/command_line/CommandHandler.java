@@ -10,7 +10,6 @@ public class CommandHandler {
     final ServerOutputSocket serverOutputSocket;
     boolean quit = false;
 
-
     public CommandHandler(CommandReader commandReader, ServerOutputSocket serverOutputSocket) {
         this.commandReader = commandReader;
         this.serverOutputSocket = serverOutputSocket;

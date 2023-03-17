@@ -41,8 +41,6 @@ public class ServerSocketHandler implements Runnable {
                 //TODO: first, broadcast messages
                 pool.broadcast(message); //sends message to all clients
                 //TODO: later, implement network protocol and chose action accordingly
-
-                out.writeObject(message);
             }
         } catch (Exception e) {
             e.printStackTrace();
