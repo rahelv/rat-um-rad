@@ -15,13 +15,6 @@ import static ch.progradler.rat_um_rad.Main.LOCAL_HOST;
 
 
 public class Client {
-
-    public static void main(String[] args) {
-
-        Client client = new Client();
-        client.start(LOCAL_HOST, DEFAULT_PORT);
-    }
-
     public void start(String host, int port) {
         System.out.format("Starting Client on %s %d\n", host, port);
         try {

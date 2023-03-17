@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static ch.progradler.rat_um_rad.Main.DEFAULT_PORT;
-
 public class Server {
     public void start(int port) {
         System.out.format("Starting Server on %d\n", port);
