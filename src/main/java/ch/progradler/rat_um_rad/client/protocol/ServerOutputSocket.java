@@ -21,7 +21,7 @@ public class ServerOutputSocket {
         }
     }
 
-    public void sendMessage(Packet packet) throws IOException {
+    public void sendPacket(Packet packet) throws IOException {
         out.writeObject(packet);
     }
 
