@@ -12,13 +12,14 @@ import java.net.UnknownHostException;
 
 
 public class Client {
+
     public void start(String host, int port) {
         System.out.format("Starting Client on %s %d\n", host, port);
         try {
             Socket socket = new Socket(host, port);
             ServerOutputSocket serverOutputSocket = new ServerOutputSocket(socket);
-            startCommandHandler(serverOutputSocket, host);
             startServerListener(socket);
+            startCommandHandler(serverOutputSocket, host);
         } catch (ConnectException e) {
             e.printStackTrace();
             System.out.println("Failed to connect socket. Is the server running on the same port?");
