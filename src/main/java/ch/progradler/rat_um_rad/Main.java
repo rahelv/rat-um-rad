@@ -41,12 +41,15 @@ public class Main {
 
     private static int getPort(String[] args) {
         if (args.length < 2) {
+            System.out.format("No port defined in args. Using default port %d\n", DEFAULT_PORT);
             return DEFAULT_PORT;
         } else {
+            String portString = args[1];
             try {
-                return Integer.parseInt(args[1]);
+                return Integer.parseInt(portString);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
+                System.out.format("Badly formatted port defined in args (%s). Using default port %d\n", portString, DEFAULT_PORT);
                 return DEFAULT_PORT;
             }
         }
@@ -54,6 +57,7 @@ public class Main {
 
     private static String getHost(String[] args) {
         if (args.length < 3) {
+            System.out.format("No host defined in args. Using localhost %s\n", LOCAL_HOST);
             return LOCAL_HOST;
         } else {
             return args[2]; // TODO: validate?
