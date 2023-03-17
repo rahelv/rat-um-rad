@@ -47,9 +47,9 @@ public class ServerSocketHandler implements Runnable {
         }
     }
 
-    public void sendMessageToClient(Packet msg) {
+    public void sendMessageToClient(Packet packet) {
         try {
-            out.writeObject(msg);
+            out.writeObject(packet);
         } catch (IOException e) {
             e.printStackTrace();
         }

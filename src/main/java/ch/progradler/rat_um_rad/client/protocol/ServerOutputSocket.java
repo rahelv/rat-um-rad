@@ -9,8 +9,6 @@ import java.net.Socket;
 public class ServerOutputSocket {
     final Socket socket;
     final ObjectOutputStream out;
-
-
     public ServerOutputSocket(Socket socket) throws Exception {
         this.socket = socket;
         try {
