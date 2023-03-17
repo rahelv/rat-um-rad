@@ -17,7 +17,7 @@ public class Client {
         try {
             Socket socket = new Socket(host, port);
             ServerOutputSocket serverOutputSocket = new ServerOutputSocket(socket);
-            startCommandHandler(serverOutputSocket);
+            startCommandHandler(serverOutputSocket, host);
             startServerListener(socket);
         } catch (ConnectException e) {
             e.printStackTrace();
@@ -32,9 +32,9 @@ public class Client {
         }
     }
 
-    private void startCommandHandler(ServerOutputSocket serverOutputSocket) {
+    private void startCommandHandler(ServerOutputSocket serverOutputSocket, String host) {
         CommandReader commandReader = new CommandReader();
-        CommandHandler commandHandler = new CommandHandler(commandReader, serverOutputSocket);
+        CommandHandler commandHandler = new CommandHandler(commandReader, serverOutputSocket, host);
         commandHandler.startListening();
     }
 
