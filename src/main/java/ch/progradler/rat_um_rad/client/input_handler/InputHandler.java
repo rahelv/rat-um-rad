@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.command_line;
+package ch.progradler.rat_um_rad.client.input_handler;
 
 import ch.progradler.rat_um_rad.client.protocol.ServerOutputSocket;
 import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
@@ -7,28 +7,34 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
 
-public class CommandHandler {
+public class InputHandler {
     public static final String ANSWER_NO = "no";
 
-    final CommandReader commandReader;
+    final InputReader inputReader;
     final ServerOutputSocket serverOutputSocket;
     final ComputerInfo computerInfo;
     boolean quit = false;
 
-    public CommandHandler(CommandReader commandReader, ServerOutputSocket serverOutputSocket, String host) {
-        this.commandReader = commandReader;
+    public InputHandler(InputReader inputReader, ServerOutputSocket serverOutputSocket, String host) {
+        this.inputReader = inputReader;
         this.serverOutputSocket = serverOutputSocket;
         this.computerInfo = new ComputerInfo(host);
     }
 
     public void startListening() {
         String username = requestAndSendUsername(); // TODO: what if username changes?
-        listenToCommands(username);
+
+        while (!quit) {
+            readInput(username);
+            //TODO: implement QUIT case
+        }
+        System.out.println("Quit application successfully!");
+        System.exit(0);
     }
 
     private String requestUsername() {
         String suggestedUsername = computerInfo.getHostName();
-        String answerToSuggestedUsername = commandReader.readInputWithPrompt(
+        String answerToSuggestedUsername = inputReader.readInputWithPrompt(
                 "The username suggested for you is: " +
                         suggestedUsername +
                         ".\nIf you want to change it, enter your new username now and click the Enter key.\n" +
@@ -55,17 +61,8 @@ public class CommandHandler {
         return username;
     }
 
-    private void listenToCommands(String username) {
-        while (!quit) {
-            readCommand(username);
-            //TODO: implement QUIT case
-        }
-        System.out.println("Quit application successfully!");
-        System.exit(0);
-    }
-
-    private void readCommand(String username) {
-        String message = commandReader.readInputWithPrompt("Enter your message: ");
+    private void readInput(String username) {
+        String message = inputReader.readInputWithPrompt("Enter your message: ");
         // TODO: handle command properly
         if (message.toLowerCase().contains("quit")) {
             quit = true;

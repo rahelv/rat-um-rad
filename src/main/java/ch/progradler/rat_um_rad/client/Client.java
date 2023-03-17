@@ -1,7 +1,7 @@
 package ch.progradler.rat_um_rad.client;
 
-import ch.progradler.rat_um_rad.client.command_line.CommandHandler;
-import ch.progradler.rat_um_rad.client.command_line.CommandReader;
+import ch.progradler.rat_um_rad.client.input_handler.InputHandler;
+import ch.progradler.rat_um_rad.client.input_handler.InputReader;
 import ch.progradler.rat_um_rad.client.protocol.ServerListenerThread;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutputSocket;
 
@@ -19,7 +19,7 @@ public class Client {
             Socket socket = new Socket(host, port);
             ServerOutputSocket serverOutputSocket = new ServerOutputSocket(socket);
             startServerListener(socket);
-            startCommandHandler(serverOutputSocket, host);
+            startInputHandler(serverOutputSocket, host);
         } catch (ConnectException e) {
             e.printStackTrace();
             System.out.println("Failed to connect socket. Is the server running on the same port?");
@@ -33,10 +33,10 @@ public class Client {
         }
     }
 
-    private void startCommandHandler(ServerOutputSocket serverOutputSocket, String host) {
-        CommandReader commandReader = new CommandReader();
-        CommandHandler commandHandler = new CommandHandler(commandReader, serverOutputSocket, host);
-        commandHandler.startListening();
+    private void startInputHandler(ServerOutputSocket serverOutputSocket, String host) {
+        InputReader inputReader = new InputReader();
+        InputHandler inputHandler = new InputHandler(inputReader, serverOutputSocket, host);
+        inputHandler.startListening();
     }
 
     private void startServerListener(Socket socket) {
