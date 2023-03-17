@@ -26,16 +26,9 @@ public class Client {
         System.out.format("Starting Client on %s %d\n", host, port);
         try {
             Socket socket = new Socket(host, port);
-
-            ServerListenerThread listener = new ServerListenerThread(socket);
-            Thread t = new Thread(listener);
-            t.start();
-
             ServerOutputSocket serverOutputSocket = new ServerOutputSocket(socket);
-            CommandReader commandReader = new CommandReader();
-            CommandHandler commandHandler = new CommandHandler(commandReader, serverOutputSocket);
-            commandHandler.startListening();
-
+            startCommandHandler(serverOutputSocket);
+            startServerListener(socket);
         } catch (ConnectException e) {
             e.printStackTrace();
             System.out.println("Failed to connect socket. Is the server running on the same port?");
@@ -47,6 +40,18 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void startCommandHandler(ServerOutputSocket serverOutputSocket) {
+        CommandReader commandReader = new CommandReader();
+        CommandHandler commandHandler = new CommandHandler(commandReader, serverOutputSocket);
+        commandHandler.startListening();
+    }
+
+    private void startServerListener(Socket socket) {
+        ServerListenerThread listener = new ServerListenerThread(socket);
+        Thread t = new Thread(listener);
+        t.start();
     }
 }
 

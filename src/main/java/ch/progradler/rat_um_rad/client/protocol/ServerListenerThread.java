@@ -20,7 +20,11 @@ public class ServerListenerThread implements Runnable {
             in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             // TODO: handle?
+            System.out.println("IOException creating input stream");
             e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Exception creating input stream");
+
         }
     }
 
