@@ -10,9 +10,6 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import static ch.progradler.rat_um_rad.Main.DEFAULT_PORT;
-import static ch.progradler.rat_um_rad.Main.LOCAL_HOST;
-
 
 public class Client {
     public void start(String host, int port) {
