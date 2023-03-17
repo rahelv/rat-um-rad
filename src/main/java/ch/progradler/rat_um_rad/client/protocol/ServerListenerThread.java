@@ -1,6 +1,6 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
-import ch.progradler.rat_um_rad.shared.models.Message;
+import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -32,7 +32,7 @@ public class ServerListenerThread implements Runnable {
     public void run() {
         try {
             while (true) { //so it keeps listening
-                Message response = (Message) in.readObject();
+                Packet response = (Packet) in.readObject();
                 System.out.println(response.getMessageAndUsername());
 
                 //TODO: implement QUIT command and other commands

@@ -1,6 +1,6 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
-import ch.progradler.rat_um_rad.shared.models.Message;
+import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -21,8 +21,8 @@ public class ServerOutputSocket {
         }
     }
 
-    public void sendMessage(Message message) throws IOException {
-        out.writeObject(message);
+    public void sendMessage(Packet packet) throws IOException {
+        out.writeObject(packet);
     }
 
     public void sendObject(Object obj) throws IOException {

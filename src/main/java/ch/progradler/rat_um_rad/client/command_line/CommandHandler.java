@@ -1,7 +1,7 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
 import ch.progradler.rat_um_rad.client.protocol.ServerOutputSocket;
-import ch.progradler.rat_um_rad.shared.models.Message;
+import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
 
@@ -51,9 +51,9 @@ public class CommandHandler {
             return;
         }
 
-        Message message = new Message(command, username);
+        Packet packet = new Packet(command, username);
         try {
-            serverOutputSocket.sendMessage(message);
+            serverOutputSocket.sendMessage(packet);
         } catch (IOException e) {
             System.out.println("Failed to send command to server!");
             e.printStackTrace();

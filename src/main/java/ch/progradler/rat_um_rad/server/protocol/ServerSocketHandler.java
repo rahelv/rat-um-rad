@@ -1,6 +1,6 @@
 package ch.progradler.rat_um_rad.server.protocol;
 
-import ch.progradler.rat_um_rad.shared.models.Message;
+import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,13 +33,13 @@ public class ServerSocketHandler implements Runnable {
             username = (String) in.readObject(); //TODO: Sanitize input
 
             while (true) {
-                Message message = (Message) in.readObject(); //TODO: in.read() and then use own serialization method
-                System.out.println(message.getMessageAndUsername()); //TODO: only needed for testing, later server won't print messages...
+                Packet packet = (Packet) in.readObject(); //TODO: in.read() and then use own serialization method
+                System.out.println(packet.getMessageAndUsername()); //TODO: only needed for testing, later server won't print messages...
 
                 //TODO: implement QUIT scenario (with break)
                 //important to remove client from pool so server doesn't crash
                 //TODO: first, broadcast messages
-                pool.broadcast(message); //sends message to all clients
+                pool.broadcast(packet); //sends message to all clients
                 //TODO: later, implement network protocol and chose action accordingly
             }
         } catch (Exception e) {
@@ -47,7 +47,7 @@ public class ServerSocketHandler implements Runnable {
         }
     }
 
-    public void sendMessageToClient(Message msg) {
+    public void sendMessageToClient(Packet msg) {
         try {
             out.writeObject(msg);
         } catch (IOException e) {
