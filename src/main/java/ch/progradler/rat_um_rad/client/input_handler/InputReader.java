@@ -1,11 +1,11 @@
-package ch.progradler.rat_um_rad.client.command_line;
+package ch.progradler.rat_um_rad.client.input_handler;
 
 import java.util.Scanner;
 
-public class CommandReader {
+public class InputReader {
     final Scanner scanner;
 
-    public CommandReader() {
+    public InputReader() {
         scanner = new Scanner(System.in);
     }
 
