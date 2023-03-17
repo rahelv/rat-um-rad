@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
 import ch.progradler.rat_um_rad.client.protocol.ServerOutputSocket;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
@@ -44,14 +45,14 @@ public class CommandHandler {
     }
 
     private void readCommand(String username) {
-        String command = commandReader.readInputWithPrompt("Enter your message: ");
+        String message = commandReader.readInputWithPrompt("Enter your message: ");
          // TODO: handle command properly
-        if(command.toLowerCase().contains("quit")){
+        if(message.toLowerCase().contains("quit")){
             quit = true;
             return;
         }
 
-        Packet packet = new Packet(command, username);
+        Packet packet = new Packet(Command.SEND_ALL, username, message);
         try {
             serverOutputSocket.sendMessage(packet);
         } catch (IOException e) {

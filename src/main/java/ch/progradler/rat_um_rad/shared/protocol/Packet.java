@@ -3,12 +3,22 @@ package ch.progradler.rat_um_rad.shared.protocol;
 import java.io.Serializable;
 
 public class Packet implements Serializable { //TODO: remove Serializable and write own serialization method
+    private Command command;
     private String username; //TODO: implement username
     private String message;
 
-    public Packet(String message, String username) {
-        this.message = message;
+    public Packet(Command command, String username, String message) {
+        this.command = command;
         this.username = username;
+        this.message = message;
+    }
+
+    public Packet(String command, String username, String message) {
+        this(Command.valueOf(command), username, message);
+    }
+
+    public Command getCommand() {
+        return command;
     }
 
     /**
