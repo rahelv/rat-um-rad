@@ -23,16 +23,14 @@ public class Client {
             ServerOutput serverOutput = new ServerOutput(socket);
             startCommandHandler(serverOutput, host);
             startServerListener(socket);
-        } catch (ConnectException e) {
-            e.printStackTrace();
-            System.out.println("Failed to connect socket. Is the server running on the same port?");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Failed to connect socket");
         } catch (Exception e) {
             e.printStackTrace();
+            if(e instanceof ConnectException) {
+                System.out.println("Failed to connect socket. Is the server running on the same port?");
+            }
+            if(e instanceof IOException) {
+                System.out.println("Failed to connect socket");
+            }
         }
     }
 
