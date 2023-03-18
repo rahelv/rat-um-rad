@@ -1,35 +1,34 @@
-package ch.progradler.rat_um_rad.client.input_handler;
+package ch.progradler.rat_um_rad.client.command_line;
 
-import ch.progradler.rat_um_rad.client.protocol.ServerOutputSocket;
+import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
+import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
 
-public class InputHandler {
-    public static final String ANSWER_NO = "no";
+/**
+ * Contains business logic by handling user input and possibly sending packet to server.
+ */
+public class CommandLineHandler {
+    private static final String ANSWER_NO = "no";
 
-    final InputReader inputReader;
-    final ServerOutputSocket serverOutputSocket;
-    final ComputerInfo computerInfo;
-    boolean quit = false;
+    private final InputReader inputReader;
+    private final ServerOutput serverOutput;
+    private final ComputerInfo computerInfo;
+    private boolean quit = false;
 
-    public InputHandler(InputReader inputReader, ServerOutputSocket serverOutputSocket, String host) {
+    public CommandLineHandler(InputReader inputReader, ServerOutput serverOutput, String host) {
         this.inputReader = inputReader;
-        this.serverOutputSocket = serverOutputSocket;
+        this.serverOutput = serverOutput;
         this.computerInfo = new ComputerInfo(host);
     }
 
     public void startListening() {
         String username = requestAndSendUsername(); // TODO: what if username changes?
-
-        while (!quit) {
-            readInput(username);
-            //TODO: implement QUIT case
-        }
-        System.out.println("Quit application successfully!");
-        System.exit(0);
+        listenToCommands(username);
     }
 
     private String requestUsername() {
@@ -52,7 +51,7 @@ public class InputHandler {
         String username = requestUsername();
 
         try {
-            serverOutputSocket.sendObject(username); //TODO: sanitize username
+            serverOutput.sendObject(username); //TODO: sanitize username
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed to send username to server!");
@@ -61,7 +60,17 @@ public class InputHandler {
         return username;
     }
 
-    private void readInput(String username) {
+    private void listenToCommands(String username) {
+        while (!quit) {
+            readCommand(username);
+            //TODO: implement QUIT case
+        }
+
+        System.out.println("Quit application successfully!");
+        System.exit(0);
+    }
+
+    private void readCommand(String username) {
         String message = inputReader.readInputWithPrompt("Enter your message: ");
         // TODO: handle command properly
         if (message.toLowerCase().contains("quit")) {
@@ -69,9 +78,11 @@ public class InputHandler {
             return;
         }
 
-        Packet packet = new Packet(Command.SEND_ALL, username, message);
+        Packet packet = new Packet(Command.SEND_ALL_EXCEPT_SENDER,
+                new ChatMessage(username, message),
+                ContentType.CHAT_MESSAGE);
         try {
-            serverOutputSocket.sendPacket(packet);
+            serverOutput.sendPacket(packet);
         } catch (IOException e) {
             System.out.println("Failed to send command to server!");
             e.printStackTrace();
