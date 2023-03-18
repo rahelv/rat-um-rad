@@ -41,5 +41,8 @@ public class Packet implements Serializable { //TODO: remove Serializable and wr
     public String encode() {
         return "";
     }
+    public String decode(String str){ //decode the String from ServerInputListener
+        return "";
+    }
 }
 
