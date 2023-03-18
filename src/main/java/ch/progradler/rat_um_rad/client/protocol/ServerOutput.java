@@ -1,15 +1,21 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
+import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ServerOutputSocket {
+/**
+ * Responsible for sending packets to server via socket stream.
+ */
+public class ServerOutput implements OutputPacketGateway {
     final Socket socket;
     final ObjectOutputStream out;
-    public ServerOutputSocket(Socket socket) throws Exception {
+
+
+    public ServerOutput(Socket socket) throws Exception {
         this.socket = socket;
         try {
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -19,7 +25,8 @@ public class ServerOutputSocket {
         }
     }
 
-    public void sendPacket(Packet packet) throws IOException {
+    @Override
+    public  void sendPacket(Packet packet) throws IOException {
         out.writeObject(packet);
     }
 

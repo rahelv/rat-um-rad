@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
+import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
@@ -8,23 +9,21 @@ import java.net.Socket;
 
 /**
  * Listens to messages from server
- * TODO: is not a thread. so why is it called thread?
  */
-public class ServerListenerThread implements Runnable {
+public class ServerInputListener implements Runnable {
     private Socket socket;
     private ObjectInputStream in; //TODO: implement using inputStream
 
-    public ServerListenerThread(Socket socket) {
+    private final ServerInputPacketGateway inputPacketGateway;
+
+    public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway) {
         this.socket = socket;
+        this.inputPacketGateway = inputPacketGateway;
         try {
             in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             // TODO: handle?
-            System.out.println("IOException creating input stream");
             e.printStackTrace();
-        } catch (Exception e) {
-            System.out.println("Exception creating input stream");
-
         }
     }
 
@@ -33,7 +32,7 @@ public class ServerListenerThread implements Runnable {
         try {
             while (true) { //so it keeps listening
                 Packet response = (Packet) in.readObject();
-                System.out.println(response.getMessageAndUsername());
+                inputPacketGateway.handleResponse(response);
 
                 //TODO: implement QUIT command and other commands
             }
