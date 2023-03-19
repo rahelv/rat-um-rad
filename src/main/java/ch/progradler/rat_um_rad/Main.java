@@ -40,27 +40,38 @@ public class Main {
     }
 
     private static int getPort(String[] args) {
-        if (args.length < 2) {
-            System.out.format("No port defined in args. Using default port %d\n", DEFAULT_PORT);
-            return DEFAULT_PORT;
-        } else {
-            String portString = args[1];
-            try {
-                return Integer.parseInt(portString);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-                System.out.format("Badly formatted port defined in args (%s). Using default port %d\n", portString, DEFAULT_PORT);
+
+        //case distinction depending on whether user wants to start server or client
+        String portString = ""; //this string won't be used when args[0] ist equal to either SERVER_COMMAND or CLIENT_COMMAND
+        if (args[0].equals(SERVER_COMMAND)) {
+            if (args.length < 2) {
+                System.out.format("No port defined in args. Using default port %d\n", DEFAULT_PORT);
                 return DEFAULT_PORT;
             }
+            portString = args[1];
+        } else if (args[0].equals(CLIENT_COMMAND)) {
+            if (args.length < 2) {
+                System.out.format("Not enough arguments given. Using default port %d\n", DEFAULT_PORT);
+                return DEFAULT_PORT;
+            }
+            portString = args[2];
+        }
+
+        try {
+            return Integer.parseInt(portString);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            System.out.format("Badly formatted port defined in args (%s). Using default port %d\n", portString, DEFAULT_PORT);
+            return DEFAULT_PORT;
         }
     }
 
     private static String getHost(String[] args) {
         if (args.length < 3) {
-            System.out.format("No host defined in args. Using localhost %s\n", LOCAL_HOST);
+            System.out.format("Not enough arguments given. Using localhost %s\n", LOCAL_HOST);
             return LOCAL_HOST;
         } else {
-            return args[2]; // TODO: validate?
+            return args[1]; // TODO: validate?
         }
     }
 
