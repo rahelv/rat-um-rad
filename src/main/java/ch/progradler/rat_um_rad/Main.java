@@ -50,7 +50,7 @@ public class Main {
             }
             portString = args[1];
         } else if (args[0].equals(CLIENT_COMMAND)) {
-            if (args.length < 2) {
+            if (args.length < 3) {
                 System.out.format("Not enough arguments given. Using default port %d\n", DEFAULT_PORT);
                 return DEFAULT_PORT;
             }
