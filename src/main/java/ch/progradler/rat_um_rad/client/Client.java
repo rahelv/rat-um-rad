@@ -8,24 +8,29 @@ import ch.progradler.rat_um_rad.client.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.protocol.ServerInputListener;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.protocol.ServerResponseHandler;
+import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.coder.ChatMessageCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 
 public class Client {
     public void start(String host, int port) {
         System.out.format("Starting Client on %s %d\n", host, port);
+
+        Coder<Packet> packetCoder = getPacketCoder();
         try {
             Socket socket = new Socket(host, port);
-            ServerOutput serverOutput = new ServerOutput(socket);
+            ServerOutput serverOutput = new ServerOutput(socket, packetCoder);
             startCommandHandler(serverOutput, host);
-            startServerListener(socket);
+            startServerListener(socket, packetCoder);
         } catch (Exception e) {
             e.printStackTrace();
-            if(e instanceof ConnectException) {
+            if (e instanceof ConnectException) {
                 System.out.println("Failed to connect socket. Is the server running on the same port?");
             }
             if(e instanceof IOException) {
@@ -40,12 +45,16 @@ public class Client {
         new Thread(commandLineHandler::startListening).start();
     }
 
-    private void startServerListener(Socket socket) {
+    private void startServerListener(Socket socket, Coder<Packet> packetCoder) {
         PackagePresenter presenter = new CommandLinePresenter();
         ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter);
-        ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway);
+        ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
         Thread t = new Thread(listener);
         t.start();
+    }
+
+    private static Coder<Packet> getPacketCoder() {
+        return new PacketCoder(new ChatMessageCoder());
     }
 }
 

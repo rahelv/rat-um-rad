@@ -2,8 +2,11 @@ package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
+import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 
 /**
@@ -11,58 +14,37 @@ import java.net.Socket;
  */
 public class ServerInputListener implements Runnable {
     private Socket socket;
-    private ObjectInputStream in; //TODO: implement using inputStream
-    private InputStream ins;//rui
+    private InputStream inputStream;
 
     private final ServerInputPacketGateway inputPacketGateway;
+    private final Coder<Packet> packetCoder;
 
-    public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway) {
+
+    public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway, Coder<Packet> packetCoder) {
         this.socket = socket;
         this.inputPacketGateway = inputPacketGateway;
+        this.packetCoder = packetCoder;
         try {
-            ins = socket.getInputStream();//rui
-            in = new ObjectInputStream(socket.getInputStream());
+            inputStream = socket.getInputStream();
         } catch (IOException e) {
             // TODO: handle?
             e.printStackTrace();
         }
     }
 
-    public String streamToString(InputStream is){
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        byte[] b = new byte[1024];
-        int len;
-
-        String s = null;
-        try {
-            //write direct ,what inputStream reads,into byteArray through ByteArrayOutputStream
-            while((len=is.read(b)) != -1){
-                bos.write(b,0,len);
-            }
-            byte[] byteArray = bos.toByteArray();
-            s = byteArray.toString();
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return s;
-    }
     @Override
     public void run() {
-        try {
-            while (true) { //so it keeps listening
-                String listenedStr = streamToString(ins);//rui
-                String[] splits = listenedStr.split("|");//rui
-                Packet response1 = new Packet(splits[0], splits[1], splits[2]);//rui
-
-                Packet response = (Packet) in.readObject();
-                inputPacketGateway.handleResponse(response);
-
-                //TODO: implement QUIT command and other commands
+        while (true) { //so it keeps listening
+            String encodedPacket = null;
+            try {
+                encodedPacket = StreamUtils.readStringFromStream(inputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+                // TODO: display error to user?
             }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            if (encodedPacket == null) continue;
+            Packet packet = packetCoder.decode(encodedPacket);
+            inputPacketGateway.handleResponse(packet);
         }
     }
 }
