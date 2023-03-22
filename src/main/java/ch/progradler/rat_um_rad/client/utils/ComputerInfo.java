@@ -5,17 +5,17 @@ import java.net.UnknownHostException;
 
 public class ComputerInfo {
 
-    InetAddress userAddress;
+    String systemUsername;
 
     public ComputerInfo(String host) {
         try {
-            userAddress = InetAddress.getByName(host);
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            systemUsername = System.getProperty("user.name"); //tested on fedora and windows TODO: test on mac
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public String getHostName() {
-        return userAddress.getHostName();
+    public String getSystemUsername() {
+        return systemUsername;
     }
 }

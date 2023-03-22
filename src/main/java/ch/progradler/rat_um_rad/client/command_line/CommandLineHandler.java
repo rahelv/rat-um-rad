@@ -32,7 +32,7 @@ public class CommandLineHandler {
     }
 
     private String requestUsername() {
-        String suggestedUsername = computerInfo.getHostName();
+        String suggestedUsername = computerInfo.getSystemUsername();
         String answerToSuggestedUsername = inputReader.readInputWithPrompt(
                 "The username suggested for you is: " +
                         suggestedUsername +
