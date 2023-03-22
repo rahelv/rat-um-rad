@@ -1,6 +1,5 @@
-package ch.progradler.rat_um_rad.shared;
+package ch.progradler.rat_um_rad.shared.util;
 
-import ch.progradler.rat_um_rad.shared.util.Calculator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

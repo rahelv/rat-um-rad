@@ -1,9 +1,11 @@
 package ch.progradler.rat_um_rad.server.protocol.socket;
 
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
+import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 /**
@@ -11,25 +13,24 @@ import java.net.Socket;
  */
 public class ClientOutput {
     private Socket socket;
-    private ObjectOutputStream out; //TODO: implement using own serialization
+    private OutputStream out; //TODO: implement using own serialization
     private final String ipAddress;
+    private final Coder<Packet> packetCoder;
 
-    public ClientOutput(Socket socket, String ipAddress) {
+    public ClientOutput(Socket socket, String ipAddress,Coder<Packet> packetCoder) {
         this.socket = socket;
+        this.packetCoder = packetCoder;
         this.ipAddress = ipAddress;
         try {
-            out = new ObjectOutputStream(socket.getOutputStream());
+            out = socket.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace(); //TODO: error management
         }
     }
 
     public void sendMessageToClient(Packet packet) {
-        try {
-            out.writeObject(packet); // TODO: encode
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String sendStr = packetCoder.encode(packet);
+        StreamUtils.writeStringToStream(sendStr,out);
     }
 
     public String getIpAddress() {

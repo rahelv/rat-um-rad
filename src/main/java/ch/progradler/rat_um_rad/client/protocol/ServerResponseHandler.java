@@ -16,6 +16,8 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
 
     @Override
     public void handleResponse(Packet packet) {
+        //TODO: implement QUIT command and other commands
+
         presenter.display(packet); // TODO: add more cases
     }
 }

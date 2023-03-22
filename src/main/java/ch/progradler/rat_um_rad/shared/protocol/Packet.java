@@ -7,16 +7,16 @@ import java.io.Serializable;
  */
 public class Packet implements Serializable { //TODO: remove Serializable and write own serialization method
     private final Command command;
-    private final Serializable content;
+    private final Object content;
     private final ContentType contentType;
 
-    public Packet(Command command, Serializable content, ContentType contentType) {
+    public Packet(Command command, Object content, ContentType contentType) {
         this.command = command;
         this.content = content;
         this.contentType = contentType;
     }
 
-    public Packet(String command, Serializable content, String contentType) {
+    public Packet(String command, Object content, String contentType) {
         this(Command.valueOf(command), content, ContentType.valueOf(contentType));
     }
 
@@ -30,19 +30,6 @@ public class Packet implements Serializable { //TODO: remove Serializable and wr
 
     public ContentType getContentType() {
         return contentType;
-    }
-
-    //TODO: test if there's problems with the usage of getMessage, when writing new methods.
-
-    /**
-     * // TODO: as class for de- and encoding should do this stuff
-     * @return String encoded in our network protocol
-     */
-    public String encode() {
-        return "";
-    }
-    public String decode(String str){ //decode the String from ServerInputListener
-        return "";
     }
 }
 

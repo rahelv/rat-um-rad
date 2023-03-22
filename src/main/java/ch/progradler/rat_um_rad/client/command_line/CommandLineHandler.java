@@ -39,7 +39,7 @@ public class CommandLineHandler {
                         ".\nIf you want to change it, enter your new username now and click the Enter key.\n" +
                         "If you do not want to change it,\nenter \"" + ANSWER_NO +
                         "\" and click the Enter key.");
-
+        // TODO: check if username is not empty or null and unittest
         if (answerToSuggestedUsername.equals(ANSWER_NO)) {
             return suggestedUsername;
         } else {
@@ -51,7 +51,7 @@ public class CommandLineHandler {
         String username = requestUsername();
 
         try {
-            serverOutput.sendObject(username); //TODO: sanitize username
+            serverOutput.sendPacket(new Packet(Command.NEW_USER, username, ContentType.USERNAME)); //TODO: sanitize username
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed to send username to server!");
