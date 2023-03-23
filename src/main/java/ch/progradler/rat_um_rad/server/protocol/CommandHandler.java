@@ -2,7 +2,6 @@ package ch.progradler.rat_um_rad.server.protocol;
 
 import ch.progradler.rat_um_rad.server.gateway.InputPacketGateway;
 import ch.progradler.rat_um_rad.server.services.IUserService;
-import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 /**
@@ -24,7 +23,7 @@ public class CommandHandler implements InputPacketGateway {
                 userService.handleNewUser((String) packet.getContent(), ipAddress);
             }
             case SEND_CHAT -> {
-                userService.handleMessageFromUser((ChatMessage) packet.getContent(), ipAddress);
+                userService.handleMessageFromUser((String) packet.getContent(), ipAddress);
             }
             case CLIENT_DISCONNECTED -> {
                 userService.handleUserDisconnected(ipAddress);

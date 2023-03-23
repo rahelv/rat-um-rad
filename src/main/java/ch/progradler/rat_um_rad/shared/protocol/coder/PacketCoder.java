@@ -50,7 +50,7 @@ public class PacketCoder implements Coder<Packet> {
             case CHAT_MESSAGE -> {
                 return messageCoder.encode((ChatMessage) content);
             }
-            case USERNAME -> {
+            case STRING -> {
                 return (String) content;
             }
             case USERNAME_CHANGE -> {
@@ -70,7 +70,7 @@ public class PacketCoder implements Coder<Packet> {
             case CHAT_MESSAGE -> {
                 return messageCoder.decode(content);
             }
-            case USERNAME -> {
+            case STRING -> {
                 return content;
             }
             case USERNAME_CHANGE -> {
@@ -82,6 +82,6 @@ public class PacketCoder implements Coder<Packet> {
         }
         // should never happen
         // TODO: maybe throw exception?
-        return null;
+        throw new IllegalArgumentException("Content type unknown: " + contentType);
     }
 }
