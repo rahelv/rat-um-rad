@@ -1,35 +1,35 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder;
 
-import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper.SEPARATOR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ChatMessageCoderTest {
+public class UsernameChangeCoderTest {
 
-    private ChatMessageCoder messageCoder;
+    private UsernameChangeCoder messageCoder;
 
     @BeforeEach
     public void initMessageCoder() {
-        messageCoder = new ChatMessageCoder();
+        messageCoder = new UsernameChangeCoder();
     }
 
     @Test
     public void encodeReturnsStringWithDataInOrderAndSeparatedByCorrectSeparator() {
         // prepare
-        String username = "User A";
-        String message = "Hi!";
-        ChatMessage chatMessage = new ChatMessage(username, message);
+        String oldName = "User A";
+        String newName = "new name";
+        UsernameChange chatMessage = new UsernameChange(oldName, newName);
 
         // execute
         String result = messageCoder.encode(chatMessage);
 
         // assert
         String expected = "{" +
-                username + SEPARATOR +
-                message +
+                oldName + SEPARATOR +
+                newName +
                 "}";
         assertEquals(expected, result);
     }
@@ -37,13 +37,13 @@ public class ChatMessageCoderTest {
     @Test
     public void decodeReturnsCorrectTypeWithCorrectData() {
         // prepare
-        String messageEncoded = "{user A" + SEPARATOR + "Hi!}";
+        String messageEncoded = "{user A" + SEPARATOR + "new name}";
 
         // execute
-        ChatMessage result = messageCoder.decode(messageEncoded);
+        UsernameChange result = messageCoder.decode(messageEncoded);
 
         // assert
-        ChatMessage expected = new ChatMessage("user A", "Hi!");
+        UsernameChange expected = new UsernameChange("user A", "new name");
 
         assertEquals(expected, result);
     }

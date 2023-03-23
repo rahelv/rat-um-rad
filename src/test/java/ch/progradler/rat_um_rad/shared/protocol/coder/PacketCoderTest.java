@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder;
 
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -18,11 +19,14 @@ public class PacketCoderTest {
     @Mock
     Coder<ChatMessage> messageCoderMock;
 
+    @Mock
+    Coder<UsernameChange> usernameChangeCoder;
+
     private PacketCoder packetCoder;
 
     @BeforeEach
     public void initPacketCoder() {
-        packetCoder = new PacketCoder(messageCoderMock);
+        packetCoder = new PacketCoder(messageCoderMock, usernameChangeCoder);
     }
 
     @Test
@@ -31,7 +35,7 @@ public class PacketCoderTest {
         ChatMessage content = new ChatMessage("userA", "Hi!");
         when(messageCoderMock.encode(content)).thenReturn("{username:userA,message:Hi!}");
 
-        Command command = Command.SEND_ALL;
+        Command command = Command.SEND_CHAT;
         ContentType contentType = ContentType.CHAT_MESSAGE;
         Packet packet = new Packet(command, content, contentType);
 
@@ -51,7 +55,7 @@ public class PacketCoderTest {
         ChatMessage expectedMessage = new ChatMessage("userA", "Hi!");
         when(messageCoderMock.decode(messageEncoded)).thenReturn(expectedMessage);
 
-        Command command = Command.SEND_ALL;
+        Command command = Command.SEND_CHAT;
         ContentType contentType = ContentType.CHAT_MESSAGE;
 
         String packetEncoded = command.name() + PacketCoder.SEPARATOR +
@@ -64,8 +68,6 @@ public class PacketCoderTest {
         // assert
         Packet expected = new Packet(command, expectedMessage, contentType);
 
-        assertEquals(expected.getCommand(), result.getCommand());
-        assertEquals(expected.getContent(), result.getContent());
-        assertEquals(expected.getContentType(), result.getContentType());
+        assertEquals(expected,result);
     }
 }

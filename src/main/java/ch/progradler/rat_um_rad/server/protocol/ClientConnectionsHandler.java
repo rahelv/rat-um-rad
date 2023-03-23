@@ -40,22 +40,28 @@ public class ClientConnectionsHandler {
     }
 
     private void acceptNewClient(InputPacketGateway inputPacketGateway, ServerSocket serverSocket) {
-        Socket socket;
         try {
-            socket = serverSocket.accept();
+            Socket socket = serverSocket.accept();
+            setupConnection(socket, inputPacketGateway);
         } catch (IOException e) {
             e.printStackTrace();
-            return;
         }
+    }
 
+    private void setupConnection(Socket socket, InputPacketGateway inputPacketGateway) {
         String ipAddress = socket.getRemoteSocketAddress().toString();
         System.out.println("Connected to client with ipAddress: " + ipAddress);
 
-        ClientInputListener clientInputListener = new ClientInputListener(socket, inputPacketGateway, packetCoder);
+        ClientInputListener clientInputListener = new ClientInputListener(socket,
+                inputPacketGateway,
+                packetCoder,
+                ipAddress,
+                connectionPool);
         clientInputListener.setUsernameReceivedListener(username -> {
             // only start output connection, when username received
-            ClientOutput clientOutput = new ClientOutput(socket, ipAddress,packetCoder);
-            connectionPool.addConnection(ipAddress, new Connection(clientOutput, clientInputListener));
+            ClientOutput clientOutput = new ClientOutput(socket, ipAddress, packetCoder);
+            Connection connection = new Connection(socket, clientOutput, clientInputListener);
+            connectionPool.addConnection(ipAddress, connection);
         });
 
         Thread t = new Thread(clientInputListener);

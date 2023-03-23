@@ -12,6 +12,7 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.ChatMessageCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.UsernameChangeCoder;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -54,7 +55,7 @@ public class Client {
     }
 
     private static Coder<Packet> getPacketCoder() {
-        return new PacketCoder(new ChatMessageCoder());
+        return new PacketCoder(new ChatMessageCoder(), new UsernameChangeCoder());
     }
 }
 

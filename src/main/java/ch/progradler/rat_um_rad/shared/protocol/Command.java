@@ -5,6 +5,9 @@ package ch.progradler.rat_um_rad.shared.protocol;
  */
 public enum Command {
     NEW_USER,
-    SEND_ALL,
-    SEND_ALL_EXCEPT_SENDER,
+    USERNAME_CONFIRMED,
+    CHANGED_USERNAME,
+    USER_DISCONNECTED,
+    SEND_CHAT,
+    CLIENT_DISCONNECTED,
 }

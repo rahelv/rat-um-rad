@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder;
 
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -11,11 +12,13 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 public class PacketCoder implements Coder<Packet> {
 
     private final Coder<ChatMessage> messageCoder;
+    private final Coder<UsernameChange> usernameChangeCoder;
 
-    static final String SEPARATOR = "-/-";
+    static final String SEPARATOR = "-/-"; // unusual text that differs from separator used for content.
 
-    public PacketCoder(Coder<ChatMessage> messageCoder) {
+    public PacketCoder(Coder<ChatMessage> messageCoder, Coder<UsernameChange> usernameChangeCoder) {
         this.messageCoder = messageCoder;
+        this.usernameChangeCoder = usernameChangeCoder;
     }
 
     /**
@@ -50,6 +53,12 @@ public class PacketCoder implements Coder<Packet> {
             case USERNAME -> {
                 return (String) content;
             }
+            case USERNAME_CHANGE -> {
+                return usernameChangeCoder.encode((UsernameChange) content);
+            }
+            case NONE -> {
+                return "-";
+            }
         }
         // should never happen
         // TODO: maybe throw exception?
@@ -63,6 +72,12 @@ public class PacketCoder implements Coder<Packet> {
             }
             case USERNAME -> {
                 return content;
+            }
+            case USERNAME_CHANGE -> {
+                return usernameChangeCoder.decode(content);
+            }
+            case NONE -> {
+                return null;
             }
         }
         // should never happen
