@@ -78,7 +78,7 @@ public class CommandLineHandler {
             return;
         }
 
-        Packet packet = new Packet(Command.SEND_ALL_EXCEPT_SENDER,
+        Packet packet = new Packet(Command.SEND_CHAT,
                 new ChatMessage(username, message),
                 ContentType.CHAT_MESSAGE);
         try {

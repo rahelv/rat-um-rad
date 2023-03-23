@@ -1,7 +1,7 @@
 package ch.progradler.rat_um_rad.client.presenter;
 
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -14,20 +14,40 @@ public class CommandLinePresenter implements PackagePresenter {
         Object content = packet.getContent();
         ContentType contentType = packet.getContentType();
 
-        switch (contentType){
-            case CHAT_MESSAGE -> {
-                displayChatMessage((ChatMessage) content);
-            }
-            case USERNAME -> {
-                if (packet.getCommand() == Command.NEW_USER) {
-                    displayNewUserAdded((String) packet.getContent());
+        switch (packet.getCommand()) {
+            case NEW_USER -> {
+                if (contentType == ContentType.USERNAME) {
+                    displayNewUserAdded((String) content);
                 }
+            }
+            case USERNAME_CONFIRMED -> {
+            }
+            case CHANGED_USERNAME -> {
+                displayChangedUsername((UsernameChange) content);
+            }
+            case USER_DISCONNECTED -> {
+                displayUserDisconnected((String) content);
+            }
+            case SEND_CHAT -> {
+                if (contentType == ContentType.CHAT_MESSAGE) {
+                    displayChatMessage((ChatMessage) content);
+                }
+            }
+            case CLIENT_DISCONNECTED -> {
             }
         }
     }
 
     private void displayNewUserAdded(String username) {
         System.out.println("New user joined chat: " + username);
+    }
+
+    private void displayChangedUsername(UsernameChange change) {
+        System.out.println("User " + change.getOldName() + " changed name to " + change.getNewName());
+    }
+
+    private void displayUserDisconnected(String username) {
+        System.out.println("User " + username + " disconnected");
     }
 
     private void displayChatMessage(ChatMessage message) {

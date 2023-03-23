@@ -2,13 +2,12 @@ package ch.progradler.rat_um_rad.shared.protocol.coder;
 
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 
+import static ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper.SEPARATOR;
+
 /**
  * En-/decodes {@link ChatMessage}
  */
 public class ChatMessageCoder implements Coder<ChatMessage> {
-
-    static final String SEPARATOR = "_/_"; // used uncommon text, so it doesn't appear in a message by accident.
-
     @Override
     public String encode(ChatMessage chatMessage) {
         return "{" +

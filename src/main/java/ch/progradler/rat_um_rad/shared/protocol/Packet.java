@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.shared.protocol;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Simple model class to hold data of a packet. This object is sent between server and client.
@@ -30,6 +31,19 @@ public class Packet implements Serializable { //TODO: remove Serializable and wr
 
     public ContentType getContentType() {
         return contentType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Packet packet = (Packet) o;
+        return command == packet.command && Objects.equals(content, packet.content) && contentType == packet.contentType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(command, content, contentType);
     }
 }
 

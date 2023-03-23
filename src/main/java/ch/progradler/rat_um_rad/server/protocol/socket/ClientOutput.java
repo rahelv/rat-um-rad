@@ -36,4 +36,11 @@ public class ClientOutput {
     public String getIpAddress() {
         return ipAddress;
     }
+
+    /**
+     * Closes output stream.
+     */
+    public void close() throws IOException {
+        out.close();
+    }
 }
