@@ -23,7 +23,7 @@ public class CommandLineHandler {
     public CommandLineHandler(InputReader inputReader, ServerOutput serverOutput, String host) {
         this.inputReader = inputReader;
         this.serverOutput = serverOutput;
-        this.computerInfo = new ComputerInfo(host);
+        this.computerInfo = new ComputerInfo();
     }
 
     public void startListening() {
@@ -31,16 +31,14 @@ public class CommandLineHandler {
         listenToCommands(username);
     }
 
-    private String requestUsername() {
+    private String chooseUsername() {
         String suggestedUsername = computerInfo.getSystemUsername();
         String answerToSuggestedUsername = inputReader.readInputWithPrompt(
                 "The username suggested for you is: " +
                         suggestedUsername +
-                        ".\nIf you want to change it, enter your new username now and click the Enter key.\n" +
-                        "If you do not want to change it,\nenter \"" + ANSWER_NO +
-                        "\" and click the Enter key.");
+                        ".\nPress enter to confirm. Otherwise enter your new username below and press enter.");
         // TODO: check if username is not empty or null and unittest
-        if (answerToSuggestedUsername.equals(ANSWER_NO)) {
+        if (answerToSuggestedUsername.equals("")) {
             return suggestedUsername;
         } else {
             return answerToSuggestedUsername;
@@ -48,7 +46,7 @@ public class CommandLineHandler {
     }
 
     private String requestAndSendUsername() {
-        String username = requestUsername();
+        String username = chooseUsername();
 
         try {
             serverOutput.sendPacket(new Packet(Command.NEW_USER, username, ContentType.USERNAME)); //TODO: sanitize username

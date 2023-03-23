@@ -5,17 +5,14 @@ import java.net.UnknownHostException;
 
 public class ComputerInfo {
 
-    String systemUsername;
-
-    public ComputerInfo(String host) {
-        try {
-            systemUsername = System.getProperty("user.name"); //tested on fedora and windows TODO: test on mac
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    public ComputerInfo() {}
 
     public String getSystemUsername() {
-        return systemUsername;
+        try {
+            return System.getProperty("user.name"); //tested on fedora and windows TODO: test on mac
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ""; //TODO: improve
+        }
     }
 }
