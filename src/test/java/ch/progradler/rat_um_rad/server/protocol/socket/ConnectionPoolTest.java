@@ -36,7 +36,7 @@ public class ConnectionPoolTest {
 
     @Test
     void sendMessageSendsMessageToCorrectClient() {
-        Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.USERNAME);
+        Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.STRING);
 
         doNothing().when(connection1).sendMessageToClient(isA(Packet.class));
         doNothing().when(connection2).sendMessageToClient(isA(Packet.class));
@@ -53,7 +53,7 @@ public class ConnectionPoolTest {
 
     @Test
     void broadcastSendsMessageToCorrectClients() {
-        Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.USERNAME);
+        Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.STRING);
 
         doNothing().when(connection1).sendMessageToClient(isA(Packet.class));
         doNothing().when(connection3).sendMessageToClient(isA(Packet.class));

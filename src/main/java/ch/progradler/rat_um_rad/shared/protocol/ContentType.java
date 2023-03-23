@@ -12,9 +12,9 @@ public enum ContentType {
      */
     CHAT_MESSAGE,
     /**
-     * Type of {@link String} with a username as content
+     * Type of {@link String}
      */
-    USERNAME,
+    STRING,
     /**
      * Type of {@link UsernameChange}
      */

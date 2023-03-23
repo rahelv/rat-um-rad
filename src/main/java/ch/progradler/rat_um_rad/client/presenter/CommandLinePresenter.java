@@ -16,7 +16,7 @@ public class CommandLinePresenter implements PackagePresenter {
 
         switch (packet.getCommand()) {
             case NEW_USER -> {
-                if (contentType == ContentType.USERNAME) {
+                if (contentType == ContentType.STRING) {
                     displayNewUserAdded((String) content);
                 }
             }

@@ -26,9 +26,10 @@ public class UserService implements IUserService {
     @Override
     public void handleNewUser(String username, String ipAddress) {
         userRepository.addUsername(username, ipAddress);
-        Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.USERNAME);
+        Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.STRING);
         outputPacketGateway.sendMessage(ipAddress, confirmPacket);
-        Packet broadCastPacket = new Packet(Command.NEW_USER, username, ContentType.USERNAME);
+        Packet broadCastPacket = new Packet(Command.NEW_USER, username, ContentType.STRING);
+        //TODO: send packet containing usernames of current logged in users?
         broadcastExcludingUser(broadCastPacket, ipAddress);
     }
 
@@ -36,7 +37,7 @@ public class UserService implements IUserService {
     public void updateUsername(String username, String ipAddress) {
         String oldName = userRepository.getUsername(ipAddress);
         userRepository.updateUsername(username, ipAddress);
-        Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.USERNAME);
+        Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.STRING);
         outputPacketGateway.sendMessage(ipAddress, confirmPacket);
         Packet broadCastPacket = new Packet(Command.CHANGED_USERNAME,
                 new UsernameChange(oldName, username),
@@ -48,13 +49,14 @@ public class UserService implements IUserService {
     public void handleUserDisconnected(String ipAddress) {
         String username = userRepository.removeUsername(ipAddress);
         if (username == null) username = ipAddress;
-        Packet packet = new Packet(Command.USER_DISCONNECTED, username, ContentType.USERNAME);
+        Packet packet = new Packet(Command.USER_DISCONNECTED, username, ContentType.STRING);
         broadcastExcludingUser(packet, ipAddress);
     }
 
     @Override
-    public void handleMessageFromUser(ChatMessage message, String ipAddress) {
-        Packet packet = new Packet(Command.SEND_CHAT, message, ContentType.CHAT_MESSAGE);
+    public void handleMessageFromUser(String message, String ipAddress) {
+        String username = userRepository.getUsername(ipAddress);
+        Packet packet = new Packet(Command.SEND_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         broadcastExcludingUser(packet, ipAddress);
     }
 

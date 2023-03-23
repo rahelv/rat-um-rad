@@ -2,7 +2,6 @@ package ch.progradler.rat_um_rad.client.command_line;
 
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
-import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -28,7 +27,7 @@ public class CommandLineHandler {
 
     public void startListening() {
         String username = requestAndSendUsername(); // TODO: what if username changes?
-        listenToCommands(username);
+        listenToCommands();
     }
 
     private String chooseUsername() {
@@ -49,7 +48,7 @@ public class CommandLineHandler {
         String username = chooseUsername();
 
         try {
-            serverOutput.sendPacket(new Packet(Command.NEW_USER, username, ContentType.USERNAME)); //TODO: sanitize username
+            serverOutput.sendPacket(new Packet(Command.NEW_USER, username, ContentType.STRING)); //TODO: sanitize username
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed to send username to server!");
@@ -58,9 +57,9 @@ public class CommandLineHandler {
         return username;
     }
 
-    private void listenToCommands(String username) {
+    private void listenToCommands() {
         while (!quit) {
-            readCommand(username);
+            readCommand();
             //TODO: implement QUIT case
         }
 
@@ -68,7 +67,7 @@ public class CommandLineHandler {
         System.exit(0);
     }
 
-    private void readCommand(String username) {
+    private void readCommand() {
         String message = inputReader.readInputWithPrompt("Enter your message: ");
         // TODO: handle command properly
         if (message.toLowerCase().contains("quit")) {
@@ -77,8 +76,8 @@ public class CommandLineHandler {
         }
 
         Packet packet = new Packet(Command.SEND_CHAT,
-                new ChatMessage(username, message),
-                ContentType.CHAT_MESSAGE);
+                message,
+                ContentType.STRING);
         try {
             serverOutput.sendPacket(packet);
         } catch (IOException e) {

@@ -65,7 +65,7 @@ public class UserServiceTest {
         userService.handleNewUser(username, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.NEW_USER, username, ContentType.USERNAME);
+        Packet packet = new Packet(Command.NEW_USER, username, ContentType.STRING);
         verify(outputPacketGatewayMock, atMostOnce())
                 .broadCast(packet, Collections.singletonList(ipAddress));
     }
@@ -85,7 +85,7 @@ public class UserServiceTest {
         userService.handleNewUser(username, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.USERNAME);
+        Packet packet = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.STRING);
         verify(outputPacketGatewayMock, atMostOnce()).sendMessage(ipAddress, packet);
     }
 
@@ -146,7 +146,7 @@ public class UserServiceTest {
         userService.updateUsername(username, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.USERNAME);
+        Packet packet = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.STRING);
         verify(outputPacketGatewayMock, atMostOnce()).sendMessage(ipAddress, packet);
     }
 
@@ -184,17 +184,20 @@ public class UserServiceTest {
         userService.handleUserDisconnected(ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.USER_DISCONNECTED, username, ContentType.USERNAME);
+        Packet packet = new Packet(Command.USER_DISCONNECTED, username, ContentType.STRING);
         verify(outputPacketGatewayMock, atMostOnce())
                 .broadCast(packet, Collections.singletonList(ipAddress));
     }
 
     @Test
-    void handleMessageBroadCastsThisMessageToAllClientsExceptThatUser() {
+    void handleMessageBroadCastsThisMessageWIthCorrectUsernameToAllClientsExceptThatUser() {
         // prepare
-        ChatMessage message = new ChatMessage("John", "Hi!");
+        String username = "John";
+        String message = "Hi!";
         String ipAddress = "clientJ";
 
+        when(userRepositoryMock.getUsername(ipAddress))
+                .thenReturn(username);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
 
@@ -202,7 +205,7 @@ public class UserServiceTest {
         userService.handleMessageFromUser(message, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.SEND_CHAT, message, ContentType.CHAT_MESSAGE);
+        Packet packet = new Packet(Command.SEND_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         verify(outputPacketGatewayMock, atMostOnce())
                 .broadCast(packet, Collections.singletonList(ipAddress));
     }
