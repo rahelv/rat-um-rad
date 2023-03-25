@@ -28,7 +28,7 @@ public class UserService implements IUserService {
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
         userRepository.addUsername(chosenUsername, ipAddress);
         Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE); //TODO: change packet to UsernameChangeConfirmation
-        outputPacketGateway.sendMessage(ipAddress, confirmPacket);
+        outputPacketGateway.sendPacket(ipAddress, confirmPacket);
         Packet broadCastPacket = new Packet(Command.NEW_USER, chosenUsername, ContentType.STRING);
         //TODO: send packet containing usernames of current logged in users?
         broadcastExcludingUser(broadCastPacket, ipAddress);
@@ -40,7 +40,7 @@ public class UserService implements IUserService {
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
         userRepository.updateUsername(chosenUsername, ipAddress);
         Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE); //TODO: change packet to UsernameChangeConfirmation
-        outputPacketGateway.sendMessage(ipAddress, confirmPacket);
+        outputPacketGateway.sendPacket(ipAddress, confirmPacket);
         Packet broadCastPacket = new Packet(Command.CHANGED_USERNAME,
                 new UsernameChange(oldName, chosenUsername),
                 ContentType.USERNAME_CHANGE);

@@ -8,7 +8,7 @@ import java.util.List;
  * Interface which allows sending messages to one or more clients.
  */
 public interface OutputPacketGateway {
-    void sendMessage(String ipAddress, Packet packet);
+    void sendPacket(String ipAddress, Packet packet);
 
     /**
      * @param excludeClients list of ipAddresses to which message should not be broadcast.

@@ -14,12 +14,16 @@ import ch.progradler.rat_um_rad.shared.protocol.coder.ChatMessageCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.UsernameChangeCoder;
+import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
 
 public class Client  {
+    public static final Logger LOGGER = LogManager.getLogger();
     /** starts the client and creates a socket which tries connecting to the server on the specified host and port.
      * @param host: ip of the server
      * @param port: port of the server socket
@@ -32,17 +36,25 @@ public class Client  {
             Socket socket = new Socket(host, port);
             ServerOutput serverOutput = new ServerOutput(socket, packetCoder);
             UsernameHandler usernameHandler = new UsernameHandler();
+            ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
             startCommandHandler(serverOutput, host, usernameHandler);
-            startServerListener(socket, packetCoder, usernameHandler);
+            startServerListener(socket, packetCoder, clientPingPongRunner, usernameHandler);
         } catch (Exception e) {
             e.printStackTrace();
             if (e instanceof ConnectException) {
-                System.out.println("Failed to connect socket. Is the server running on the same port?");
+                LOGGER.error("Failed to connect socket. Is the server running on the same port?");
             }
             if(e instanceof IOException) {
-                System.out.println("Failed to connect socket");
+                LOGGER.error("Failed to connect socket");
             }
         }
+    }
+
+    private ClientPingPongRunner startClientPingPong(ServerOutput serverOutput) {
+        ClientPingPongRunner clientPingPongRunner = new ClientPingPongRunner(serverOutput);
+        Thread clientPingPongThread = new Thread(clientPingPongRunner);
+        clientPingPongThread.start();
+        return clientPingPongRunner;
     }
 
     /** starts the command handler in a new thread.
@@ -63,9 +75,9 @@ public class Client  {
      * @param packetCoder
      * @param usernameHandler
      */
-    private void startServerListener(Socket socket, Coder<Packet> packetCoder, UsernameHandler usernameHandler) {
+    private void startServerListener(Socket socket, Coder<Packet> packetCoder, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler) {
         PackagePresenter presenter = new CommandLinePresenter();
-        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, usernameHandler);
+        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner, usernameHandler);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
         Thread t = new Thread(listener);
         t.start();

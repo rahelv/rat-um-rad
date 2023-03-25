@@ -16,7 +16,6 @@ public class Main {
         }
 
         String serverOrClient = args[0];
-        System.out.println(args[0]); // TODO: remove
 
         int port = getPort(args);
         if (serverOrClient.equals(SERVER_COMMAND)) {
@@ -68,7 +67,7 @@ public class Main {
 
     private static String getHost(String[] args) {
         if (args.length < 3) {
-            System.out.format("Not enough arguments given. Using localhost %s\n", LOCAL_HOST);
+            System.out.format("Not enough arguments given. Using host %s\n", LOCAL_HOST);
             return LOCAL_HOST;
         } else {
             return args[1]; // TODO: validate?

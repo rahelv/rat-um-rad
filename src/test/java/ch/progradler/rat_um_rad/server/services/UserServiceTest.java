@@ -48,7 +48,7 @@ public class UserServiceTest {
         userService.handleNewUser(username, ipAddress);
 
         // assert
-        verify(userRepositoryMock, atMostOnce()).addUsername(username, ipAddress);
+        verify(userRepositoryMock).addUsername(username, ipAddress);
     }
 
     @Test
@@ -60,14 +60,14 @@ public class UserServiceTest {
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendMessage(eq(ipAddress), isA(Packet.class));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
         userService.handleNewUser(username, ipAddress);
 
         // assert
         Packet packet = new Packet(Command.NEW_USER, username, ContentType.STRING);
-        verify(outputPacketGatewayMock, atMostOnce())
+        verify(outputPacketGatewayMock)
                 .broadCast(packet, Collections.singletonList(ipAddress));
     }
 
@@ -80,14 +80,14 @@ public class UserServiceTest {
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendMessage(eq(ipAddress), isA(Packet.class));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
         userService.handleNewUser(username, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.STRING);
-        verify(outputPacketGatewayMock, atMostOnce()).sendMessage(ipAddress, packet);
+        Packet packet = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, username), ContentType.USERNAME_CHANGE);
+        verify(outputPacketGatewayMock, atLeastOnce()).sendPacket(eq(ipAddress), eq(packet));
     }
 
     @Test
@@ -99,13 +99,13 @@ public class UserServiceTest {
         doNothing().when(userRepositoryMock).updateUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendMessage(eq(ipAddress), isA(Packet.class));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
         userService.updateUsername(username, ipAddress);
 
         // assert
-        verify(userRepositoryMock, atMostOnce()).updateUsername(username, ipAddress);
+        verify(userRepositoryMock).updateUsername(username, ipAddress);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class UserServiceTest {
         doNothing().when(userRepositoryMock).updateUsername(newUsername, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendMessage(eq(ipAddress), isA(Packet.class));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
         userService.updateUsername(newUsername, ipAddress);
@@ -128,7 +128,7 @@ public class UserServiceTest {
         Packet packet = new Packet(Command.CHANGED_USERNAME,
                 new UsernameChange(oldUsername, newUsername),
                 ContentType.USERNAME_CHANGE);
-        verify(outputPacketGatewayMock, atMostOnce())
+        verify(outputPacketGatewayMock)
                 .broadCast(packet, Collections.singletonList(ipAddress));
     }
 
@@ -141,14 +141,14 @@ public class UserServiceTest {
         doNothing().when(userRepositoryMock).updateUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendMessage(eq(ipAddress), isA(Packet.class));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
         userService.updateUsername(username, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.STRING);
-        verify(outputPacketGatewayMock, atMostOnce()).sendMessage(ipAddress, packet);
+        Packet packet = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, username), ContentType.USERNAME_CHANGE);
+        verify(outputPacketGatewayMock, atLeastOnce()).sendPacket(eq(ipAddress), eq(packet));
     }
 
 
@@ -167,7 +167,7 @@ public class UserServiceTest {
         userService.handleUserDisconnected(ipAddress);
 
         // assert
-        verify(userRepositoryMock, atMostOnce()).removeUsername(ipAddress);
+        verify(userRepositoryMock).removeUsername(ipAddress);
     }
 
     @Test
@@ -186,7 +186,7 @@ public class UserServiceTest {
 
         // assert
         Packet packet = new Packet(Command.USER_DISCONNECTED, username, ContentType.STRING);
-        verify(outputPacketGatewayMock, atMostOnce())
+        verify(outputPacketGatewayMock)
                 .broadCast(packet, Collections.singletonList(ipAddress));
     }
 
@@ -207,7 +207,7 @@ public class UserServiceTest {
 
         // assert
         Packet packet = new Packet(Command.SEND_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
-        verify(outputPacketGatewayMock, atMostOnce())
+        verify(outputPacketGatewayMock)
                 .broadCast(packet, Collections.singletonList(ipAddress));
     }
 

@@ -1,38 +1,39 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
+import ch.progradler.rat_um_rad.client.Client;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
-import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 
+import static ch.progradler.rat_um_rad.client.command_line.UsernameHandler.PROPERTY_NAME_USERNAME;
+
 /**
  * Contains business logic by handling user input and possibly sending packet to server.
  */
 public class CommandLineHandler implements PropertyChangeListener, Runnable {
-    private static final String ANSWER_NO = "no";
+    public static final Logger LOGGER = LogManager.getLogger();
 
     private final InputReader inputReader;
     private final OutputPacketGateway outputPacketGateway;
-    private final ComputerInfo computerInfo;
     private final UsernameHandler usernameHandler;
     private boolean quit = false;
 
     public CommandLineHandler(InputReader inputReader, OutputPacketGateway outputPacketGateway, String host, UsernameHandler usernameHandler) {
         this.inputReader = inputReader;
         this.outputPacketGateway = outputPacketGateway;
-        this.computerInfo = new ComputerInfo();
         this.usernameHandler = usernameHandler;
     }
 
     /**
      * starts the CommandLineHandler. Condition: username has to be sent to the server, waits until username is set
      *
-     * @see UsernameHandler#propertyChangeSupport and
      * @see UsernameHandler#addUsernameObserver(PropertyChangeListener)
      */
     @Override
@@ -56,7 +57,7 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if(evt.getPropertyName().equals("username")) {
+        if (evt.getPropertyName().equals(PROPERTY_NAME_USERNAME)) {
             synchronized (this) {
                 notify();
             }
@@ -67,6 +68,7 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
      * continuously listens for User Input (Commands), stops when quit-command is triggered
      */
     private void listenToCommands() {
+        LOGGER.debug("Listening to user input commands...");
         while (!quit) {
             readCommand();
             //TODO: implement QUIT case
@@ -95,7 +97,7 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
             try {
                 outputPacketGateway.sendPacket(packet);
             } catch (IOException e) {
-                System.out.println("Failed to send command to server!");
+                LOGGER.warn("Failed to send command to server!");
                 e.printStackTrace();
             }
         }
