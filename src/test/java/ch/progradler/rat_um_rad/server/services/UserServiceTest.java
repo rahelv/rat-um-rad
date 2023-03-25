@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -208,5 +209,19 @@ public class UserServiceTest {
         Packet packet = new Packet(Command.SEND_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         verify(outputPacketGatewayMock, atMostOnce())
                 .broadCast(packet, Collections.singletonList(ipAddress));
+    }
+
+    /**
+     * checks if sugggested alternative is the next same username with number that is not already used
+     */
+    @Test
+    void checkUsernameAndSuggestAlternative() {
+        when(userRepositoryMock.hasDuplicate("rahel")).thenReturn(true);
+        when(userRepositoryMock.hasDuplicate("rahel1")).thenReturn(true);
+        when(userRepositoryMock.hasDuplicate("rahel2")).thenReturn(true);
+        when(userRepositoryMock.hasDuplicate("rahel3")).thenReturn(true);
+        when(userRepositoryMock.hasDuplicate("rahel4")).thenReturn(true);
+
+        assertEquals("rahel5", userService.checkUsernameAndSuggestAlternative("rahel"));
     }
 }

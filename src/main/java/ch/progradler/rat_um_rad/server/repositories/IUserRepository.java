@@ -10,4 +10,10 @@ public interface IUserRepository {
     String removeUsername(String ipAddress);
 
     int getUserCount();
+
+    /**
+     * @param username to check for if has duplicates.
+     * @return whether or not the username is already registered.
+     */
+    boolean hasDuplicate(String username);
 }

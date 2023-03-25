@@ -3,8 +3,7 @@ package ch.progradler.rat_um_rad.server.repositories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserRepositoryTest {
     private UserRepository userRepository;
@@ -62,5 +61,12 @@ public class UserRepositoryTest {
         assertEquals(NAME_1, userRepository.getUsername(IP_ADDRESS_1));
         userRepository.removeUsername(IP_ADDRESS_1);
         assertNull(userRepository.getUsername(IP_ADDRESS_1));
+    }
+
+    @Test
+    void hasDuplicates() {
+        String username = "Albert";
+        userRepository.addUsername(username, "client1");
+        assertTrue(userRepository.hasDuplicate(username));
     }
 }

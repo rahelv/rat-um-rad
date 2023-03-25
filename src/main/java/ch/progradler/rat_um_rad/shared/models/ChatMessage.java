@@ -1,12 +1,11 @@
 package ch.progradler.rat_um_rad.shared.models;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Simple model class to hold data about a chat message.
  */
-public class ChatMessage implements Serializable {
+public class ChatMessage {
     final String username;
     final String message;
 

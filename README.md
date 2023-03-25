@@ -2,22 +2,30 @@
 
 ### By Emanuele, Rahel, Rui und Jonah.
 
-## Dokumentation
+## Über das Spiel
 
-Das Projekttagebuch, ein grober Projektplan, Softwareanforderungen, eine Dokument über Server-Client-Protokollierung,
-die Präsentation für Meilenstein 1 und mehr befindet
-sich [hier](https://drive.google.com/drive/folders/1Voso3Dcn3yKRfsRwU3yPKWJBVLTWuam_?usp=sharing).
+Rat um Rad ist ein digitales Brettspiel für 3-5 Spieler. Die Spieler bauen Strecken auf einem Streckennetz der Stadt Basel. 
+Ziel ist es möglichst lange Strecken zu bilden und als erster alle Spielsteine verbaut zu haben. 
 
-### TODO: Improve README
-This is a readme file. It typically includes some information about your project. For more information about readmes,
-you can either [read a guide](https://github.com/18F/open-source-guide/blob/18f-pages/pages/making-readmes-readable.md)
-or have a look at the readmes of popular open-source projects such as [Swift by Apple](https://github.com/apple/swift)
-or [Tensorflow](https://github.com/tensorflow/tensorflow).
+## Entwicklung 
 
-Readme files are typically formatted in Markdown. However, there are platform-specific flavors, so for this project, you
-can make full use of the [Gitlab markdown syntax](https://docs.gitlab.com/ee/user/markdown.html), for example when
-talking about a :bug: (bug) or if your code is slow like a :snail:. You can also tag people using @username and
-reference issues using '#1', where 1 is the issue number. For more features, consult the linked Gitlab syntax guide.
+Das Spiel befindet sich aktuell in Entwicklung. Der aktuelle Entwicklungsstand und relevante Dokumente können auf [Google Drive](https://drive.google.com/drive/folders/1Voso3Dcn3yKRfsRwU3yPKWJBVLTWuam_?usp=sharing). mitverfolgt werden.
+Zudem wird zu jedem Meilenstein ein Ordner mit dem aktuellen Stand der relevanten Dokumente in diesem Repository hinterlegt.
 
-If you don't like reading
-documentation, [here's a cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet).
+## Programm starten  
+Sowohl Client als auch Server können über das Terminal gestartet werden. 
+Der Server muss laufen, damit der Client gestartet werden kann. 
+
+### Server Input Parameter
+| Befehl          | Beschreibung                                                                                       |
+|-----------------|----------------------------------------------------------------------------------------------------|
+| server \<port\> | startet den Server und erstellt das Socket, welches auf dem gewählten Port auf Verbindungen wartet |
+| server          | zu Testzwecken, startet den Server mit Default-Parameter Port: 8090                                |
+
+
+
+### Client Input Parameter 
+| Befehl                 | Beschreibung                                                                                                                 |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| client \<ip\> \<port\> | startet den Client und stellt eine socket-Verbindung zur gewählten IP und Port her |
+| client                 | zu Testzwecken, startet den Client mit Default-Parametern Host: localhost und Port: 8090                                     |
