@@ -10,4 +10,5 @@ public enum Command {
     USER_DISCONNECTED,
     SEND_CHAT,
     CLIENT_DISCONNECTED,
+    SET_USERNAME
 }

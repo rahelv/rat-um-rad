@@ -25,10 +25,11 @@ public class UserService implements IUserService {
 
     @Override
     public void handleNewUser(String username, String ipAddress) {
-        userRepository.addUsername(username, ipAddress);
-        Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.STRING);
+        String chosenUsername = checkUsernameAndSuggestAlternative(username);
+        userRepository.addUsername(chosenUsername, ipAddress);
+        Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE); //TODO: change packet to UsernameChangeConfirmation
         outputPacketGateway.sendMessage(ipAddress, confirmPacket);
-        Packet broadCastPacket = new Packet(Command.NEW_USER, username, ContentType.STRING);
+        Packet broadCastPacket = new Packet(Command.NEW_USER, chosenUsername, ContentType.STRING);
         //TODO: send packet containing usernames of current logged in users?
         broadcastExcludingUser(broadCastPacket, ipAddress);
     }
@@ -36,13 +37,24 @@ public class UserService implements IUserService {
     @Override
     public void updateUsername(String username, String ipAddress) {
         String oldName = userRepository.getUsername(ipAddress);
-        userRepository.updateUsername(username, ipAddress);
-        Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, username, ContentType.STRING);
+        String chosenUsername = checkUsernameAndSuggestAlternative(username);
+        userRepository.updateUsername(chosenUsername, ipAddress);
+        Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE); //TODO: change packet to UsernameChangeConfirmation
         outputPacketGateway.sendMessage(ipAddress, confirmPacket);
         Packet broadCastPacket = new Packet(Command.CHANGED_USERNAME,
-                new UsernameChange(oldName, username),
+                new UsernameChange(oldName, chosenUsername),
                 ContentType.USERNAME_CHANGE);
         broadcastExcludingUser(broadCastPacket, ipAddress);
+    }
+
+    String checkUsernameAndSuggestAlternative(String username) {
+        String usernameToBeChecked = username;
+        Integer counter = 0;
+        while (userRepository.hasDuplicate(usernameToBeChecked)) {
+            counter++;
+            usernameToBeChecked = username + counter;
+        }
+        return usernameToBeChecked;
     }
 
     @Override

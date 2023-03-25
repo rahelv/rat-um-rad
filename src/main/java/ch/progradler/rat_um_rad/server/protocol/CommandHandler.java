@@ -28,6 +28,9 @@ public class CommandHandler implements InputPacketGateway {
             case CLIENT_DISCONNECTED -> {
                 userService.handleUserDisconnected(ipAddress);
             }
+            case SET_USERNAME -> {
+                userService.updateUsername((String) packet.getContent(), ipAddress);
+            }
         }
     }
 }
