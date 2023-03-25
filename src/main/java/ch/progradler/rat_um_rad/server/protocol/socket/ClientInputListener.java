@@ -3,11 +3,14 @@ package ch.progradler.rat_um_rad.server.protocol.socket;
 import ch.progradler.rat_um_rad.server.gateway.InputPacketGateway;
 import ch.progradler.rat_um_rad.server.protocol.ClientDisconnectedListener;
 import ch.progradler.rat_um_rad.server.protocol.UsernameReceivedListener;
+import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.util.StreamUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,29 +21,34 @@ import java.net.SocketException;
  * Listens to incoming commands from a specific client via socket stream.
  */
 public class ClientInputListener implements Runnable {
+    public static final Logger LOGGER = LogManager.getLogger();
     private final InputPacketGateway inputPacketGateway;
     private InputStream inputStream;
     private final Coder<Packet> packetCoder;
-    private final String ipAddress;
+    private String ipAddress;
     private final ClientDisconnectedListener clientDisconnectedListener;
     private UsernameReceivedListener usernameReceivedListener;
+    private final ServerPingPongRunner serverPingPongRunner;
 
     public ClientInputListener(Socket socket,
                                InputPacketGateway inputPacketGateway,
                                Coder<Packet> packetCoder,
                                String ipAddress,
-                               ClientDisconnectedListener clientDisconnectedListener) {
+                               ClientDisconnectedListener clientDisconnectedListener,
+                               ServerPingPongRunner serverPingPongRunner) {
         this.inputPacketGateway = inputPacketGateway;
         this.packetCoder = packetCoder;
         this.ipAddress = ipAddress;
         this.clientDisconnectedListener = clientDisconnectedListener;
+        this.serverPingPongRunner = serverPingPongRunner;
         try {
             inputStream = socket.getInputStream();
         } catch (IOException e) {
             e.printStackTrace(); //TODO: error management
-            System.out.println("Failed to connect with client. Removing client...");
+            LOGGER.warn("Failed to connect with client. Removing client...");
             clientDisconnectedListener.onDisconnected(ipAddress);
         }
+
     }
 
     public void setUsernameReceivedListener(UsernameReceivedListener usernameReceivedListener) {

@@ -24,9 +24,9 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     }
 
     @Override
-    public void sendMessage(String ipAddress, Packet packet) {
+    public void sendPacket(String ipAddress, Packet packet) {
         IConnection connection = connections.get(ipAddress);
-        connection.sendMessageToClient(packet);
+        connection.sendPacketToClient(packet);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
         clientsForBroadCast.removeAll(excludeClients);
 
         for (String ipAddress : clientsForBroadCast) {
-            sendMessage(ipAddress, packet);
+            sendPacket(ipAddress, packet);
         }
     }
 

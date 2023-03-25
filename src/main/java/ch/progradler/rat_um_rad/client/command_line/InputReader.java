@@ -27,7 +27,7 @@ public class InputReader {
      * Displays prompt to user and takes user input.
      *
      * @param prompt: Is displayed to user
-     * @param strip: Whether or not to strip input before returning.
+     * @param strip: Whether to strip input before returning.
      * @return String: User Input
      */
     public String readInputWithPrompt(String prompt, boolean strip) {

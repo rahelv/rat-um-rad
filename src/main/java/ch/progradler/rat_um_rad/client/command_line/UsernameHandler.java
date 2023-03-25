@@ -5,13 +5,17 @@ import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
 public class UsernameHandler {
-    private static final String PROPERTY_NAME_USERNAME = "username";
+    public static final Logger LOGGER = LogManager.getLogger();
+
+    public static final String PROPERTY_NAME_USERNAME = "username";
 
     private final ComputerInfo computerInfo;
     private final InputReader inputReader;
@@ -89,8 +93,8 @@ public class UsernameHandler {
             outputPacketGateway.sendPacket(new Packet(Command.NEW_USER, username, ContentType.STRING));
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Failed to send username to server!");
-            return chooseAndSendUsername(outputPacketGateway); //TODO: is this the best solution ?
+            LOGGER.warn("Failed to send username to server!"); //TODO: choose appropriate logger levels for all logs
+            return chooseAndSendUsername(outputPacketGateway);
         }
         return username;
     }
@@ -114,13 +118,18 @@ public class UsernameHandler {
      * get new username from changeUsername() and send the new chosen Username to the Server.
      */
     public void changeAndSendNewUsername(OutputPacketGateway outputPacketGateway) {
-        String username = readNewUsernameToChange();
+        String chosenUsername = readNewUsernameToChange();
+
+        if(chosenUsername == this.username) {
+            System.out.println("Your username already is: " + chosenUsername); //TODO: implement using presenter 
+            return;
+        }
 
         try {
-            outputPacketGateway.sendPacket(new Packet(Command.SET_USERNAME, username, ContentType.STRING)); //TODO: sanitize username
+            outputPacketGateway.sendPacket(new Packet(Command.SET_USERNAME, chosenUsername, ContentType.STRING)); //TODO: sanitize username
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Failed to send username to server!");
+            LOGGER.warn("Failed to send username to server!");
             changeAndSendNewUsername(outputPacketGateway);
         }
     }

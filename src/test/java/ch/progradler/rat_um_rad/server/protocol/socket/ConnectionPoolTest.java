@@ -38,16 +38,16 @@ public class ConnectionPoolTest {
     void sendMessageSendsMessageToCorrectClient() {
         Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.STRING);
 
-        doNothing().when(connection1).sendMessageToClient(isA(Packet.class));
-        doNothing().when(connection2).sendMessageToClient(isA(Packet.class));
+        doNothing().when(connection1).sendPacketToClient(isA(Packet.class));
+        doNothing().when(connection2).sendPacketToClient(isA(Packet.class));
 
-        connectionPool.sendMessage("client2", packet);
-        connectionPool.sendMessage("client1", packet);
-        connectionPool.sendMessage("client2", packet);
+        connectionPool.sendPacket("client2", packet);
+        connectionPool.sendPacket("client1", packet);
+        connectionPool.sendPacket("client2", packet);
 
-        verify(connection1, times(1)).sendMessageToClient(packet);
-        verify(connection2, times(2)).sendMessageToClient(packet);
-        verify(connection3, times(0)).sendMessageToClient(packet);
+        verify(connection1, times(1)).sendPacketToClient(packet);
+        verify(connection2, times(2)).sendPacketToClient(packet);
+        verify(connection3, times(0)).sendPacketToClient(packet);
     }
 
 
@@ -55,16 +55,16 @@ public class ConnectionPoolTest {
     void broadcastSendsMessageToCorrectClients() {
         Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.STRING);
 
-        doNothing().when(connection1).sendMessageToClient(isA(Packet.class));
-        doNothing().when(connection3).sendMessageToClient(isA(Packet.class));
+        doNothing().when(connection1).sendPacketToClient(isA(Packet.class));
+        doNothing().when(connection3).sendPacketToClient(isA(Packet.class));
 
         List<String> exclude = Collections.singletonList("client2");
 
         connectionPool.broadCast(packet, exclude);
 
-        verify(connection1, times(1)).sendMessageToClient(packet);
-        verify(connection2, times(0)).sendMessageToClient(packet);
-        verify(connection3, times(1)).sendMessageToClient(packet);
+        verify(connection1, times(1)).sendPacketToClient(packet);
+        verify(connection2, times(0)).sendPacketToClient(packet);
+        verify(connection3, times(1)).sendPacketToClient(packet);
     }
 
     @Test

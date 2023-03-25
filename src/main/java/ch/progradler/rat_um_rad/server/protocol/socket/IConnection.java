@@ -8,7 +8,7 @@ import java.io.IOException;
  * Interface of a connection.
  */
 public interface IConnection {
-    void sendMessageToClient(Packet packet);
+    void sendPacketToClient(Packet packet);
 
     void close() throws IOException;
 }
