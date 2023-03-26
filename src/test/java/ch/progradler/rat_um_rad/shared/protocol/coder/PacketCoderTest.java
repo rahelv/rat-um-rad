@@ -52,8 +52,8 @@ public class PacketCoderTest {
     }
 
     @Test
-    public void encodeReturnsCorrectStringIfContentNull() {
-        Command command = Command.SEND_CHAT;
+    public void encodeReturnsCorrectStringIfContentTypeIsNone() {
+        Command command = Command.PONG;
         ContentType contentType = ContentType.NONE;
 
         Packet packet = new Packet(command, null, contentType);
@@ -65,10 +65,9 @@ public class PacketCoderTest {
     }
 
     @Test
-    public void decodeReturnsPacketWithContentNullIfContentEmpty() {
-
-        Command command = Command.SEND_CHAT;
-        ContentType contentType = ContentType.CHAT_MESSAGE;
+    public void decodeReturnsPacketWithContentNullIfContentEmptyTypeIsNone() {
+        Command command = Command.PING;
+        ContentType contentType = ContentType.NONE;
 
         String packetEncoded = command.name() + PacketCoder.SEPARATOR +
                 "null" + PacketCoder.SEPARATOR +
@@ -103,6 +102,49 @@ public class PacketCoderTest {
         // assert
         Packet expected = new Packet(command, expectedMessage, contentType);
 
-        assertEquals(expected,result);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void encodeWorksForString() {
+        // prepare
+        String username = "userA";
+
+        Command command = Command.NEW_USER;
+        ContentType contentType = ContentType.STRING;
+
+
+        Packet packet = new Packet(command, username, contentType);
+
+        // execute
+        String result = packetCoder.encode(packet);
+
+        // assert
+        String expected = command.name() + PacketCoder.SEPARATOR +
+                "{" + username + "}" + PacketCoder.SEPARATOR +
+                contentType.name();
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void decodeWorksForString() {
+        // prepare
+        String username = "userA";
+
+        Command command = Command.NEW_USER;
+        ContentType contentType = ContentType.STRING;
+
+        String packetEncoded = command.name() + PacketCoder.SEPARATOR +
+                "{" + username + "}" + PacketCoder.SEPARATOR +
+                contentType.name();
+
+        // execute
+        Packet result = packetCoder.decode(packetEncoded);
+
+        // assert
+        Packet expected = new Packet(command, username, contentType);
+
+        assertEquals(expected, result);
     }
 }
