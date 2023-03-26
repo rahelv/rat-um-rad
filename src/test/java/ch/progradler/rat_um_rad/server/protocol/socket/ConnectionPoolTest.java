@@ -80,4 +80,10 @@ public class ConnectionPoolTest {
         // should already be removed after first call -> only 1 close call
         verify(connection2, times(1)).close();
     }
+
+    @Test
+    void sendPacketThrowsNoErrorIfIPAddressNotPresent() {
+        Packet packet = new Packet(Command.PONG, null, ContentType.NONE);
+        assertDoesNotThrow(() -> connectionPool.sendPacket("nonExistentClient", packet));
+    }
 }
