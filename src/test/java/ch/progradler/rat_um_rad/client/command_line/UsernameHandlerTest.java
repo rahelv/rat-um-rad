@@ -73,39 +73,4 @@ class UsernameHandlerTest {
     @Test
     void changeAndSendNewUsername() { //TODO
     }
-
-    @Test
-    void isUsernameValidReturnsFalseWhenDigitAtBeginning() {
-        String wrongUsername = "6username";
-
-        assertFalse(usernameHandler.isUsernameValid(wrongUsername));
-    }
-
-    @Test
-    void isUsernameValidReturnsFalseWhenSpecialCharUsed() {
-        String wrongUsername = "u$ername";
-
-        assertFalse(usernameHandler.isUsernameValid(wrongUsername));
-    }
-
-    @Test
-    void isUsernameValidReturnsTrueWhenUnderScoreUsed() {
-        String username = "user_name";
-
-        assertTrue(usernameHandler.isUsernameValid(username));
-    }
-
-    @Test
-    void isUsernameValidReturnsFalseWhenLessThan5Chars() {
-        String wrongUsername = "user";
-
-        assertFalse(usernameHandler.isUsernameValid(wrongUsername));
-    }
-
-    @Test
-    void isUsernameValidReturnsFalseWhenMoreThan30Chars() {
-        String wrongUsername = "usernamehatmehrals30zeichenlala";
-
-        assertFalse(usernameHandler.isUsernameValid(wrongUsername));
-    }
 }

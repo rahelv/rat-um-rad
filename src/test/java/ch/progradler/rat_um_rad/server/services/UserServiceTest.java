@@ -7,6 +7,7 @@ import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,19 +28,23 @@ public class UserServiceTest {
     @Mock
     IUserRepository userRepositoryMock;
 
+    @Mock
+    UsernameValidator usernameValidatorMock;
+
     private UserService userService;
 
     @BeforeEach
     public void initServiceTest() {
-        userService = new UserService(outputPacketGatewayMock, userRepositoryMock);
+        userService = new UserService(outputPacketGatewayMock, userRepositoryMock, usernameValidatorMock);
     }
 
     @Test
     void handleNewUserAddsUsernameToRepository() {
         // prepare
-        String username = "John";
+        String username = "Johnny";
         String ipAddress = "clientJ";
 
+        when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
@@ -52,11 +57,28 @@ public class UserServiceTest {
     }
 
     @Test
+    void handleNewUserSendsErrorMessageWhenNameInvalid() {
+        // prepare
+        String username = "5Johnny";
+        String ipAddress = "clientJ";
+        Packet errorPacket = new Packet(Command.INVALID_ACTION_FATAL, "Username invalid. Please try again", ContentType.STRING);
+        when(usernameValidatorMock.isUsernameValid(username)).thenReturn(false);
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), eq(errorPacket));
+
+        // execute
+        userService.handleNewUser(username, ipAddress);
+
+        // assert
+        verify(outputPacketGatewayMock, atLeastOnce()).sendPacket(eq(ipAddress), eq(errorPacket));
+    }
+
+    @Test
     void handleNewUserBroadCastsThisInfoToAllClientsExceptThatUser() {
         // prepare
-        String username = "John";
+        String username = "Johnny";
         String ipAddress = "clientJ";
 
+        when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
@@ -74,9 +96,10 @@ public class UserServiceTest {
     @Test
     void handleNewUserSendsConfirmationThatUser() {
         // prepare
-        String username = "John";
+        String username = "Johnny";
         String ipAddress = "clientJ";
 
+        when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
@@ -93,9 +116,10 @@ public class UserServiceTest {
     @Test
     void updateUsernameCallsUpdateUsernameOnRepository() {
         // prepare
-        String username = "John";
+        String username = "Johnny";
         String ipAddress = "clientJ";
 
+        when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).updateUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
@@ -109,12 +133,29 @@ public class UserServiceTest {
     }
 
     @Test
+    void updateUsernameSendsErrorMessageWhenNameInvalid() {
+        // prepare
+        String username = "5Johnny";
+        String ipAddress = "clientJ";
+        Packet errorPacket = new Packet(Command.INVALID_ACTION_WARNING, "The chosen username was invalid. Please try again", ContentType.STRING); //on client: user has to trigger usernamechange dialog again
+        when(usernameValidatorMock.isUsernameValid(username)).thenReturn(false);
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), eq(errorPacket));
+
+        // execute
+        userService.updateUsername(username, ipAddress);
+
+        // assert
+        verify(outputPacketGatewayMock, atLeastOnce()).sendPacket(eq(ipAddress), eq(errorPacket));
+    }
+
+    @Test
     void updateUsernameBroadCastsThisInfoToAllClientsExceptThatUser() {
         // prepare
-        String oldUsername = "John";
-        String newUsername = "Johnny";
+        String oldUsername = "Johnny";
+        String newUsername = "Johnny5";
         String ipAddress = "clientJ";
 
+        when(usernameValidatorMock.isUsernameValid(newUsername)).thenReturn(true);
         when(userRepositoryMock.getUsername(ipAddress)).thenReturn(oldUsername);
         doNothing().when(userRepositoryMock).updateUsername(newUsername, ipAddress);
         doNothing().when(outputPacketGatewayMock)
@@ -135,9 +176,10 @@ public class UserServiceTest {
     @Test
     void updateUsernameSendsConfirmationThatUser() {
         // prepare
-        String username = "John";
+        String username = "Johnny";
         String ipAddress = "clientJ";
 
+        when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).updateUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
@@ -155,7 +197,7 @@ public class UserServiceTest {
     @Test
     void handleDisconnectRemovesUsernameFromRepository() {
         // prepare
-        String username = "John";
+        String username = "Johnny";
         String ipAddress = "clientJ";
 
         when(userRepositoryMock.removeUsername(ipAddress))
@@ -173,7 +215,7 @@ public class UserServiceTest {
     @Test
     void handleDisconnectBroadcastsThisInfo() {
         // prepare
-        String username = "John";
+        String username = "Johnny";
         String ipAddress = "clientJ";
 
         when(userRepositoryMock.removeUsername(ipAddress))
@@ -193,7 +235,7 @@ public class UserServiceTest {
     @Test
     void handleMessageBroadCastsThisMessageWIthCorrectUsernameToAllClientsExceptThatUser() {
         // prepare
-        String username = "John";
+        String username = "Johnny";
         String message = "Hi!";
         String ipAddress = "clientJ";
 
