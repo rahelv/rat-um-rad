@@ -23,7 +23,7 @@ public class PacketCoder implements Coder<Packet> {
 
     /**
      * @return String encoded in our network protocol.
-     * Will be in format "command|encodedContent|contentType"
+     * Will be in format "command-/-{encodedContent}-/-contentType"
      */
     @Override
     public String encode(Packet packet) {

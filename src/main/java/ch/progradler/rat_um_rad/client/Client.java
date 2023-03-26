@@ -50,6 +50,11 @@ public class Client  {
         }
     }
 
+    /**
+     * starts the Client Ping Pong Runner (Thread)
+     * @param serverOutput
+     * @return
+     */
     private ClientPingPongRunner startClientPingPong(ServerOutput serverOutput) {
         ClientPingPongRunner clientPingPongRunner = new ClientPingPongRunner(serverOutput);
         Thread clientPingPongThread = new Thread(clientPingPongRunner);

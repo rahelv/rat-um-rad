@@ -8,6 +8,10 @@ import static ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper.SEPARAT
  * En-/decodes {@link ChatMessage}
  */
 public class ChatMessageCoder implements Coder<ChatMessage> {
+    /** receives a chatMessage and encodes it to the defined serialized format.
+     * @param chatMessage
+     * @return
+     */
     @Override
     public String encode(ChatMessage chatMessage) {
         return "{" +
@@ -16,6 +20,10 @@ public class ChatMessageCoder implements Coder<ChatMessage> {
                 "}";
     }
 
+    /** receives an encoded String and decodes it to class ChatMessage
+     * @param encoded
+     * @return
+     */
     @Override
     public ChatMessage decode(String encoded) {
         String unwrapped = encoded.substring(1, encoded.length() - 1);

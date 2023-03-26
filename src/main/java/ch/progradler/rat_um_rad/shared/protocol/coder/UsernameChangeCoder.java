@@ -9,6 +9,10 @@ import static ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper.SEPARAT
  */
 public class UsernameChangeCoder implements Coder<UsernameChange> {
 
+    /** receives a UsernameChange and encodes it to the defined serialized format.
+     * @param usernameChange
+     * @return
+     */
     @Override
     public String encode(UsernameChange usernameChange) {
         return "{" +
@@ -17,6 +21,10 @@ public class UsernameChangeCoder implements Coder<UsernameChange> {
                 "}";
     }
 
+    /** receives an encoded String and decodes it to class UsernameChange
+     * @param encoded
+     * @return
+     */
     @Override
     public UsernameChange decode(String encoded) {
         String unwrapped = encoded.substring(1, encoded.length() - 1);

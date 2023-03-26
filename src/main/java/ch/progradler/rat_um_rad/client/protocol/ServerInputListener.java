@@ -30,6 +30,9 @@ public class ServerInputListener implements Runnable {
         }
     }
 
+    /**
+     * run method for the ServerInputListener. Listens for Packets from the Server.
+     */
     @Override
     public void run() {
         while (true) { //so it keeps listening
