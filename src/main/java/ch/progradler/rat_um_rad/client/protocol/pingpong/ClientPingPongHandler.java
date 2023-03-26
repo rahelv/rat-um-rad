@@ -21,6 +21,9 @@ public class ClientPingPongHandler {
     private boolean pingArrived = false;
     private final OutputPacketGateway outputPacketGateway;
 
+    /**
+     * @param outputPacketGateway is the serverOutput instance.
+     */
     public ClientPingPongHandler(OutputPacketGateway outputPacketGateway) {
         this.outputPacketGateway = outputPacketGateway;
     }
@@ -33,6 +36,9 @@ public class ClientPingPongHandler {
         return pingArrived;
     }
 
+    /**
+     * If the time the server needed to return a PING lasts longer than TIME_FOR_DISCONNECT, the connection is broken up.
+     */
     public void handleTimeForDisconnectOver(int arrivedPingCounter, int timeCounter) {
         if (timeCounter >= TIME_FOR_DISCONNECT) {
             LOGGER.log(Level.forName("PINGPONG", 700), arrivedPingCounter + ". PING didn't arrive within time limit.");
