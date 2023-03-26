@@ -39,8 +39,6 @@ public class CommandLinePresenter implements PackagePresenter {
                     displayChatMessage((ChatMessage) content);
                 }
             }
-            case CLIENT_DISCONNECTED -> {
-            }
         }
     }
 

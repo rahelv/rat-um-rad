@@ -74,7 +74,7 @@ public class ClientInputListener implements Runnable {
                 //TODO: later, implement network protocol and chose action accordingly
             }
         } catch (SocketException e) {
-            inputPacketGateway.handleClientCommand(new Packet(Command.CLIENT_DISCONNECTED,
+            inputPacketGateway.handleClientCommand(new Packet(Command.USER_DISCONNECTED,
                     null,
                     ContentType.NONE), ipAddress);
             System.out.println("Client " + ipAddress +

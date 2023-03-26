@@ -16,10 +16,8 @@ public enum Command {
      */
     PONG,
     SET_USERNAME,
-    CLIENT_DISCONNECTED,
 
     // server commands (sent from server to client):
-
     CHANGED_USERNAME,
     USERNAME_CONFIRMED,
     USER_DISCONNECTED,

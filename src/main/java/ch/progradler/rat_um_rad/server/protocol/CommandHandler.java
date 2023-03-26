@@ -34,7 +34,7 @@ public class CommandHandler implements InputPacketGateway {
             case SEND_CHAT -> {
                 userService.handleMessageFromUser((String) packet.getContent(), ipAddress);
             }
-            case CLIENT_DISCONNECTED -> {
+            case USER_DISCONNECTED -> {
                 userService.handleUserDisconnected(ipAddress);
             }
             case PONG -> {
