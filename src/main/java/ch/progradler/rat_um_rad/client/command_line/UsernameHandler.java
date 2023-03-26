@@ -86,9 +86,9 @@ public class UsernameHandler {
                 new StringBuilder()
                         .append( "The username suggested for you is: ")
                         .append(suggestedUsername)
-                        .append("Press enter to confirm. Otherwise enter your new username below and click Enter.")
-                        .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
-                        .append("To change your username in the future, type CHANGEUSERNAME and press Enter")
+                        .append("\nPress enter to confirm. Otherwise enter your new username below and click Enter.")
+                        .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
+                        .append("\nTo change your username in the future, type CHANGEUSERNAME and press Enter")
                         .toString());
         // TODO: check if username is not empty or null and unittest
         if (answerToSuggestedUsername.equals("")) {
@@ -129,8 +129,8 @@ public class UsernameHandler {
                 new StringBuilder()
                         .append("You opened the username changer  with the command CHANGEUSERNAME, your current username is: ")
                         .append(getUsername())
-                        .append(".\n Press enter to keep this one. Otherwise enter your new username below and click Enter.")
-                        .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
+                        .append(".\nPress enter to keep this one. Otherwise enter your new username below and click Enter.")
+                        .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
                         .toString());
     }
 
@@ -143,7 +143,7 @@ public class UsernameHandler {
         return inputReader.readInputWithPrompt(
                 new StringBuilder()
                         .append("The username you entered isn't valid! Please try again.")
-                        .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
+                        .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
                         .toString());
     }
 

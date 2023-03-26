@@ -39,9 +39,9 @@ class UsernameHandlerTest {
         when(inputReaderMock.readInputWithPrompt(new StringBuilder()
                 .append( "The username suggested for you is: ")
                 .append(suggestedUsername)
-                .append("Press enter to confirm. Otherwise enter your new username below and click Enter.")
-                .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
-                .append("To change your username in the future, type CHANGEUSERNAME and press Enter")
+                .append("\nPress enter to confirm. Otherwise enter your new username below and click Enter.")
+                .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
+                .append("\nTo change your username in the future, type CHANGEUSERNAME and press Enter")
                 .toString())).thenReturn("");
         assertEquals(suggestedUsername, usernameHandler.chooseUsername());
     }
@@ -54,9 +54,9 @@ class UsernameHandlerTest {
         when(inputReaderMock.readInputWithPrompt( new StringBuilder()
                 .append( "The username suggested for you is: ")
                 .append(suggestedUsername)
-                .append("Press enter to confirm. Otherwise enter your new username below and click Enter.")
-                .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
-                .append("To change your username in the future, type CHANGEUSERNAME and press Enter")
+                .append("\nPress enter to confirm. Otherwise enter your new username below and click Enter.")
+                .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
+                .append("\nTo change your username in the future, type CHANGEUSERNAME and press Enter")
                 .toString())).thenReturn(chosenUsername);
         assertEquals(chosenUsername, usernameHandler.chooseUsername());
     }
