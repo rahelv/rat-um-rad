@@ -7,6 +7,7 @@ import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.util.regex.*;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -61,18 +62,34 @@ public class UsernameHandler {
     }
 
     /**
+     * Method to validate a given username.
+     * regex rules: [] first character has to be a letter, [] all other allowed chars (letters, digits and _), {} length constraint min. 5 characters, max. 30
+     * @param username: Username to be validated
+     * @return boolean: returns true if username is valid.
+     */
+    public boolean isUsernameValid(String username) {
+        String regex = "^[A-Za-z][A-Za-z0-9_]{4,29}$";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(username);
+        return matcher.matches();
+    }
+
+    /**
      * Asks the user to set a username, suggests the system username as default username.
      * This method is used to set the username the first time.
-     * @param
      * @return Username chosen by user as String
      */
     public String chooseUsername() {
         String suggestedUsername = computerInfo.getSystemUsername();
         String answerToSuggestedUsername = inputReader.readInputWithPrompt(
-                "The username suggested for you is: " +
-                        suggestedUsername +
-                        ".\nPress enter to confirm. Otherwise enter your new username below and click Enter." +
-                        "\nTo change your username in the future, type CHANGEUSERNAME and press Enter");
+                new StringBuilder()
+                        .append( "The username suggested for you is: ")
+                        .append(suggestedUsername)
+                        .append("Press enter to confirm. Otherwise enter your new username below and click Enter.")
+                        .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
+                        .append("To change your username in the future, type CHANGEUSERNAME and press Enter")
+                        .toString());
         // TODO: check if username is not empty or null and unittest
         if (answerToSuggestedUsername.equals("")) {
             return suggestedUsername;
@@ -83,11 +100,13 @@ public class UsernameHandler {
 
     /**
      * choose Username @see chooseUsername(), and send this chosen Username to Server
-     *
      * @return username which was chosen by server
      */
     public String chooseAndSendUsername(OutputPacketGateway outputPacketGateway) {
         String username = chooseUsername();
+        while(!isUsernameValid(username)) {
+            username = reenterUsernameAfterInValidUsernameEntered();
+        }
 
         try {
             outputPacketGateway.sendPacket(new Packet(Command.NEW_USER, username, ContentType.STRING));
@@ -111,6 +130,20 @@ public class UsernameHandler {
                         .append("You opened the username changer  with the command CHANGEUSERNAME, your current username is: ")
                         .append(getUsername())
                         .append(".\n Press enter to keep this one. Otherwise enter your new username below and click Enter.")
+                        .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
+                        .toString());
+    }
+
+    /**
+     * Prompts the user to reenter a valid username after the first entered username was false.
+     * @return entered username as string.
+     */
+    public String reenterUsernameAfterInValidUsernameEntered() {
+        // TODO: check if username is not empty or null and unittest or if username entered is the same as current username
+        return inputReader.readInputWithPrompt(
+                new StringBuilder()
+                        .append("The username you entered isn't valid! Please try again.")
+                        .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
                         .toString());
     }
 
@@ -119,6 +152,9 @@ public class UsernameHandler {
      */
     public void changeAndSendNewUsername(OutputPacketGateway outputPacketGateway) {
         String chosenUsername = readNewUsernameToChange();
+        while(!isUsernameValid(chosenUsername)) {
+            chosenUsername = reenterUsernameAfterInValidUsernameEntered();
+        }
 
         if(chosenUsername == this.username) {
             System.out.println("Your username already is: " + chosenUsername); //TODO: implement using presenter 

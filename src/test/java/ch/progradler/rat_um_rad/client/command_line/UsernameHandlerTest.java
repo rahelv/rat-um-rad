@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,10 +36,13 @@ class UsernameHandlerTest {
     void chooseUsernameChoosesSystemUsernameWhenNothingEntered() {
         String suggestedUsername = "systemUsername";
         when((computerInfoMock).getSystemUsername()).thenReturn(suggestedUsername);
-        when(inputReaderMock.readInputWithPrompt("The username suggested for you is: " +
-                suggestedUsername +
-                ".\nPress enter to confirm. Otherwise enter your new username below and click Enter." +
-                "\nTo change your username in the future, type CHANGEUSERNAME and press Enter")).thenReturn("");
+        when(inputReaderMock.readInputWithPrompt(new StringBuilder()
+                .append( "The username suggested for you is: ")
+                .append(suggestedUsername)
+                .append("Press enter to confirm. Otherwise enter your new username below and click Enter.")
+                .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
+                .append("To change your username in the future, type CHANGEUSERNAME and press Enter")
+                .toString())).thenReturn("");
         assertEquals(suggestedUsername, usernameHandler.chooseUsername());
     }
 
@@ -48,10 +51,13 @@ class UsernameHandlerTest {
         String suggestedUsername = "systemUsername";
         String chosenUsername = "chosenUsername";
         when((computerInfoMock).getSystemUsername()).thenReturn(suggestedUsername);
-        when(inputReaderMock.readInputWithPrompt("The username suggested for you is: " +
-                suggestedUsername +
-                ".\nPress enter to confirm. Otherwise enter your new username below and click Enter." +
-                "\nTo change your username in the future, type CHANGEUSERNAME and press Enter")).thenReturn(chosenUsername);
+        when(inputReaderMock.readInputWithPrompt( new StringBuilder()
+                .append( "The username suggested for you is: ")
+                .append(suggestedUsername)
+                .append("Press enter to confirm. Otherwise enter your new username below and click Enter.")
+                .append("Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
+                .append("To change your username in the future, type CHANGEUSERNAME and press Enter")
+                .toString())).thenReturn(chosenUsername);
         assertEquals(chosenUsername, usernameHandler.chooseUsername());
     }
 
@@ -66,5 +72,40 @@ class UsernameHandlerTest {
 
     @Test
     void changeAndSendNewUsername() { //TODO
+    }
+
+    @Test
+    void isUsernameValidReturnsFalseWhenDigitAtBeginning() {
+        String wrongUsername = "6username";
+
+        assertFalse(usernameHandler.isUsernameValid(wrongUsername));
+    }
+
+    @Test
+    void isUsernameValidReturnsFalseWhenSpecialCharUsed() {
+        String wrongUsername = "u$ername";
+
+        assertFalse(usernameHandler.isUsernameValid(wrongUsername));
+    }
+
+    @Test
+    void isUsernameValidReturnsTrueWhenUnderScoreUsed() {
+        String username = "user_name";
+
+        assertTrue(usernameHandler.isUsernameValid(username));
+    }
+
+    @Test
+    void isUsernameValidReturnsFalseWhenLessThan5Chars() {
+        String wrongUsername = "user";
+
+        assertFalse(usernameHandler.isUsernameValid(wrongUsername));
+    }
+
+    @Test
+    void isUsernameValidReturnsFalseWhenMoreThan30Chars() {
+        String wrongUsername = "usernamehatmehrals30zeichenlala";
+
+        assertFalse(usernameHandler.isUsernameValid(wrongUsername));
     }
 }
