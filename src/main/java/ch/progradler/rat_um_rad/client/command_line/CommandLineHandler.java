@@ -1,63 +1,74 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
-import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
-import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
+import ch.progradler.rat_um_rad.client.Client;
+import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
+
+import static ch.progradler.rat_um_rad.client.command_line.UsernameHandler.PROPERTY_NAME_USERNAME;
 
 /**
  * Contains business logic by handling user input and possibly sending packet to server.
  */
-public class CommandLineHandler {
-    private static final String ANSWER_NO = "no";
+public class CommandLineHandler implements PropertyChangeListener, Runnable {
+    public static final Logger LOGGER = LogManager.getLogger();
 
     private final InputReader inputReader;
-    private final ServerOutput serverOutput;
-    private final ComputerInfo computerInfo;
+    private final OutputPacketGateway outputPacketGateway;
+    private final UsernameHandler usernameHandler;
     private boolean quit = false;
 
-    public CommandLineHandler(InputReader inputReader, ServerOutput serverOutput, String host) {
+    public CommandLineHandler(InputReader inputReader, OutputPacketGateway outputPacketGateway, String host, UsernameHandler usernameHandler) {
         this.inputReader = inputReader;
-        this.serverOutput = serverOutput;
-        this.computerInfo = new ComputerInfo();
+        this.outputPacketGateway = outputPacketGateway;
+        this.usernameHandler = usernameHandler;
     }
 
-    public void startListening() {
-        String username = requestAndSendUsername(); // TODO: what if username changes?
+    /**
+     * starts the CommandLineHandler. Condition: username has to be sent to the server, waits until username is set
+     *
+     * @see UsernameHandler#addUsernameObserver(PropertyChangeListener)
+     */
+    @Override
+    public void run() {
+        usernameHandler.chooseAndSendUsername(outputPacketGateway);
+        try {
+            synchronized (this) {
+                wait();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         listenToCommands();
     }
 
-    private String chooseUsername() {
-        String suggestedUsername = computerInfo.getSystemUsername();
-        String answerToSuggestedUsername = inputReader.readInputWithPrompt(
-                "The username suggested for you is: " +
-                        suggestedUsername +
-                        ".\nPress enter to confirm. Otherwise enter your new username below and press enter.");
-        // TODO: check if username is not empty or null and unittest
-        if (answerToSuggestedUsername.equals("")) {
-            return suggestedUsername;
-        } else {
-            return answerToSuggestedUsername;
+    /**
+     * Listens for username changes, as CommandLineHandler only runs when user has set username.
+     * @param evt A PropertyChangeEvent object describing the event source
+     *          and the property that has changed.
+     * @see Client (CommandLineHandler observes UsernameHandler)
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(PROPERTY_NAME_USERNAME)) {
+            synchronized (this) {
+                notify();
+            }
         }
     }
 
-    private String requestAndSendUsername() {
-        String username = chooseUsername();
-
-        try {
-            serverOutput.sendPacket(new Packet(Command.NEW_USER, username, ContentType.STRING)); //TODO: sanitize username
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Failed to send username to server!");
-            return requestAndSendUsername();
-        }
-        return username;
-    }
-
+    /**
+     * continuously listens for User Input (Commands), stops when quit-command is triggered
+     */
     private void listenToCommands() {
+        LOGGER.debug("Listening to user input commands...");
         while (!quit) {
             readCommand();
             //TODO: implement QUIT case
@@ -67,22 +78,28 @@ public class CommandLineHandler {
         System.exit(0);
     }
 
+    /**
+     * Users InputReader to get User Commands. Analyses the incoming commands and distributes them to responsible classes.
+     */
     private void readCommand() {
+        // TODO: unittest and create enum for user commands
         String message = inputReader.readInputWithPrompt("Enter your message: ");
         // TODO: handle command properly
         if (message.toLowerCase().contains("quit")) {
             quit = true;
             return;
-        }
-
-        Packet packet = new Packet(Command.SEND_CHAT,
-                message,
-                ContentType.STRING);
-        try {
-            serverOutput.sendPacket(packet);
-        } catch (IOException e) {
-            System.out.println("Failed to send command to server!");
-            e.printStackTrace();
+        } else if (message.toLowerCase().contains("changeusername")) {
+            usernameHandler.changeAndSendNewUsername(outputPacketGateway);
+        } else { //TODO: add more commands and handle seperately
+            Packet packet = new Packet(Command.SEND_CHAT,
+                    message,
+                    ContentType.STRING);
+            try {
+                outputPacketGateway.sendPacket(packet);
+            } catch (IOException e) {
+                LOGGER.warn("Failed to send command to server!");
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -13,7 +13,6 @@ import java.net.Socket;
  * Listens to messages from server
  */
 public class ServerInputListener implements Runnable {
-    private Socket socket;
     private InputStream inputStream;
 
     private final ServerInputPacketGateway inputPacketGateway;
@@ -21,7 +20,6 @@ public class ServerInputListener implements Runnable {
 
 
     public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway, Coder<Packet> packetCoder) {
-        this.socket = socket;
         this.inputPacketGateway = inputPacketGateway;
         this.packetCoder = packetCoder;
         try {
@@ -32,6 +30,9 @@ public class ServerInputListener implements Runnable {
         }
     }
 
+    /**
+     * run method for the ServerInputListener. Listens for Packets from the Server.
+     */
     @Override
     public void run() {
         while (true) { //so it keeps listening

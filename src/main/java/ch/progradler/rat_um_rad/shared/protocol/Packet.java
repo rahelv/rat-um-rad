@@ -1,12 +1,11 @@
 package ch.progradler.rat_um_rad.shared.protocol;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Simple model class to hold data of a packet. This object is sent between server and client.
  */
-public class Packet implements Serializable { //TODO: remove Serializable and write own serialization method
+public class Packet {
     private final Command command;
     private final Object content;
     private final ContentType contentType;

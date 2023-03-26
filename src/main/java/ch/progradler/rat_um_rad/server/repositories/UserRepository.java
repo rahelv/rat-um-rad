@@ -37,4 +37,9 @@ public class UserRepository implements IUserRepository {
     public int getUserCount() {
         return names.size();
     }
+
+    @Override
+    public boolean hasDuplicate(String username) {
+        return names.containsValue(username);
+    }
 }

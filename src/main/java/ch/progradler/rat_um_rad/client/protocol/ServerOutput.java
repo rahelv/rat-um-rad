@@ -29,6 +29,11 @@ public class ServerOutput implements OutputPacketGateway {
         }
     }
 
+    /**
+     * Sends packet to the server.
+     * @param packet
+     * @throws IOException
+     */
     @Override
     public  void sendPacket(Packet packet) throws IOException {
         // TODO: unittest

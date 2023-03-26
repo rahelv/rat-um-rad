@@ -27,23 +27,48 @@ public class ChatMessageCoderTest {
         String result = messageCoder.encode(chatMessage);
 
         // assert
-        String expected = "{" +
-                username + SEPARATOR +
-                message +
-                "}";
+        String expected = username + SEPARATOR + message;
+        assertEquals(expected, result);
+    }
+
+    public void encodeWorksWithEmptyMessage() {
+        // prepare
+        String username = "User A";
+        ChatMessage chatMessage = new ChatMessage(username, "");
+
+        // execute
+        String result = messageCoder.encode(chatMessage);
+
+        // assert
+        String expected = username + SEPARATOR;
         assertEquals(expected, result);
     }
 
     @Test
     public void decodeReturnsCorrectTypeWithCorrectData() {
         // prepare
-        String messageEncoded = "{user A" + SEPARATOR + "Hi!}";
+        String messageEncoded = "user A" + SEPARATOR + "Hi!";
 
         // execute
         ChatMessage result = messageCoder.decode(messageEncoded);
 
         // assert
         ChatMessage expected = new ChatMessage("user A", "Hi!");
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void decodeWorksWithEmptyStrings() {
+        // prepare
+        String username = "user A";
+        String messageEncoded = username + SEPARATOR;
+
+        // execute
+        ChatMessage result = messageCoder.decode(messageEncoded);
+
+        // assert
+        ChatMessage expected = new ChatMessage(username, "");
 
         assertEquals(expected, result);
     }

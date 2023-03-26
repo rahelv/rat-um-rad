@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.server;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.protocol.ClientConnectionsHandler;
 import ch.progradler.rat_um_rad.server.protocol.CommandHandler;
+import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.repositories.UserRepository;
 import ch.progradler.rat_um_rad.server.services.IUserService;
@@ -18,9 +19,12 @@ public class Server {
         System.out.format("Starting Server on %d\n", port);
 
         ClientConnectionsHandler connectionsHandler = new ClientConnectionsHandler(getPacketCoder());
+        ServerPingPongRunner serverPingPongRunner = new ServerPingPongRunner(connectionsHandler.connectionPool);
+        new Thread(serverPingPongRunner).start();
         OutputPacketGateway outputPacketGateway = connectionsHandler.connectionPool;
-        CommandHandler commandHandler = new CommandHandler(getUserService(outputPacketGateway));
-        connectionsHandler.start(port, commandHandler);
+        CommandHandler commandHandler = new CommandHandler(
+                serverPingPongRunner, getUserService(outputPacketGateway));
+        connectionsHandler.start(port, commandHandler, serverPingPongRunner);
     }
 
     private static IUserService getUserService(OutputPacketGateway outputPacketGateway) {

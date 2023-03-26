@@ -28,7 +28,7 @@ public class ClientOutput {
         }
     }
 
-    public void sendMessageToClient(Packet packet) {
+    public void sendPacketToClient(Packet packet) {
         String sendStr = packetCoder.encode(packet);
         StreamUtils.writeStringToStream(sendStr,out);
     }
