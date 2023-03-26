@@ -6,13 +6,15 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class StreamUtilsTest {
 
     @Test
     public void testReadStringFromStream() throws IOException {
-        String expected = "hello/world!";
-        byte[] dataBytes = expected.getBytes();
+        String expected = "hello/world![#|?!&&/$$£üäö";
+
+        byte[] dataBytes = expected.getBytes(StandardCharsets.UTF_8);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(dataBytes);
 
         String result = StreamUtils.readStringFromStream(inputStream);
@@ -22,10 +24,10 @@ public class StreamUtilsTest {
 
     @Test
     public void testSendStrToStream() {
-        String testSendStr = "hello/world/again";
+        String testSendStr = "hello/world/again,[#|?!&&/$$£üöäü";
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         StreamUtils.writeStringToStream(testSendStr, outputStream);
-        Assertions.assertEquals(testSendStr, outputStream.toString());
+        Assertions.assertEquals(testSendStr, outputStream.toString(StandardCharsets.UTF_8));
     }
 }
