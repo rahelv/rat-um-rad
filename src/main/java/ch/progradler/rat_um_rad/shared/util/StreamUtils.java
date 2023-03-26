@@ -22,7 +22,7 @@ public class StreamUtils {
     }
 
     public static void writeStringToStream(String sendStr, OutputStream outStream) {
-        byte[] bytes = sendStr.getBytes();
+        byte[] bytes = sendStr.getBytes(StandardCharsets.UTF_8);
         try {
             outStream.write(bytes);
         } catch (IOException e) {
