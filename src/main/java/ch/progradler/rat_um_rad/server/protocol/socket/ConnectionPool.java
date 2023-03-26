@@ -3,6 +3,8 @@ package ch.progradler.rat_um_rad.server.protocol.socket;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.protocol.ClientDisconnectedListener;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +16,9 @@ import java.util.Map;
  * Holds all client connections.
  */
 public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedListener {
+    private static final Logger LOGGER = LogManager.getLogger();
+
+
     /**
      * Keys are IP-Addresses.
      */
@@ -26,6 +31,10 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     @Override
     public void sendPacket(String ipAddress, Packet packet) {
         IConnection connection = connections.get(ipAddress);
+        if (connection == null) {
+            LOGGER.info("No connection for IP-address {} found! Packet not sent.", ipAddress);
+            return; // TODO: test
+        }
         connection.sendPacketToClient(packet);
     }
 
