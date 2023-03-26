@@ -25,5 +25,7 @@ public enum Command {
      * Is regularly sent from server to client in order to detect connection losses. Expects the client to send back a PONG command.
      */
     PING,
+    INVALID_ACTION_WARNING,
+    INVALID_ACTION_FATAL
 
 }

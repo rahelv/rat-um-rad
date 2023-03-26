@@ -39,6 +39,9 @@ public class CommandLinePresenter implements PackagePresenter {
                     displayChatMessage((ChatMessage) content);
                 }
             }
+            case INVALID_ACTION_WARNING, INVALID_ACTION_FATAL -> {
+                displayString((String) content);
+            }
         }
     }
 
@@ -81,5 +84,9 @@ public class CommandLinePresenter implements PackagePresenter {
 
     private void displayChatMessage(ChatMessage message) {
         System.out.println("Message by " + message.getUsername() + ": " + message.getMessage());
+    }
+
+    private void displayString(String message) {
+        System.out.println(message);
     }
 }

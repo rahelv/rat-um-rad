@@ -15,10 +15,13 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
     private final ClientPingPongRunner clientPingPongRunner;
     private final UsernameHandler usernameHandler;
 
-    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler) {
+    private final ServerOutput serverOutput;
+
+    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler, ServerOutput serverOutput) {
         this.presenter = presenter;
         this.clientPingPongRunner = clientPingPongRunner;
         this.usernameHandler = usernameHandler;
+        this.serverOutput = serverOutput;
     }
 
     /**
@@ -39,6 +42,10 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 UsernameChange change = (UsernameChange) packet.getContent();
                 this.usernameHandler.setConfirmedUsername(change.getNewName());
                 presenter.display(packet);
+            }
+            case INVALID_ACTION_FATAL -> {
+                //TODO: differentiate further between fatal actions
+                this.usernameHandler.chooseAndSendUsername(this.serverOutput);
             }
             default -> presenter.display(packet);
         }

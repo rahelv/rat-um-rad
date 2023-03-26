@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.client;
 import ch.progradler.rat_um_rad.client.command_line.CommandLineHandler;
 import ch.progradler.rat_um_rad.client.command_line.InputReader;
 import ch.progradler.rat_um_rad.client.command_line.UsernameHandler;
+import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.presenter.CommandLinePresenter;
 import ch.progradler.rat_um_rad.client.presenter.PackagePresenter;
@@ -38,7 +39,7 @@ public class Client  {
             UsernameHandler usernameHandler = new UsernameHandler();
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
             startCommandHandler(serverOutput, host, usernameHandler);
-            startServerListener(socket, packetCoder, clientPingPongRunner, usernameHandler);
+            startServerListener(socket, packetCoder, clientPingPongRunner, usernameHandler, serverOutput);
         } catch (Exception e) {
             e.printStackTrace();
             if (e instanceof ConnectException) {
@@ -80,9 +81,9 @@ public class Client  {
      * @param packetCoder
      * @param usernameHandler
      */
-    private void startServerListener(Socket socket, Coder<Packet> packetCoder, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler) {
+    private void startServerListener(Socket socket, Coder<Packet> packetCoder, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler, ServerOutput serverOutput) {
         PackagePresenter presenter = new CommandLinePresenter();
-        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner, usernameHandler);
+        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner, usernameHandler, serverOutput);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
         Thread t = new Thread(listener);
         t.start();

@@ -5,6 +5,7 @@ import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.regex.*;
@@ -21,6 +22,7 @@ public class UsernameHandler {
     private final ComputerInfo computerInfo;
     private final InputReader inputReader;
     private String username;
+    private UsernameValidator usernameValidator;
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -35,6 +37,7 @@ public class UsernameHandler {
     public UsernameHandler() {
         this.computerInfo = new ComputerInfo();
         this.inputReader = new InputReader();
+        this.usernameValidator = new UsernameValidator();
     }
 
     /**
@@ -59,20 +62,6 @@ public class UsernameHandler {
         String oldUsername = this.username;
         this.username = username;
         propertyChangeSupport.firePropertyChange(PROPERTY_NAME_USERNAME, oldUsername, username);
-    }
-
-    /**
-     * Method to validate a given username.
-     * regex rules: [] first character has to be a letter, [] all other allowed chars (letters, digits and _), {} length constraint min. 5 characters, max. 30
-     * @param username: Username to be validated
-     * @return boolean: returns true if username is valid.
-     */
-    public boolean isUsernameValid(String username) {
-        String regex = "^[A-Za-z][A-Za-z0-9_]{4,29}$";
-
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(username);
-        return matcher.matches();
     }
 
     /**
@@ -104,7 +93,7 @@ public class UsernameHandler {
      */
     public String chooseAndSendUsername(OutputPacketGateway outputPacketGateway) {
         String username = chooseUsername();
-        while(!isUsernameValid(username)) {
+        while(!usernameValidator.isUsernameValid(username)) {
             username = reenterUsernameAfterInValidUsernameEntered();
         }
 
@@ -152,7 +141,7 @@ public class UsernameHandler {
      */
     public void changeAndSendNewUsername(OutputPacketGateway outputPacketGateway) {
         String chosenUsername = readNewUsernameToChange();
-        while(!isUsernameValid(chosenUsername)) {
+        while(!usernameValidator.isUsernameValid(chosenUsername)) {
             chosenUsername = reenterUsernameAfterInValidUsernameEntered();
         }
 

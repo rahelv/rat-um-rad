@@ -7,6 +7,7 @@ import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,15 +18,34 @@ import java.util.List;
 public class UserService implements IUserService {
     private final OutputPacketGateway outputPacketGateway;
     private final IUserRepository userRepository;
+    private UsernameValidator usernameValidator;
 
     public UserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository) {
         this.outputPacketGateway = outputPacketGateway;
         this.userRepository = userRepository;
+        this.usernameValidator = new UsernameValidator();
+    }
+
+    /**
+     * Constructor for Testing purposes. TODO: decide if usernamevalidator should be given as parameter in normal constructor.
+     * @param outputPacketGateway
+     * @param userRepository
+     * @param usernameValidator
+     */
+    public UserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, UsernameValidator usernameValidator) {
+        this.outputPacketGateway = outputPacketGateway;
+        this.userRepository = userRepository;
+        this.usernameValidator = usernameValidator;
     }
 
     @Override
     public void handleNewUser(String username, String ipAddress) {
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
+        if(!usernameValidator.isUsernameValid(chosenUsername)) {
+            Packet errorPacket = new Packet(Command.INVALID_ACTION_FATAL, "Username invalid. Please try again", ContentType.STRING); //TODO: on client, user has to enter username again
+            outputPacketGateway.sendPacket(ipAddress, errorPacket);
+            return;
+        }
         userRepository.addUsername(chosenUsername, ipAddress);
         Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE); //TODO: change packet to UsernameChangeConfirmation
         outputPacketGateway.sendPacket(ipAddress, confirmPacket);
@@ -37,6 +57,11 @@ public class UserService implements IUserService {
     @Override
     public void updateUsername(String username, String ipAddress) {
         String oldName = userRepository.getUsername(ipAddress);
+        if(!usernameValidator.isUsernameValid(username)) {
+            Packet errorPacket = new Packet(Command.INVALID_ACTION_WARNING, "The chosen username was invalid. Please try again", ContentType.STRING); //on client: user has to trigger usernamechange dialog again
+            outputPacketGateway.sendPacket(ipAddress, errorPacket);
+            return;
+        }
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
         userRepository.updateUsername(chosenUsername, ipAddress);
         Packet confirmPacket = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE); //TODO: change packet to UsernameChangeConfirmation
