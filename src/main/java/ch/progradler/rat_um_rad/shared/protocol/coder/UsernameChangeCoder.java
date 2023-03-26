@@ -15,10 +15,8 @@ public class UsernameChangeCoder implements Coder<UsernameChange> {
      */
     @Override
     public String encode(UsernameChange usernameChange) {
-        return "{" +
-                usernameChange.getOldName() + SEPARATOR +
-                usernameChange.getNewName() +
-                "}";
+        return usernameChange.getOldName() + SEPARATOR +
+                usernameChange.getNewName();
     }
 
     /** receives an encoded String and decodes it to class UsernameChange
@@ -27,8 +25,7 @@ public class UsernameChangeCoder implements Coder<UsernameChange> {
      */
     @Override
     public UsernameChange decode(String encoded) {
-        String unwrapped = encoded.substring(1, encoded.length() - 1);
-        String[] fields = unwrapped.split(SEPARATOR);
+        String[] fields = encoded.split(SEPARATOR);
         String oldName = fields[0];
         String newName = fields[1];
         return new UsernameChange(oldName, newName);

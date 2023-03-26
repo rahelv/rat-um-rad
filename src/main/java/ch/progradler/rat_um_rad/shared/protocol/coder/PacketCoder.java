@@ -33,6 +33,7 @@ public class PacketCoder implements Coder<Packet> {
                 + SEPARATOR + contentType.name();
     }
 
+    @Override
     public Packet decode(String encoded) {
         String[] fields = encoded.split(SEPARATOR);
         if (fields.length < 3) {
@@ -45,7 +46,20 @@ public class PacketCoder implements Coder<Packet> {
         return new Packet(command, decodeContent(fields[1], contentType), contentType);
     }
 
+    /**
+     * @return encodes content and wraps it with "{}" if not null
+     */
     private <T> String encodeContent(T content, ContentType contentType) {
+        boolean isContentNull = content == null;
+        String encodedNoWrap = encodeContentNoWrap(content, contentType);
+        if (isContentNull) return encodedNoWrap;
+        return "{" + encodedNoWrap + "}";
+    }
+
+    /**
+     * @return encoded content with no "{}" wrap
+     */
+    private <T> String encodeContentNoWrap(T content, ContentType contentType) {
         switch (contentType) {
             case CHAT_MESSAGE -> {
                 return messageCoder.encode((ChatMessage) content);
@@ -57,7 +71,7 @@ public class PacketCoder implements Coder<Packet> {
                 return usernameChangeCoder.encode((UsernameChange) content);
             }
             case NONE -> {
-                return "-";
+                return "null";
             }
         }
         // should never happen
@@ -65,19 +79,29 @@ public class PacketCoder implements Coder<Packet> {
         return null;
     }
 
+    /**
+     * @param content
+     * @return content without "{}" around it
+     */
+    private String unwrapContent(String content) {
+        return content.substring(1, content.length() - 1);
+    }
+
+    /**
+     * @return decoded content by first removing "{}" wrap if not null
+     */
     private Object decodeContent(String content, ContentType contentType) {
+        if (contentType == ContentType.NONE) return null;
+        String contentUnwrapped = unwrapContent(content);
         switch (contentType) {
             case CHAT_MESSAGE -> {
-                return messageCoder.decode(content);
+                return messageCoder.decode(contentUnwrapped);
             }
             case STRING -> {
-                return content;
+                return contentUnwrapped;
             }
             case USERNAME_CHANGE -> {
-                return usernameChangeCoder.decode(content);
-            }
-            case NONE -> {
-                return null;
+                return usernameChangeCoder.decode(contentUnwrapped);
             }
         }
         // should never happen
