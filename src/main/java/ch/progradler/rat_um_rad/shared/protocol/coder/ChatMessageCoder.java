@@ -14,10 +14,8 @@ public class ChatMessageCoder implements Coder<ChatMessage> {
      */
     @Override
     public String encode(ChatMessage chatMessage) {
-        return "{" +
-                chatMessage.getUsername() + SEPARATOR +
-                chatMessage.getMessage() +
-                "}";
+        return chatMessage.getUsername() + SEPARATOR +
+                chatMessage.getMessage();
     }
 
     /** receives an encoded String and decodes it to class ChatMessage
@@ -26,10 +24,10 @@ public class ChatMessageCoder implements Coder<ChatMessage> {
      */
     @Override
     public ChatMessage decode(String encoded) {
-        String unwrapped = encoded.substring(1, encoded.length() - 1);
-        String[] fields = unwrapped.split(SEPARATOR);
+        String[] fields = encoded.split(SEPARATOR);
         String username = fields[0];
-        String message = fields[1];
+        String message = (fields.length < 2) ? "" : fields[1];
+
         return new ChatMessage(username, message);
     }
 }

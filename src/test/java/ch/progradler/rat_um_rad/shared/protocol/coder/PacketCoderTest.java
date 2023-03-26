@@ -33,7 +33,9 @@ public class PacketCoderTest {
     public void encodeReturnsStringWithDataInOrderAndSeparatedByCorrectSeparator() {
         // prepare
         ChatMessage content = new ChatMessage("userA", "Hi!");
-        when(messageCoderMock.encode(content)).thenReturn("{username:userA,message:Hi!}");
+
+        when(messageCoderMock.encode(content)).thenReturn("username:userA,message:Hi!");
+
 
         Command command = Command.SEND_CHAT;
         ContentType contentType = ContentType.CHAT_MESSAGE;
@@ -44,14 +46,47 @@ public class PacketCoderTest {
 
         // assert
         String expected = command.name() + PacketCoder.SEPARATOR +
-                messageCoderMock.encode(content) + PacketCoder.SEPARATOR + contentType.name();
+                "{" + messageCoderMock.encode(content) + "}" +
+                PacketCoder.SEPARATOR + contentType.name();
         assertEquals(expected, result);
+    }
+
+    @Test
+    public void encodeReturnsCorrectStringIfContentNull() {
+        Command command = Command.SEND_CHAT;
+        ContentType contentType = ContentType.NONE;
+
+        Packet packet = new Packet(command, null, contentType);
+        String result = packetCoder.encode(packet);
+
+        String expected = command.name() + PacketCoder.SEPARATOR +
+                "null" + PacketCoder.SEPARATOR + contentType.name();
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void decodeReturnsPacketWithContentNullIfContentEmpty() {
+
+        Command command = Command.SEND_CHAT;
+        ContentType contentType = ContentType.CHAT_MESSAGE;
+
+        String packetEncoded = command.name() + PacketCoder.SEPARATOR +
+                "null" + PacketCoder.SEPARATOR +
+                contentType.name();
+
+        // execute
+        Packet result = packetCoder.decode(packetEncoded);
+
+        // assert
+        Packet expected = new Packet(command, null, contentType);
+
+        assertEquals(expected,result);
     }
 
     @Test
     public void decodeReturnsCorrectTypeWithCorrectData() {
         // prepare
-        String messageEncoded = "{username:userA,message:Hi!}";
+        String messageEncoded = "username:userA,message:Hi!";
         ChatMessage expectedMessage = new ChatMessage("userA", "Hi!");
         when(messageCoderMock.decode(messageEncoded)).thenReturn(expectedMessage);
 
@@ -59,7 +94,7 @@ public class PacketCoderTest {
         ContentType contentType = ContentType.CHAT_MESSAGE;
 
         String packetEncoded = command.name() + PacketCoder.SEPARATOR +
-                messageEncoded + PacketCoder.SEPARATOR +
+                "{" + messageEncoded + "}" + PacketCoder.SEPARATOR +
                 contentType.name();
 
         // execute

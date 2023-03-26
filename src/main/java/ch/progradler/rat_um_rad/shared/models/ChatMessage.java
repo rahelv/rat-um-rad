@@ -15,10 +15,16 @@ public class ChatMessage {
     }
 
     public String getUsername() {
+        if(username == null){
+            return "";
+        }
         return username;
     }
 
     public String getMessage() {
+        if(message == null){
+            return "";
+        }
         return message;
     }
 
