@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UsernameChangeCoderTest {
 
-    private UsernameChangeCoder messageCoder;
+    private UsernameChangeCoder usernameChangeCoder;
 
     @BeforeEach
     public void initMessageCoder() {
-        messageCoder = new UsernameChangeCoder();
+        usernameChangeCoder = new UsernameChangeCoder();
     }
 
     @Test
@@ -24,23 +24,20 @@ public class UsernameChangeCoderTest {
         UsernameChange chatMessage = new UsernameChange(oldName, newName);
 
         // execute
-        String result = messageCoder.encode(chatMessage);
+        String result = usernameChangeCoder.encode(chatMessage);
 
         // assert
-        String expected = "{" +
-                oldName + SEPARATOR +
-                newName +
-                "}";
+        String expected = oldName + SEPARATOR + newName;
         assertEquals(expected, result);
     }
 
     @Test
     public void decodeReturnsCorrectTypeWithCorrectData() {
         // prepare
-        String messageEncoded = "{user A" + SEPARATOR + "new name}";
+        String messageEncoded = "user A" + SEPARATOR + "new name";
 
         // execute
-        UsernameChange result = messageCoder.decode(messageEncoded);
+        UsernameChange result = usernameChangeCoder.decode(messageEncoded);
 
         // assert
         UsernameChange expected = new UsernameChange("user A", "new name");
