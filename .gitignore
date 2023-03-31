@@ -230,3 +230,4 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,intellij,gradle,macos,java
+/.idea/git_toolbox_prj.xml
