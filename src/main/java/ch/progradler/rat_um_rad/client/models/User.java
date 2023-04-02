@@ -4,6 +4,22 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class User {
+    private static volatile User instance;
+    private static Object mutex = new Object();
+
+    private User() {}
+
+    public static User getInstance() {
+        User result = instance;
+        if (result == null) {
+            synchronized (mutex) {
+                result = instance;
+                if (result == null)
+                    instance = result = new User();
+            }
+        }
+        return result;
+    }
     public static final String PROPERTY_NAME_USERNAME = "username";
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private String username;

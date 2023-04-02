@@ -18,7 +18,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 
 public class UserController implements PropertyChangeListener {
-    private final User user = new User();
+    private final User user = User.getInstance();
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String PROPERTY_NAME_USERNAME = "username";
