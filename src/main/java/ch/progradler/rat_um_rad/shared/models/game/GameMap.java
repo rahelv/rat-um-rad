@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.shared.models.game;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +13,10 @@ public class GameMap {
     public GameMap(List<City> cities, List<Road> roads) {
         this.cities = cities;
         this.roads = roads;
+    }
+
+    public static GameMap defaultMap() {
+        return new GameMap(new ArrayList<>(), new ArrayList<>()); // TODO: implement correctly
     }
 
     public List<City> getCities() {
