@@ -1,6 +1,9 @@
-package ch.progradler.rat_um_rad.client.command_line;
+package ch.progradler.rat_um_rad.client.controllers;
 
+import ch.progradler.rat_um_rad.client.Client;
+import ch.progradler.rat_um_rad.client.command_line.InputReader;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -8,33 +11,38 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.util.regex.*;
+
+import java.beans.PropertyChangeEvent;
 
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
-public class UsernameHandler {
+public class UserController implements PropertyChangeListener {
+    private final User user = new User();
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String PROPERTY_NAME_USERNAME = "username";
 
     private final ComputerInfo computerInfo;
     private final InputReader inputReader;
-    private String username;
     private UsernameValidator usernameValidator;
 
-    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
     /**
-     * Adds PropertyChangeListener for the username property
-     * @param listener
+     * Listens for username changes, as CommandLineHandler only runs when user has set username.
+     * @param evt A PropertyChangeEvent object describing the event source
+     *          and the property that has changed.
+     * @see Client (CommandLineHandler observes UsernameHandler)
      */
-    public void addUsernameObserver(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(PROPERTY_NAME_USERNAME, listener);
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(PROPERTY_NAME_USERNAME)) {
+           //TODO: handle username change
+        }
     }
 
-    public UsernameHandler() {
+    public UserController() {
+        user.addUsernameObserver(this);
+
         this.computerInfo = new ComputerInfo();
         this.inputReader = new InputReader();
         this.usernameValidator = new UsernameValidator();
@@ -45,23 +53,13 @@ public class UsernameHandler {
      * @param computerInfo
      * @param inputReader
      */
-    public UsernameHandler(ComputerInfo computerInfo, InputReader inputReader) {
+    public UserController(ComputerInfo computerInfo, InputReader inputReader) {
         this.computerInfo = computerInfo;
         this.inputReader = inputReader;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Sets the username which is received from server. Triggers PropertyChange so Observers (CommandLineHandler) are notified of username change.
-     * @param username
-     */
-    public void setConfirmedUsername(String username) {
-        String oldUsername = this.username;
-        this.username = username;
-        propertyChangeSupport.firePropertyChange(PROPERTY_NAME_USERNAME, oldUsername, username);
+    public void changeUsername(String newName) {
+        this.user.setConfirmedUsername(newName);
     }
 
     /**
@@ -117,7 +115,7 @@ public class UsernameHandler {
         return inputReader.readInputWithPrompt(
                 new StringBuilder()
                         .append("You opened the username changer  with the command CHANGEUSERNAME, your current username is: ")
-                        .append(getUsername())
+                        .append(user.getUsername())
                         .append(".\nPress enter to keep this one. Otherwise enter your new username below and click Enter.")
                         .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
                         .toString());
@@ -145,7 +143,7 @@ public class UsernameHandler {
             chosenUsername = reenterUsernameAfterInValidUsernameEntered();
         }
 
-        if(chosenUsername == this.username) {
+        if(chosenUsername == this.user.getUsername()) {
             System.out.println("Your username already is: " + chosenUsername); //TODO: implement using presenter 
             return;
         }

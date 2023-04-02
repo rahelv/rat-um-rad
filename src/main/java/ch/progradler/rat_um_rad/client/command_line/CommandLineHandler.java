@@ -1,6 +1,6 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
-import ch.progradler.rat_um_rad.client.Client;
+import ch.progradler.rat_um_rad.client.controllers.UserController;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -8,60 +8,31 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
-
-import static ch.progradler.rat_um_rad.client.command_line.UsernameHandler.PROPERTY_NAME_USERNAME;
 
 /**
  * Contains business logic by handling user input and possibly sending packet to server.
  */
-public class CommandLineHandler implements PropertyChangeListener, Runnable {
+public class CommandLineHandler implements Runnable {
     public static final Logger LOGGER = LogManager.getLogger();
 
     private final InputReader inputReader;
     private final OutputPacketGateway outputPacketGateway;
-    private final UsernameHandler usernameHandler;
+    private final UserController userController;
     private boolean quit = false;
 
-    public CommandLineHandler(InputReader inputReader, OutputPacketGateway outputPacketGateway, String host, UsernameHandler usernameHandler) {
+    public CommandLineHandler(InputReader inputReader, OutputPacketGateway outputPacketGateway, String host, UserController userController) {
         this.inputReader = inputReader;
         this.outputPacketGateway = outputPacketGateway;
-        this.usernameHandler = usernameHandler;
+        this.userController = userController;
     }
 
     /**
-     * starts the CommandLineHandler. Condition: username has to be sent to the server, waits until username is set
-     *
-     * @see UsernameHandler#addUsernameObserver(PropertyChangeListener)
+     * starts the CommandLineHandler.
      */
     @Override
     public void run() {
-        usernameHandler.chooseAndSendUsername(outputPacketGateway);
-        try {
-            synchronized (this) {
-                wait();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         listenToCommands();
-    }
-
-    /**
-     * Listens for username changes, as CommandLineHandler only runs when user has set username.
-     * @param evt A PropertyChangeEvent object describing the event source
-     *          and the property that has changed.
-     * @see Client (CommandLineHandler observes UsernameHandler)
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(PROPERTY_NAME_USERNAME)) {
-            synchronized (this) {
-                notify();
-            }
-        }
     }
 
     /**
@@ -89,7 +60,7 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
             quit = true;
             return;
         } else if (message.toLowerCase().contains("changeusername")) {
-            usernameHandler.changeAndSendNewUsername(outputPacketGateway);
+            userController.changeAndSendNewUsername(outputPacketGateway);
         } else { //TODO: add more commands and handle seperately
             Packet packet = new Packet(Command.SEND_CHAT,
                     message,

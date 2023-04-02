@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.presenter;
+package ch.progradler.rat_um_rad.client.command_line.presenter;
 
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
