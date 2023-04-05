@@ -2,7 +2,7 @@ package ch.progradler.rat_um_rad.client;
 
 import ch.progradler.rat_um_rad.client.command_line.CommandLineHandler;
 import ch.progradler.rat_um_rad.client.command_line.InputReader;
-import ch.progradler.rat_um_rad.client.controllers.UserController;
+import ch.progradler.rat_um_rad.client.command_line.UsernameHandler;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.command_line.presenter.CommandLinePresenter;
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
@@ -35,12 +35,12 @@ public class Client  {
         try {
             Socket socket = new Socket(host, port);
             ServerOutput serverOutput = new ServerOutput(socket, packetCoder);
-            UserController userController = new UserController();
+            UsernameHandler usernameHandler = new UsernameHandler();
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
-            startCommandHandler(serverOutput, host, userController);
-            startServerListener(socket, packetCoder, clientPingPongRunner, userController, serverOutput);
+            startCommandHandler(serverOutput, host, usernameHandler);
+            startServerListener(socket, packetCoder, clientPingPongRunner, usernameHandler, serverOutput);
 
-            userController.chooseAndSendUsername(serverOutput); //TODO: does this happen here or somewhere else ?
+            usernameHandler.chooseAndSendUsername(serverOutput); //TODO: does this happen here or somewhere else ?
         } catch (Exception e) {
             e.printStackTrace();
             if (e instanceof ConnectException) {
@@ -67,11 +67,11 @@ public class Client  {
     /** starts the command handler in a new thread.
      * @param serverOutput
      * @param host
-     * @param userController
+     * @param usernameHandler
      */
-    private void startCommandHandler(ServerOutput serverOutput, String host, UserController userController) {
+    private void startCommandHandler(ServerOutput serverOutput, String host, UsernameHandler usernameHandler) {
         InputReader inputReader = new InputReader();
-        CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, serverOutput, host, userController);
+        CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, serverOutput, host, usernameHandler);
         Thread t = new Thread(commandLineHandler);
         t.start();
     }
@@ -79,11 +79,11 @@ public class Client  {
     /** starts the ServerListener in a new thread, which listens to input from server.
      * @param socket
      * @param packetCoder
-     * @param userController
+     * @param usernameHandler
      */
-    private void startServerListener(Socket socket, Coder<Packet> packetCoder, ClientPingPongRunner clientPingPongRunner, UserController userController, ServerOutput serverOutput) {
+    private void startServerListener(Socket socket, Coder<Packet> packetCoder, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler, ServerOutput serverOutput) {
         PackagePresenter presenter = new CommandLinePresenter();
-        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner, userController, serverOutput);
+        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner, usernameHandler, serverOutput);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
         Thread t = new Thread(listener);
         t.start();

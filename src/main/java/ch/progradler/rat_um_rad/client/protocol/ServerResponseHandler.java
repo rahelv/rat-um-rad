@@ -1,6 +1,6 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
-import ch.progradler.rat_um_rad.client.controllers.UserController;
+import ch.progradler.rat_um_rad.client.command_line.UsernameHandler;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
@@ -13,14 +13,14 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 public class ServerResponseHandler implements ServerInputPacketGateway {
     private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
-    private final UserController userController;
+    private final UsernameHandler usernameHandler;
 
     private final ServerOutput serverOutput;
 
-    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner, UserController userController, ServerOutput serverOutput) {
+    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler, ServerOutput serverOutput) {
         this.presenter = presenter;
         this.clientPingPongRunner = clientPingPongRunner;
-        this.userController = userController;
+        this.usernameHandler = usernameHandler;
         this.serverOutput = serverOutput;
     }
 
@@ -39,12 +39,12 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case USERNAME_CONFIRMED -> {
                 UsernameChange change = (UsernameChange) packet.getContent();
-                this.userController.changeUsername(change.getNewName());
+                this.usernameHandler.changeUsername(change.getNewName());
                 presenter.display(packet);
             }
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
-                this.userController.chooseAndSendUsername(this.serverOutput);
+                this.usernameHandler.chooseAndSendUsername(this.serverOutput);
             }
             default -> presenter.display(packet);
         }

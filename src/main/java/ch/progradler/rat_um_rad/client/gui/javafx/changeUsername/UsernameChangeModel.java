@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
 
 import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class UsernameChangeModel {
@@ -15,6 +16,7 @@ public class UsernameChangeModel {
         computerInfo = new ComputerInfo();
         this.systemUsername = computerInfo.getSystemUsername();
         this.currentUsername = User.getInstance().getUsername();
+        this.chosenUsername = new SimpleStringProperty(this.systemUsername);
     }
     public String getChosenUsername() {
          return chosenUsername.get();

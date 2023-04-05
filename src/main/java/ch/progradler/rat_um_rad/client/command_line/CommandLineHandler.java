@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
-import ch.progradler.rat_um_rad.client.controllers.UserController;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -18,13 +17,13 @@ public class CommandLineHandler implements Runnable {
 
     private final InputReader inputReader;
     private final OutputPacketGateway outputPacketGateway;
-    private final UserController userController;
+    private final UsernameHandler usernameHandler;
     private boolean quit = false;
 
-    public CommandLineHandler(InputReader inputReader, OutputPacketGateway outputPacketGateway, String host, UserController userController) {
+    public CommandLineHandler(InputReader inputReader, OutputPacketGateway outputPacketGateway, String host, UsernameHandler usernameHandler) {
         this.inputReader = inputReader;
         this.outputPacketGateway = outputPacketGateway;
-        this.userController = userController;
+        this.usernameHandler = usernameHandler;
     }
 
     /**
@@ -60,7 +59,7 @@ public class CommandLineHandler implements Runnable {
             quit = true;
             return;
         } else if (message.toLowerCase().contains("changeusername")) {
-            userController.changeAndSendNewUsername(outputPacketGateway);
+            usernameHandler.changeAndSendNewUsername(outputPacketGateway);
         } else { //TODO: add more commands and handle seperately
             Packet packet = new Packet(Command.SEND_CHAT,
                     message,

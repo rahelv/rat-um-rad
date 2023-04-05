@@ -1,15 +1,22 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
-
-import javafx.stage.Stage;
+import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 
 public class UsernameChangeController {
     private ChangeUsernameDialog changeUsernameDialog;
-    private UsernameChangeModel usernameChangeModel = new UsernameChangeModel();
-    private Stage stage;
+    private UsernameChangeModel usernameChangeModel;
+    private UsernameValidator usernameValidator = new UsernameValidator();
 
-    public UsernameChangeController(Stage stage) {
-        this.stage = stage;
-        changeUsernameDialog = new ChangeUsernameDialog(usernameChangeModel);
-        changeUsernameDialog.getView();
+    public UsernameChangeController(UsernameChangeModel usernameChangeModel, ChangeUsernameDialog changeUsernameDialog) {
+        this.usernameChangeModel = usernameChangeModel;
+        this.changeUsernameDialog = changeUsernameDialog;
+    }
+
+    public boolean validateUsername(String username) {
+        return usernameValidator.isUsernameValid(username);
+    }
+
+    public void sendChosenUsernameToServer() {
+        System.out.println("username sent to server");
+      //TODO: use Service to send username to server
     }
 }

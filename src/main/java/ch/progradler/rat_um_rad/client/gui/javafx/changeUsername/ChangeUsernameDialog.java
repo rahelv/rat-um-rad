@@ -1,13 +1,13 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
 
-import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
-import javafx.beans.binding.Bindings;
-import javafx.scene.Node;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 
-import javax.swing.plaf.synth.Region;
 import java.util.Optional;
 
 /**
@@ -16,32 +16,60 @@ import java.util.Optional;
  * TODO: refactoring, binding chosenUsername to inputField, add EventHandlers to Buttons (connect to UserController)
  */
 
-
 public class ChangeUsernameDialog  {
+    private Stage stage;
     private UsernameChangeModel usernameChangeModel;
-    ComputerInfo computerInfo;
-    public ChangeUsernameDialog(UsernameChangeModel usernameChangeModel) {
-        this.usernameChangeModel = usernameChangeModel;
-        computerInfo = new ComputerInfo(); //TODO: move to viewModel
+    private UsernameChangeController usernameChangeController;
+    public ChangeUsernameDialog(Stage stage) {
+        this.usernameChangeModel = new UsernameChangeModel();
+        this.usernameChangeController = new UsernameChangeController(usernameChangeModel, this);
     }
 
     public void getView() {
-        TextInputDialog textInputDialog = new TextInputDialog(computerInfo.getSystemUsername());
-        textInputDialog.setGraphic(null);
-        textInputDialog.initModality(Modality.APPLICATION_MODAL);
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Please choose your username");
+        dialog.setHeaderText(this.usernameChangeModel.getUsernameRules());
+        dialog.initModality(Modality.APPLICATION_MODAL);
 
+        //Buttons
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        textInputDialog.setTitle("Please choose your username");
-        textInputDialog.setHeaderText(this.usernameChangeModel.getUsernameRules());
-        textInputDialog.setContentText("Please enter your username: ");
+        //Labels and fields
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(20, 150, 10, 10));
 
-        TextField inputField = textInputDialog.getEditor();
-       // inputField.textProperty().bindBidirectional(usernameChangeModel.chosenUsernameProperty());
-        //TODO
+        TextField username = new TextField(this.usernameChangeModel.getSystemUsername());
+        gridPane.add(new Label("Please enter your username: "), 0, 0);
+        gridPane.add(username, 1, 0);
 
-        Optional<String> result = textInputDialog.showAndWait();
+        username.textProperty().bindBidirectional(usernameChangeModel.chosenUsernameProperty());
+
+        Button ok = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+        ok.addEventFilter(ActionEvent.ACTION, event -> {
+            if (!this.usernameChangeController.validateUsername(this.usernameChangeModel.getChosenUsername())) {
+                Label invalidLabel = new Label(this.usernameChangeModel.getUsernameRules()); //TODO: Darstellung anpassen
+                gridPane.add(invalidLabel, 0, 2);
+                event.consume();
+            }
+            else if (this.usernameChangeModel.getChosenUsername() == this.usernameChangeModel.getCurrentUsername()) {
+                Label invalidLabel = new Label(this.usernameChangeModel.getChosenUsername() + " is already your username"); //TODO: Darstellung anpassen
+                gridPane.add(invalidLabel, 0, 2);
+                event.consume();
+                //TODO: tell user to choose another name or cancel the action
+            }
+            else {
+                this.usernameChangeController.sendChosenUsernameToServer();
+            }
+        });
+
+        dialog.getDialogPane().setContent(gridPane);
+
+        // Request focus on the username field by default.
+        Platform.runLater(() -> username.requestFocus());
+
+        Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> System.out.println("Your name: " + name));
-
-        //TODO: add eventhandlers to buttons
     }
 }

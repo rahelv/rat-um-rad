@@ -33,7 +33,8 @@ public class GUI extends Application {
         stage.setScene(scene);
         stage.show();
 
-        UsernameChangeController usernameChangeController = new UsernameChangeController(stage);
+        ChangeUsernameDialog changeUsernameDialog = new ChangeUsernameDialog(stage);
+        changeUsernameDialog.getView();
     }
 
 }

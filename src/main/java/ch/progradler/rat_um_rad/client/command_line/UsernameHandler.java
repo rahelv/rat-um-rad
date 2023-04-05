@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.controllers;
+package ch.progradler.rat_um_rad.client.command_line;
 
 import ch.progradler.rat_um_rad.client.Client;
 import ch.progradler.rat_um_rad.client.command_line.InputReader;
@@ -17,7 +17,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 
-public class UserController implements PropertyChangeListener {
+public class UsernameHandler implements PropertyChangeListener {
     private final User user = User.getInstance();
     public static final Logger LOGGER = LogManager.getLogger();
 
@@ -40,7 +40,7 @@ public class UserController implements PropertyChangeListener {
         }
     }
 
-    public UserController() {
+    public UsernameHandler() {
         user.addUsernameObserver(this);
 
         this.computerInfo = new ComputerInfo();
@@ -53,7 +53,7 @@ public class UserController implements PropertyChangeListener {
      * @param computerInfo
      * @param inputReader
      */
-    public UserController(ComputerInfo computerInfo, InputReader inputReader) {
+    public UsernameHandler(ComputerInfo computerInfo, InputReader inputReader) {
         this.computerInfo = computerInfo;
         this.inputReader = inputReader;
     }

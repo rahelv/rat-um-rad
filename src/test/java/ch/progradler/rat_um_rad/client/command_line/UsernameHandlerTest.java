@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
-import ch.progradler.rat_um_rad.client.controllers.UserController;
 import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UserControllerTest {
+class UsernameHandlerTest {
 
     @Mock
     ComputerInfo computerInfoMock;
@@ -20,17 +19,17 @@ class UserControllerTest {
     @Mock
     InputReader inputReaderMock;
 
-    private UserController userController;
+    private UsernameHandler usernameHandler;
 
     @BeforeEach
     public void initServiceTest() {
-        userController = new UserController(computerInfoMock, inputReaderMock);
+        usernameHandler = new UsernameHandler(computerInfoMock, inputReaderMock);
     }
 
     @Test
     void setConfirmedUsernameSetsTheConfirmedUsername() { //TODO: add tests for propertychangelistener
-        userController.setConfirmedUsername("rahel");
-        assertEquals("rahel", userController.getUsername());
+        usernameHandler.setConfirmedUsername("rahel");
+        assertEquals("rahel", usernameHandler.getUsername());
     }
 
     @Test
@@ -44,7 +43,7 @@ class UserControllerTest {
                 .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
                 .append("\nTo change your username in the future, type CHANGEUSERNAME and press Enter")
                 .toString())).thenReturn("");
-        assertEquals(suggestedUsername, userController.chooseUsername());
+        assertEquals(suggestedUsername, usernameHandler.chooseUsername());
     }
 
     @Test
@@ -59,7 +58,7 @@ class UserControllerTest {
                 .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
                 .append("\nTo change your username in the future, type CHANGEUSERNAME and press Enter")
                 .toString())).thenReturn(chosenUsername);
-        assertEquals(chosenUsername, userController.chooseUsername());
+        assertEquals(chosenUsername, usernameHandler.chooseUsername());
     }
 
     @Test
