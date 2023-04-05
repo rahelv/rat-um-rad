@@ -1,26 +1,22 @@
-package ch.progradler.rat_um_rad.shared.models.game;
+package ch.progradler.rat_um_rad.client.models;
 
-import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 
 import java.util.List;
 
 /**
- * Collection of whole information and data of a player.
+ * Collection of data and information of a player, visible for other clients.
  */
-public class Player extends PlayerBase {
+public class VisiblePlayer {
     public static final int STARTING_WHEELS_PER_PLAYER = 35;
     private final String name;
     private int color;
     private int score;
     private final int wheelsRemaining;
-    private List<WheelCard> wheelCards;
-    private DestinationCard longDestinationCard;
-    private List<DestinationCard> shortDestinationCards;
 
     //TODO List of roads build by player?
-    public Player(String name) {
+    public VisiblePlayer(String name) {
         this.name = name;
         wheelsRemaining = STARTING_WHEELS_PER_PLAYER;
     }
@@ -43,17 +39,5 @@ public class Player extends PlayerBase {
 
     public int getWheelsRemaining() {
         return wheelsRemaining;
-    }
-
-    public List<WheelCard> getWheelCards() {
-        return wheelCards;
-    }
-
-    public DestinationCard getLongDestinationCard() {
-        return longDestinationCard;
-    }
-
-    public List<DestinationCard> getShortDestinationCards() {
-        return shortDestinationCards;
     }
 }
