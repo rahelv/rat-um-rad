@@ -40,6 +40,7 @@ public class UserService implements IUserService {
 
     @Override
     public void handleNewUser(String username, String ipAddress) {
+        System.out.println("handleNewUser angekommen");
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
         if(!usernameValidator.isUsernameValid(chosenUsername)) {
             Packet errorPacket = new Packet(Command.INVALID_ACTION_FATAL, "Username invalid. Please try again", ContentType.STRING); //TODO: on client, user has to enter username again

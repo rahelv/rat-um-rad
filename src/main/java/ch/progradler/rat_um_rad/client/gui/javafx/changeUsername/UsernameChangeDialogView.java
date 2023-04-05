@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
 
+import ch.progradler.rat_um_rad.client.services.UserService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -8,21 +9,19 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.Optional;
-
 /**
  * handbook: shown in menubar (help - handbook)
  * dialog for username input : client: username suggestion based on system username which is shown in usernameField
- * TODO: refactoring, binding chosenUsername to inputField, add EventHandlers to Buttons (connect to UserController)
+ *
  */
 
-public class ChangeUsernameDialog  {
+public class UsernameChangeDialogView {
     private Stage stage;
     private UsernameChangeModel usernameChangeModel;
     private UsernameChangeController usernameChangeController;
-    public ChangeUsernameDialog(Stage stage) {
+    public UsernameChangeDialogView(Stage stage, UserService userService) {
         this.usernameChangeModel = new UsernameChangeModel();
-        this.usernameChangeController = new UsernameChangeController(usernameChangeModel, this);
+        this.usernameChangeController = new UsernameChangeController(usernameChangeModel, this, userService);
     }
 
     public void getView() {
@@ -69,7 +68,6 @@ public class ChangeUsernameDialog  {
         // Request focus on the username field by default.
         Platform.runLater(() -> username.requestFocus());
 
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(name -> System.out.println("Your name: " + name));
+        dialog.show();
     }
 }

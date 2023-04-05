@@ -9,7 +9,7 @@ public class UsernameChangeModel {
     ComputerInfo computerInfo;
     private String systemUsername;
     private String currentUsername; 
-    private StringProperty chosenUsername; //TODO: bind to textfield
+    private StringProperty chosenUsername;
     private String usernameRules = "Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!\n";
 
     UsernameChangeModel() {

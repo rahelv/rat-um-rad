@@ -1,17 +1,20 @@
 package ch.progradler.rat_um_rad.client.gui.javafx;
 
-import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.ChangeUsernameDialog;
-import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
+import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeDialogView;
+import ch.progradler.rat_um_rad.client.services.UserService;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.ServiceLoader;
+
 /**
  * This is the Rat um Rad JavaFX-Application.
  */
 public class GUI extends Application {
+    private UserService userService =  ServiceLoader.load(UserService.class).findFirst();
     private MenuBar menuBar;
     private VBox vBox;
 
@@ -33,8 +36,7 @@ public class GUI extends Application {
         stage.setScene(scene);
         stage.show();
 
-        ChangeUsernameDialog changeUsernameDialog = new ChangeUsernameDialog(stage);
-        changeUsernameDialog.getView();
+        UsernameChangeDialogView usernameChangeDialogView = new UsernameChangeDialogView(stage, userService);
+        usernameChangeDialogView.getView();
     }
-
 }

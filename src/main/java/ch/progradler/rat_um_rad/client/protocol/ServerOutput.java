@@ -36,8 +36,7 @@ public class ServerOutput implements OutputPacketGateway {
      */
     @Override
     public  void sendPacket(Packet packet) throws IOException {
-        // TODO: unittest
-
+        //TODO: unittest
         String sendStr = packetCoder.encode(packet);
         StreamUtils.writeStringToStream(sendStr,outStream);
     }

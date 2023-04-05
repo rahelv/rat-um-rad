@@ -14,10 +14,8 @@ import java.net.Socket;
  */
 public class ServerInputListener implements Runnable {
     private InputStream inputStream;
-
     private final ServerInputPacketGateway inputPacketGateway;
     private final Coder<Packet> packetCoder;
-
 
     public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway, Coder<Packet> packetCoder) {
         this.inputPacketGateway = inputPacketGateway;
