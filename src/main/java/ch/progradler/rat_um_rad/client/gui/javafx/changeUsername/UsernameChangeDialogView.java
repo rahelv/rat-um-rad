@@ -1,6 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
 
-import ch.progradler.rat_um_rad.client.services.UserService;
+import ch.progradler.rat_um_rad.client.services.IUserService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -19,7 +19,8 @@ public class UsernameChangeDialogView {
     private Stage stage;
     private UsernameChangeModel usernameChangeModel;
     private UsernameChangeController usernameChangeController;
-    public UsernameChangeDialogView(Stage stage, UserService userService) {
+
+    public UsernameChangeDialogView(Stage stage, IUserService userService) {
         this.usernameChangeModel = new UsernameChangeModel();
         this.usernameChangeController = new UsernameChangeController(usernameChangeModel, this, userService);
     }

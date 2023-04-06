@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.client.gui.javafx;
 
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeDialogView;
+import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -8,13 +9,11 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.util.ServiceLoader;
-
 /**
  * This is the Rat um Rad JavaFX-Application.
  */
 public class GUI extends Application {
-    private UserService userService =  ServiceLoader.load(UserService.class).findFirst();
+    private IUserService userService;
     private MenuBar menuBar;
     private VBox vBox;
 
@@ -26,8 +25,15 @@ public class GUI extends Application {
         launch(args);
     }
 
+    private void initServices(){
+        userService = new UserService();
+        // userService =  ServiceLoader.load(UserService.class).findFirst(); TODO: use this?
+    }
+
     @Override
     public void start(Stage stage) {
+        initServices();
+
         this.menuBar = new RatUmRadMenuBar();
 
         vBox = new VBox(menuBar);
