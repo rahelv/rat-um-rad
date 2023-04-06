@@ -2,10 +2,9 @@ package ch.progradler.rat_um_rad.shared.models.game;
 
 import ch.progradler.rat_um_rad.client.models.ClientGame;
 import ch.progradler.rat_um_rad.server.models.Game;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
 
 import java.util.Date;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * Since the game kept by the server {@link Game} is different from the game
@@ -15,24 +14,24 @@ public class GameBase {
     private final String id;
     private GameStatus status;
     private final GameMap map;
-    /**
-     * Keys are ip-addresses
-     */
-    private Map<String, PlayerBase> players;
+
     private final Date createdAt;
-    private String creatorPlayerIpAddress;
+    private final String creatorPlayerIpAddress;
     private final int requiredPlayerCount;
+    private final int turn;
+
     public GameBase(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount) {
+        this(id, status, map, new Date() /* now */, creatorPlayerIpAddress, requiredPlayerCount, 0);
+    }
+
+    public GameBase(String id, GameStatus status, GameMap map, Date createdAt, String creatorPlayerIpAddress, int requiredPlayerCount, int turn) {
         this.id = id;
         this.status = status;
         this.map = map;
+        this.createdAt = createdAt;
         this.creatorPlayerIpAddress = creatorPlayerIpAddress;
         this.requiredPlayerCount = requiredPlayerCount;
-        createdAt = new Date(); // now
-    }
-
-    public void addPlayer(String ipAddress) {
-        //TODO: implement
+        this.turn = turn;
     }
 
     public String getId() {
@@ -61,5 +60,22 @@ public class GameBase {
 
     public int getRequiredPlayerCount() {
         return requiredPlayerCount;
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GameBase)) return false;
+        GameBase gameBase = (GameBase) o;
+        return requiredPlayerCount == gameBase.requiredPlayerCount && turn == gameBase.turn && id.equals(gameBase.id) && status == gameBase.status && map.equals(gameBase.map) && createdAt.equals(gameBase.createdAt) && creatorPlayerIpAddress.equals(gameBase.creatorPlayerIpAddress);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn);
     }
 }

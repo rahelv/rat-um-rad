@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.shared.protocol;
 
+import ch.progradler.rat_um_rad.client.models.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 
@@ -16,9 +17,17 @@ public enum ContentType {
      */
     STRING,
     /**
+     * Type of {@link Integer} or <code>int</code>
+     */
+    INTEGER,
+    /**
      * Type of {@link UsernameChange}
      */
     USERNAME_CHANGE,
+    /**
+     * Type of {@link ClientGame}
+     */
+    GAME,
     /**
      * Type of {@code null}
      */
