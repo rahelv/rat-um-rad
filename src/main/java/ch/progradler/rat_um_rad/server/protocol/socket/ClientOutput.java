@@ -29,7 +29,7 @@ public class ClientOutput {
     }
 
     public void sendPacketToClient(Packet packet) {
-        String sendStr = packetCoder.encode(packet);
+        String sendStr = packetCoder.encode(packet, 0);
         StreamUtils.writeStringToStream(sendStr,out);
     }
 

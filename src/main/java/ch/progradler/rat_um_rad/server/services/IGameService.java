@@ -12,41 +12,43 @@ import java.util.List;
  * This is the interface with actions the players can do and important services like exitGame().
  */
 public interface IGameService {
+
+    void createGame(String creatorIpAddress, int requiredPlayerCount);
     /**
      * Called when a new player connects to the game.
      */
-    public void addPlayer(String ipAddress);
-    public void sendMessageTo(String ipAddressFrom, String ipAddressTo);
-    public void sendMessageToAll(String ipAddressFrom);
-    public void exitGame(String ipAddress);
+    void addPlayer(String ipAddress);
+    void sendMessageTo(String ipAddressFrom, String ipAddressTo);
+    void sendMessageToAll(String ipAddressFrom);
+    void exitGame(String ipAddress);
 
     /**
      * This method is used in the game state PREPARATION as well as in STARTED.
      */
-    public void selectShortDestinationCards(String ipAddress, DestinationCardDeck destinationCardDeck);
-    public void buildRoad(String ipAddress, String roadId);
+    void selectShortDestinationCards(String ipAddress, DestinationCardDeck destinationCardDeck);
+    void buildRoad(String ipAddress, String roadId);
 
     /**
      * The user can choose the color of wheelCards he wants to use to build that road when the road
      * is grey.
      */
-    public void buildGreyRoad(String ipAddress, String roadId, WheelColor color);
-    public void takeWheelCardFromDeck(String ipAddress);
-    public void takeOpenWheelCard(String ipAdress, WheelCard wheelCard);
-    public void takeDestinationCard(String ipAdress);
+    void buildGreyRoad(String ipAddress, String roadId, WheelColor color);
+    void takeWheelCardFromDeck(String ipAddress);
+    void takeOpenWheelCard(String ipAddress, WheelCard wheelCard);
+    void takeDestinationCard(String ipAddress);
 
     /**
      * TODO: explain what this method does.
      */
-    public void handleConnectionLoss(String ipAddress);
-    public void wantToFinishGame(String ipAddress);
+    void handleConnectionLoss(String ipAddress);
+    void wantToFinishGame(String ipAddress);
 
     /**
      * In order to finish the game in a hypothetical dead end of the game, this method can be called.
      * If it's called from every player where no player called dontWantToFinishGame() anymore, the
      * game gets the state FINISHED.
      */
-    public void dontWantToFinishGame(String ipAddress);
+    void dontWantToFinishGame(String ipAddress);
 
     /**
      * @return List of game instances that have not yet started
