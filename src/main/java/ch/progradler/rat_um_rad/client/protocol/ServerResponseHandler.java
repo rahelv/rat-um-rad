@@ -1,10 +1,9 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
-import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
-import ch.progradler.rat_um_rad.client.models.User;
+import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
+import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
-import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -14,14 +13,17 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 public class ServerResponseHandler implements ServerInputPacketGateway {
     private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
-    private final UserService userService;
-    private final ServerOutput serverOutput;
 
-    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner, UserService userService, ServerOutput serverOutput) {
+    private UsernameChangeController usernameChangeController;
+
+    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner) {
         this.presenter = presenter;
         this.clientPingPongRunner = clientPingPongRunner;
-        this.userService = userService;
-        this.serverOutput = serverOutput;
+    }
+
+    @Override
+    public void setUsernameChangeController(UsernameChangeController usernameChangeController) {
+        this.usernameChangeController = usernameChangeController;
     }
 
     /**
@@ -40,9 +42,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case USERNAME_CONFIRMED -> {
                 System.out.println("angekommen");
                 UsernameChange change = (UsernameChange) packet.getContent();
-                this.userService.changeUsername(change.getNewName()); //TODO: how to handle incoming messages in GUI ?
-                System.out.println((User.getInstance().getUsername()));
-                //presenter.display(packet);
+                usernameChangeController.setConfirmedUsername(change.getNewName());
             }
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions

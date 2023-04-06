@@ -1,7 +1,6 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
 import ch.progradler.rat_um_rad.client.Client;
-import ch.progradler.rat_um_rad.client.command_line.InputReader;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
@@ -13,12 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.beans.PropertyChangeEvent;
-
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 
 public class UsernameHandler implements PropertyChangeListener {
-    private final User user = User.getInstance();
+    private User user; // TODO: remove this:  = User.getInstance();
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String PROPERTY_NAME_USERNAME = "username";
@@ -41,7 +39,7 @@ public class UsernameHandler implements PropertyChangeListener {
     }
 
     public UsernameHandler() {
-        user.addUsernameObserver(this);
+        // TODO: remove this: user.addUsernameObserver(this);
 
         this.computerInfo = new ComputerInfo();
         this.inputReader = new InputReader();
@@ -59,7 +57,7 @@ public class UsernameHandler implements PropertyChangeListener {
     }
 
     public void changeUsername(String newName) {
-        this.user.setConfirmedUsername(newName);
+        this.user.setUsername(newName);
     }
 
     /**

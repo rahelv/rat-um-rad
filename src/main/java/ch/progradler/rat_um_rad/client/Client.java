@@ -1,24 +1,25 @@
 package ch.progradler.rat_um_rad.client;
 
-import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.command_line.presenter.CommandLinePresenter;
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
+import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.gui.javafx.GUI;
-import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeDialogView;
 import ch.progradler.rat_um_rad.client.protocol.ServerInputListener;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.protocol.ServerResponseHandler;
+import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
+import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.ChatMessageCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.UsernameChangeCoder;
-import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import javafx.application.Application;
-import javafx.stage.Stage;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -37,7 +38,10 @@ public class Client  {
         try {
             Socket socket = new Socket(host, port);
             ServerOutput serverOutput = new ServerOutput(socket, packetCoder);
-            UserService userService = new UserService(serverOutput);
+
+            OutputPacketGatewaySingleton.setOutputPacketGateway(serverOutput);
+
+            IUserService userService = new UserService(serverOutput);
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
             //startCommandHandler(serverOutput, host, userService);
             startServerListener(socket, packetCoder, clientPingPongRunner, userService, serverOutput);
@@ -72,21 +76,30 @@ public class Client  {
      * @param userService
 
     private void startCommandHandler(ServerOutput serverOutput, String host, UserService userService) {
-        InputReader inputReader = new InputReader();
-        CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, serverOutput, host, userService);
-        Thread t = new Thread(commandLineHandler);
-        t.start();
+    InputReader inputReader = new InputReader();
+    CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, serverOutput, host, userService);
+    Thread t = new Thread(commandLineHandler);
+    t.start();
     }  */
 
-    /** starts the ServerListener in a new thread, which listens to input from server.
+    /**
+     * starts the ServerListener in a new thread, which listens to input from server.
+     *
      * @param socket
      * @param packetCoder
      * @param userService
      */
-    private void startServerListener(Socket socket, Coder<Packet> packetCoder, ClientPingPongRunner clientPingPongRunner, UserService userService, ServerOutput serverOutput) {
+    private void startServerListener(Socket socket,
+                                     Coder<Packet> packetCoder,
+                                     ClientPingPongRunner clientPingPongRunner,
+                                     IUserService userService,
+                                     ServerOutput serverOutput) {
         PackagePresenter presenter = new CommandLinePresenter();
-        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner, userService, serverOutput);
+        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
+
+        InputPacketGatewaySingleton.setInputPacketGateway(inputPacketGateway);
+
         Thread t = new Thread(listener);
         t.start();
     }

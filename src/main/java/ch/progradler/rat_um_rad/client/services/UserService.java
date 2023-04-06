@@ -1,11 +1,12 @@
 package ch.progradler.rat_um_rad.client.services;
-import java.io.IOException;
 
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
-import ch.progradler.rat_um_rad.client.models.User;
+import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+
+import java.io.IOException;
 
 /**
  * Implementation of {@link IUserService}.
@@ -13,9 +14,12 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
  */
 public class UserService implements IUserService {
     private OutputPacketGateway outputPacketGateway;
+
     public UserService() {
-        //Do nothing
+        //Do nothing TODO: remove this constructor!!!
+        outputPacketGateway = OutputPacketGatewaySingleton.getOutputPacketGateway();
     }
+
     public UserService(OutputPacketGateway outputPacketGateway) {
         this.outputPacketGateway = outputPacketGateway;
     }
@@ -31,10 +35,6 @@ public class UserService implements IUserService {
             //LOGGER.warn("Failed to send username to server!"); //TODO: choose appropriate logger levels for all logs
             //return chooseAndSendUsername(outputPacketGateway);
         }
-    }
-
-    public void changeUsername(String username) {
-        User.getInstance().setConfirmedUsername(username);
     }
 }
 

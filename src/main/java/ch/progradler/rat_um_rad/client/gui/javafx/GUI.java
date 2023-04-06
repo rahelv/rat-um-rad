@@ -1,6 +1,10 @@
 package ch.progradler.rat_um_rad.client.gui.javafx;
 
+import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeDialogView;
+import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeModel;
+import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import javafx.application.Application;
@@ -42,7 +46,20 @@ public class GUI extends Application {
         stage.setScene(scene);
         stage.show();
 
-        UsernameChangeDialogView usernameChangeDialogView = new UsernameChangeDialogView(stage, userService);
-        usernameChangeDialogView.getView();
+        setupUsernameController(stage);
+    }
+
+    private void setupUsernameController(Stage stage) {
+        UsernameChangeDialogView usernameChangeDialogView = new UsernameChangeDialogView(stage);
+
+        UsernameChangeModel usernameChangeModel = new UsernameChangeModel(new User());
+        UsernameChangeController usernameChangeController = new UsernameChangeController(
+                usernameChangeModel,
+                usernameChangeDialogView,
+                userService
+        );
+        InputPacketGatewaySingleton.getInputPacketGateway()
+                .setUsernameChangeController(usernameChangeController);
+        usernameChangeController.updateView();
     }
 }

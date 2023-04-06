@@ -8,22 +8,23 @@ import javafx.beans.property.StringProperty;
 public class UsernameChangeModel {
     ComputerInfo computerInfo;
     private String systemUsername;
-    private String currentUsername; 
+    private User user;
     private StringProperty chosenUsername;
     private String usernameRules = "Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!\n";
 
-    UsernameChangeModel() {
+    public UsernameChangeModel(User user) {
         computerInfo = new ComputerInfo();
         this.systemUsername = computerInfo.getSystemUsername();
-        this.currentUsername = User.getInstance().getUsername();
+        this.user = user;
         this.chosenUsername = new SimpleStringProperty(this.systemUsername);
     }
+
     public String getChosenUsername() {
          return chosenUsername.get();
     }
 
     public String getCurrentUsername() {
-        return currentUsername;
+        return user.getUsername();
     }
 
     public String getUsernameRules() {
