@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.client.services;
 
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -36,5 +37,17 @@ public class UserService implements IUserService {
             //return chooseAndSendUsername(outputPacketGateway);
         }
     }
+
+    @Override
+    public void sendChatMessageToServer(String sender,String chatContent) throws IOException {
+        try {
+            ChatMessage chatMessage = new ChatMessage(sender, chatContent);
+            Packet packet = new Packet(Command.SEND_CHAT, chatMessage, ContentType.CHAT_MESSAGE);
+            outputPacketGateway.sendPacket(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 

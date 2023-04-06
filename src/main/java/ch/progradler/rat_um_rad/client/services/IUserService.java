@@ -4,4 +4,6 @@ import java.io.IOException;
 
 public interface IUserService {
     void sendChosenUsernameToServer(String username) throws IOException;
+
+    void sendChatMessageToServer(String sender,String chatMessage) throws IOException;
 }
