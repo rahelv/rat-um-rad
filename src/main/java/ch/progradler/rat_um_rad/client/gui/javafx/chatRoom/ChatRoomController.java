@@ -49,7 +49,8 @@ public class ChatRoomController {
     }
     public void addMyOwnChatContentToChatPaneList(String content){
         Platform.runLater(() -> {
-            Label contentLabel = new Label(content);
+            Label contentLabel = new Label();
+            contentLabel.setText(content);
             contentLabel.setPrefSize(Label.USE_COMPUTED_SIZE,Label.USE_COMPUTED_SIZE);
             HBox hBox = new HBox();
             hBox.setMaxWidth(chatPaneListView.getWidth()-20);
