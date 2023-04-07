@@ -21,6 +21,8 @@ import java.io.IOException;
  * This is the Rat um Rad JavaFX-Application.
  */
 public class GUI extends Application {
+    Stage window;
+    Scene mainScene;
     private FXMLLoader loader;
     private IUserService userService;
 
@@ -38,25 +40,22 @@ public class GUI extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage primaryStage) {
+        this.window = primaryStage;
         initServices();
 
         loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxmlView/mainPage.fxml"));
         try {
             Parent content = loader.load();
-            stage.setScene(new Scene(content, 640, 480));
-            stage.show();
+            this.mainScene = new Scene(content, 640, 480);
+            primaryStage.setScene(mainScene);
+            primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        setupUsernameController(stage);
-    }
-
-    @FXML
-    public void openHandbook(ActionEvent event) {
-        HandbookPopup handbookPopup = new HandbookPopup(); //TODO: only open once
+        setupUsernameController(this.window);
     }
 
     private void setupUsernameController(Stage stage) {
@@ -71,5 +70,10 @@ public class GUI extends Application {
         InputPacketGatewaySingleton.getInputPacketGateway()
                 .setUsernameChangeController(usernameChangeController);
         usernameChangeController.updateView();
+    }
+
+    @FXML
+    private void changeUsernameButtonTriggered(ActionEvent event) {
+       //TODO: this.usernameChangeController.updateView();
     }
 }

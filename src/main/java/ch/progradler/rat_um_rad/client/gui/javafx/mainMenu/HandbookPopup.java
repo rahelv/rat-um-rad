@@ -1,6 +1,5 @@
-package ch.progradler.rat_um_rad.client.gui.javafx;
+package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu;
 
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;

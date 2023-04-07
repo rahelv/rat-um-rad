@@ -15,7 +15,7 @@
             <Font name="Arial Black" size="15.0" />
          </font>
       </Label>
-      <TextField fx:id="chatMsgTextField" layoutX="61.0" layoutY="333.0" prefHeight="42.0" prefWidth="381.0" promptText="say something" />
+      <TextField fx:id="chatMsgTextField" layoutX="61.0" layoutY="333.0" prefHeight="42.0" prefWidth="381.0" promptText="say something" onAction="#sendChatMessageAction" />
       <Button fx:id="sendButton" layoutX="472.0" layoutY="341.0" mnemonicParsing="false" onAction="#sendChatMessageAction" prefHeight="28.0" prefWidth="70.0" text="send" />
       <ScrollPane layoutX="61.0" layoutY="62.0" prefHeight="244.0" prefWidth="481.0">
          <content>

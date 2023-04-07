@@ -11,10 +11,12 @@
             fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.GUI"
             prefHeight="400.0" prefWidth="600.0">
     <VBox>
-        <MenuBar>
-            <Menu text="Help">
-                <MenuItem text="Handbook" onAction="#openHandbook"></MenuItem>
-            </Menu>
-        </MenuBar>
+        <fx:include source="mainMenu.fxml"></fx:include>
+        <fx:include source="chatRoomView.fxml"></fx:include>
+        <Label>Rat um Rad</Label>
+        <HBox>
+            <Label text="Hallo _username_"></Label>
+            <Button text="Change username" onAction="#changeUsernameButtonTriggered"></Button>
+        </HBox>
     </VBox>
 </AnchorPane>
