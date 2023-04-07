@@ -4,17 +4,28 @@ import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
+import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handles incoming responses from server.
  */
 public class ServerResponseHandler implements ServerInputPacketGateway {
+    private List<IListener> listeners = new ArrayList<IListener>();
     private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
-
     private UsernameChangeController usernameChangeController;
+
+    @Override
+    public void addListener(IListener listenerToAdd) {
+        this.listeners.add(listenerToAdd);
+    }
 
     public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner) {
         this.presenter = presenter;
@@ -47,6 +58,16 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
                 //this.userService.chooseAndSendUsername(this.serverOutput);
+            }
+            case SEND_CHAT -> {
+                //TODO: update chatRoomModel
+                Object content = packet.getContent();
+                ContentType contentType = packet.getContentType();
+                if (contentType == ContentType.CHAT_MESSAGE) {
+                    for(IListener listener : listeners) {
+                        listener.chatMessageReceived((ChatMessage) content);
+                    }
+                }
             }
             default -> presenter.display(packet);
         }

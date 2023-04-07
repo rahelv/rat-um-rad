@@ -1,5 +1,7 @@
 package ch.progradler.rat_um_rad.client.gateway;
 
+import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+
 public class InputPacketGatewaySingleton {
     private static ServerInputPacketGateway inputPacketGateway;
 

@@ -25,7 +25,7 @@ public class UsernameChangeController {
     }
 
     public void updateView() {
-        // TODO: unittest!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //TODO: unittest!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         usernameChangeDialogView.displayUsernameChangedDialog(usernameChangeModel,() -> {
             String username = usernameChangeModel.getChosenUsername();
             if(!validateUsername(username)) return "Invalid username. See: " + usernameChangeModel.getUsernameRules();
