@@ -8,18 +8,21 @@ import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.MenuBar;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 /**
  * This is the Rat um Rad JavaFX-Application.
  */
 public class GUI extends Application {
+    private FXMLLoader loader;
     private IUserService userService;
-    private MenuBar menuBar;
-    private VBox vBox;
 
     /**
      * Launching this method will not work on some platforms.
@@ -38,15 +41,22 @@ public class GUI extends Application {
     public void start(Stage stage) {
         initServices();
 
-        this.menuBar = new RatUmRadMenuBar();
-
-        vBox = new VBox(menuBar);
-
-        Scene scene = new Scene(vBox, 640, 480);
-        stage.setScene(scene);
-        stage.show();
+        loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/fxmlView/mainPage.fxml"));
+        try {
+            Parent content = loader.load();
+            stage.setScene(new Scene(content, 640, 480));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         setupUsernameController(stage);
+    }
+
+    @FXML
+    public void openHandbook(ActionEvent event) {
+        HandbookPopup handbookPopup = new HandbookPopup(); //TODO: only open once
     }
 
     private void setupUsernameController(Stage stage) {
