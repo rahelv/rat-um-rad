@@ -1,22 +1,65 @@
 package ch.progradler.rat_um_rad.shared.models.game;
 
 import ch.progradler.rat_um_rad.client.models.VisiblePlayer;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
-import java.util.List;
+import java.util.Objects;
 
 /**
  * Since the players kept by the server and the own player kept by each client {@link Player} is different from the
  * other players kept by the client {@link VisiblePlayer}, both extend this class.
  */
 public class PlayerBase {
-    public static final int STARTING_WHEELS_PER_PLAYER = 35;
-    private String name;
-    private int color;
-    private int score;
-    private int wheelsRemaining;
-    private List<WheelCard> wheelCards;
-    private DestinationCard longDestinationCard;
-    private List<DestinationCard> shortDestinationCards;
+    private final String name;
+    protected WheelColor color;
+    private final int score;
+    private final int wheelsRemaining;
+    /**
+     * Determines when it is the players turn.
+     * Is set to zero before the game begins and is reassigned when game begins.
+     */
+    private final int playingOrder;
+
+    //TODO List of roads build by player?
+
+    public PlayerBase(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder) {
+        this.name = name;
+        this.color = color;
+        this.score = score;
+        this.wheelsRemaining = wheelsRemaining;
+        this.playingOrder = playingOrder;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public WheelColor getColor() {
+        return color;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public int getWheelsRemaining() {
+        return wheelsRemaining;
+    }
+
+    public int getPlayingOrder() {
+        return playingOrder;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PlayerBase)) return false;
+        PlayerBase that = (PlayerBase) o;
+        return score == that.score && wheelsRemaining == that.wheelsRemaining && playingOrder == that.playingOrder && name.equals(that.name) && color == that.color;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, color, score, wheelsRemaining, playingOrder);
+    }
 }

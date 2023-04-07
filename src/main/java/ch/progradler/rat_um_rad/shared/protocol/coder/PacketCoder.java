@@ -6,6 +6,8 @@ import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
+import java.util.List;
+
 /**
  * Responsible for en-/decoding a {@link Packet}
  */
@@ -14,44 +16,44 @@ public class PacketCoder implements Coder<Packet> {
     private final Coder<ChatMessage> messageCoder;
     private final Coder<UsernameChange> usernameChangeCoder;
 
-    static final String SEPARATOR = "-/-"; // unusual text that differs from separator used for content.
-
     public PacketCoder(Coder<ChatMessage> messageCoder, Coder<UsernameChange> usernameChangeCoder) {
         this.messageCoder = messageCoder;
         this.usernameChangeCoder = usernameChangeCoder;
     }
 
     /**
+     * @param packet
+     * @param level
      * @return String encoded in our network protocol.
      * Will be in format "command-/-{encodedContent}-/-contentType"
      */
     @Override
-    public String encode(Packet packet) {
+    public String encode(Packet packet, int level) {
         ContentType contentType = packet.getContentType();
-        return packet.getCommand().name() + SEPARATOR
-                + encodeContent(packet.getContent(), contentType)
-                + SEPARATOR + contentType.name();
+        return CoderHelper.encodeFields(level, packet.getCommand().name(),
+                encodeContent(packet.getContent(), contentType, level + 1),
+                contentType.name());
     }
 
     @Override
-    public Packet decode(String encoded) {
-        String[] fields = encoded.split(SEPARATOR);
-        if (fields.length < 3) {
+    public Packet decode(String encoded, int level) {
+        List<String> fields = CoderHelper.decodeFields(level, encoded);
+        if (fields.size() < 3) {
             // should never happen
             throw new IllegalArgumentException("Cannot decode Packet String because it hat missing fields: " + encoded);
         }
 
-        ContentType contentType = ContentType.valueOf(fields[2]);
-        Command command = Command.valueOf(fields[0]);
-        return new Packet(command, decodeContent(fields[1], contentType), contentType);
+        ContentType contentType = ContentType.valueOf(fields.get(2));
+        Command command = Command.valueOf(fields.get(0));
+        return new Packet(command, decodeContent(fields.get(1), contentType, level + 1), contentType);
     }
 
     /**
      * @return encodes content and wraps it with "{}" if not null
      */
-    private <T> String encodeContent(T content, ContentType contentType) {
+    private <T> String encodeContent(T content, ContentType contentType, int level) {
         boolean isContentNull = content == null;
-        String encodedNoWrap = encodeContentNoWrap(content, contentType);
+        String encodedNoWrap = encodeContentNoWrap(content, contentType, level);
         if (isContentNull) return encodedNoWrap;
         return "{" + encodedNoWrap + "}";
     }
@@ -59,24 +61,26 @@ public class PacketCoder implements Coder<Packet> {
     /**
      * @return encoded content with no "{}" wrap
      */
-    private <T> String encodeContentNoWrap(T content, ContentType contentType) {
+    private <T> String encodeContentNoWrap(T content, ContentType contentType, int level) {
         switch (contentType) {
             case CHAT_MESSAGE -> {
-                return messageCoder.encode((ChatMessage) content);
+                return messageCoder.encode((ChatMessage) content, level);
             }
             case STRING -> {
                 return (String) content;
             }
+            case INTEGER -> {
+                return content.toString();
+            }
             case USERNAME_CHANGE -> {
-                return usernameChangeCoder.encode((UsernameChange) content);
+                return usernameChangeCoder.encode((UsernameChange) content, level);
             }
             case NONE -> {
                 return "null";
             }
         }
         // should never happen
-        // TODO: maybe throw exception?
-        return null;
+        throw new IllegalArgumentException("Unrecognized contentType while encoding: " + contentType);
     }
 
     /**
@@ -90,22 +94,25 @@ public class PacketCoder implements Coder<Packet> {
     /**
      * @return decoded content by first removing "{}" wrap if not null
      */
-    private Object decodeContent(String content, ContentType contentType) {
+    private Object decodeContent(String content, ContentType contentType, int level) {
         if (contentType == ContentType.NONE) return null;
         String contentUnwrapped = unwrapContent(content);
         switch (contentType) {
             case CHAT_MESSAGE -> {
-                return messageCoder.decode(contentUnwrapped);
+                return messageCoder.decode(contentUnwrapped, level);
             }
             case STRING -> {
                 return contentUnwrapped;
             }
-            case USERNAME_CHANGE -> {
-                return usernameChangeCoder.decode(contentUnwrapped);
+            case INTEGER -> {
+                return Integer.parseInt(contentUnwrapped);
             }
+            case USERNAME_CHANGE -> {
+                return usernameChangeCoder.decode(contentUnwrapped, level);
+            }
+
         }
         // should never happen
-        // TODO: maybe throw exception?
-        throw new IllegalArgumentException("Content type unknown: " + contentType);
+        throw new IllegalArgumentException("Unrecognized contentType while decoding: " + contentType);
     }
 }

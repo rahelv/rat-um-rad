@@ -1,8 +1,9 @@
 package ch.progradler.rat_um_rad.server.protocol;
 
 import ch.progradler.rat_um_rad.server.gateway.InputPacketGateway;
-import ch.progradler.rat_um_rad.server.services.IUserService;
 import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
+import ch.progradler.rat_um_rad.server.services.IGameService;
+import ch.progradler.rat_um_rad.server.services.IUserService;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 /**
@@ -11,11 +12,13 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 public class CommandHandler implements InputPacketGateway {
 
     private final IUserService userService;
+    private final IGameService gameService;
     private final ServerPingPongRunner serverPingPongRunner;
 
-    public CommandHandler(ServerPingPongRunner serverPingPongRunner, IUserService userService) {
+    public CommandHandler(ServerPingPongRunner serverPingPongRunner, IUserService userService, IGameService gameService) {
         this.serverPingPongRunner = serverPingPongRunner;
         this.userService = userService;
+        this.gameService = gameService;
     }
 
     /**
@@ -44,6 +47,10 @@ public class CommandHandler implements InputPacketGateway {
             }
             case SET_USERNAME -> {
                 userService.updateUsername((String) packet.getContent(), ipAddress);
+            }
+            case CREATE_GAME -> {
+                int requiredPlayerCount = (int) packet.getContent();
+                gameService.createGame(ipAddress, requiredPlayerCount);
             }
         }
     }
