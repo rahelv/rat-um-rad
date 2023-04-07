@@ -20,7 +20,7 @@ public class ChatRoomController implements Initializable, IListener {
     private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
     public Button sendButton;
-    public ListView chatPaneListView;//fxml file is in resources/fxmlview
+    public ListView chatPaneListView;
 
     private IUserService userService;
 
