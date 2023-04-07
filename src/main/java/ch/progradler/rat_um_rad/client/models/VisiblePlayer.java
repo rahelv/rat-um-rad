@@ -1,43 +1,55 @@
 package ch.progradler.rat_um_rad.client.models;
 
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
-import java.util.List;
+import java.util.Objects;
 
 /**
  * Collection of data and information of a player, visible for other clients.
  */
-public class VisiblePlayer {
-    public static final int STARTING_WHEELS_PER_PLAYER = 35;
-    private final String name;
-    private int color;
-    private int score;
-    private final int wheelsRemaining;
+public class VisiblePlayer extends PlayerBase {
+    private final String ipAddress;
+    private final int wheelCardsCount;
+    private final int shortDestinationCardsCount;
 
-    //TODO List of roads build by player?
-    public VisiblePlayer(String name) {
-        this.name = name;
-        wheelsRemaining = STARTING_WHEELS_PER_PLAYER;
+    public VisiblePlayer(String name,
+                         WheelColor color,
+                         int score,
+                         int wheelsRemaining,
+                         String ipAddress,
+                         int wheelCardsCount,
+                         int shortDestinationCardsCount,
+                         int playingOrder) {
+        super(name, color, score, wheelsRemaining, playingOrder);
+        this.ipAddress = ipAddress;
+        this.wheelCardsCount = wheelCardsCount;
+        this.shortDestinationCardsCount = shortDestinationCardsCount;
     }
 
-    public static int getStartingWheelsPerPlayer() {
-        return STARTING_WHEELS_PER_PLAYER;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    public String getName() {
-        return name;
+    public int getWheelCardsCount() {
+        return wheelCardsCount;
     }
 
-    public int getColor() {
-        return color;
+    public int getShortDestinationCardsCount() {
+        return shortDestinationCardsCount;
     }
 
-    public int getScore() {
-        return score;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        VisiblePlayer that = (VisiblePlayer) o;
+        return wheelCardsCount == that.wheelCardsCount && shortDestinationCardsCount == that.shortDestinationCardsCount && ipAddress.equals(that.ipAddress);
     }
 
-    public int getWheelsRemaining() {
-        return wheelsRemaining;
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), ipAddress, wheelCardsCount, shortDestinationCardsCount);
     }
 }

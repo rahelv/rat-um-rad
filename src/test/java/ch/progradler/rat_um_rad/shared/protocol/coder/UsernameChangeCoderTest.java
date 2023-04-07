@@ -4,7 +4,6 @@ import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper.SEPARATOR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UsernameChangeCoderTest {
@@ -19,25 +18,27 @@ public class UsernameChangeCoderTest {
     @Test
     public void encodeReturnsStringWithDataInOrderAndSeparatedByCorrectSeparator() {
         // prepare
+        int level = 3;
         String oldName = "User A";
         String newName = "new name";
         UsernameChange chatMessage = new UsernameChange(oldName, newName);
 
         // execute
-        String result = usernameChangeCoder.encode(chatMessage);
+        String result = usernameChangeCoder.encode(chatMessage, level);
 
         // assert
-        String expected = oldName + SEPARATOR + newName;
+        String expected = CoderHelper.encodeFields(level, oldName, newName);
         assertEquals(expected, result);
     }
 
     @Test
     public void decodeReturnsCorrectTypeWithCorrectData() {
         // prepare
-        String messageEncoded = "user A" + SEPARATOR + "new name";
+        int level = 4;
+        String messageEncoded = CoderHelper.encodeFields(level, "user A", "new name");
 
         // execute
-        UsernameChange result = usernameChangeCoder.decode(messageEncoded);
+        UsernameChange result = usernameChangeCoder.decode(messageEncoded, level);
 
         // assert
         UsernameChange expected = new UsernameChange("user A", "new name");
