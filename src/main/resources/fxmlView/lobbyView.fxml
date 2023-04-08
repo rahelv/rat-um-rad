@@ -16,22 +16,22 @@
          <Font name="Arial Black" size="26.0" />
       </font>
    </Label>
-   <ListView layoutX="29.0" layoutY="160.0" prefHeight="201.0" prefWidth="188.0" />
-   <Button layoutX="30.0" layoutY="361.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="121.0" text="show all games" textFill="#4d5ad7" />
+   <ListView fx:id="openGamesListView" layoutX="29.0" layoutY="160.0" prefHeight="201.0" prefWidth="188.0" />
+   <Button fx:id="showAllGamesButton" layoutX="30.0" layoutY="361.0" mnemonicParsing="false" onAction="#showAllGamesAction" prefHeight="23.0" prefWidth="121.0" text="show all games" textFill="#4d5ad7" />
    <Label alignment="CENTER" layoutX="25.0" layoutY="134.0" prefHeight="26.0" prefWidth="188.0" text="Lobby(open games)">
       <font>
          <Font name="Arial Bold" size="13.0" />
       </font>
    </Label>
-   <Button layoutX="505.0" layoutY="1.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="95.0" text="leave lobby" />
-   <Button layoutX="236.0" layoutY="160.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="102.0" style="-fx-background-color: Blue;" text="create game" textFill="WHITE" />
-   <TextArea layoutX="361.0" layoutY="161.0" prefHeight="82.0" prefWidth="200.0" text="current online players : 15" />
+   <Button fx:id="leaveLobbyButton" layoutX="505.0" layoutY="1.0" mnemonicParsing="false" onAction="#leaveLobbyAction" prefHeight="26.0" prefWidth="95.0" text="leave lobby" />
+   <Button fx:id="createGameButton" layoutX="236.0" layoutY="160.0" mnemonicParsing="false" onAction="#createGameAction" prefHeight="26.0" prefWidth="102.0" style="-fx-background-color: Blue;" text="create game" textFill="WHITE" />
+   <TextArea fx:id="currentPlayersTextArea" layoutX="361.0" layoutY="161.0" prefHeight="82.0" prefWidth="200.0" text="current online players : 15" />
    <Label layoutX="236.0" layoutY="266.0" prefHeight="26.0" prefWidth="140.0" text="join with game ID : ">
       <font>
          <Font name="Arial Bold" size="13.0" />
       </font>
    </Label>
-   <TextField layoutX="236.0" layoutY="291.0" promptText="game ID" />
-   <Button layoutX="414.0" layoutY="292.0" mnemonicParsing="false" style="-fx-background-color: blue;" text="join" textFill="WHITE" />
+   <TextField fx:id="gameIdTextField" layoutX="236.0" layoutY="291.0" promptText="game ID" />
+   <Button fx:id="joinButton" layoutX="414.0" layoutY="292.0" mnemonicParsing="false" onAction="#joinAction" style="-fx-background-color: blue;" text="join" textFill="WHITE" />
    <HBox layoutY="70.0" prefHeight="54.0" prefWidth="361.0" />
 </AnchorPane>
