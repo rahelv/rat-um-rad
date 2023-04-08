@@ -3,10 +3,8 @@ package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.lobby;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,8 +27,12 @@ public class LobbyController implements Initializable {
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        openGamesListView.getItems().addAll(this.lobbyModel.getGameNames());
+        //this.openGamesListView.getItems().addAll(this.lobbyModel.getGameNamesList());
+        this.openGamesListView.setItems(this.lobbyModel.getGameNamesList());
+        openGamesListView.setCellFactory(param -> new Cell());
+        //each item of listView should have 2 buttons:list players and join game
     }
+
 
     @FXML
     public void showAllGamesAction(ActionEvent event){
@@ -47,5 +49,29 @@ public class LobbyController implements Initializable {
 
     @FXML
     public void joinAction(ActionEvent actionEvent) {
+    }
+    static class Cell extends ListCell<String> { //to be continued,nicht so sicher
+        HBox hbox = new HBox();
+        Label nameLabel = new Label();
+        Button listPlayers = new Button("list");
+        Button enterGame = new Button("join");
+        public Cell() {
+            super();
+            hbox.getChildren().addAll(listPlayers,enterGame);
+            //add button actions
+        }
+        @Override
+        protected void updateItem(String name,boolean empty){
+            super.updateItem(name,empty);
+            setText(null);
+            setGraphic(null);
+            if(name != null && !empty){
+                nameLabel.setText(name);
+                setGraphic(hbox);
+            }
+        }
+    }
+    public void listPlayersInGame(){
+
     }
 }
