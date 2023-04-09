@@ -7,6 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -36,28 +38,30 @@ public class LobbyController implements Initializable {
         //each item of listView should have 2 buttons:list players and join game
         openGamesListView.setCellFactory(param -> new CustomCell());
 
-
         //populate the ListView with HBox
         for(String item : lobbyModel.getGameNamesList()){
             openGamesListView.setCellFactory(param -> new CustomCell());
         }
     }
     static class CustomCell extends ListCell<String> {
-        HBox hbox;
-        Label nameLabel;
-        Button listPlayersBtn;
-        Button enterGameBtn;
+        private HBox hbox;
+        private Pane pane;
+        private Label nameLabel;
+        private Button listPlayersBtn;
+        private Button enterGameBtn;
         public CustomCell() {
             super();
             hbox = new HBox();
+            pane = new Pane();
             nameLabel = new Label();
+
             listPlayersBtn = new Button("list");
-            listPlayersBtn.setAlignment(Pos.CENTER_RIGHT);
             enterGameBtn = new Button("join");
-            enterGameBtn.setAlignment(Pos.CENTER_RIGHT);
-            hbox.getChildren().addAll(nameLabel, listPlayersBtn, enterGameBtn);
+
+            hbox.getChildren().addAll(nameLabel,pane,listPlayersBtn, enterGameBtn);
+            hbox.setHgrow(pane, Priority.ALWAYS);
             setText(null);
-            //add button actions
+
             listPlayersBtn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -67,7 +71,7 @@ public class LobbyController implements Initializable {
             enterGameBtn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    //do somthing
+                    //do something
                 }
             });
         }
