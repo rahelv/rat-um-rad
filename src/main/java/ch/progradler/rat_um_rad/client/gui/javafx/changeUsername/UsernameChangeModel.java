@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
 
-import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
 import javafx.beans.property.SimpleStringProperty;

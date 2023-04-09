@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.Game.chatRoom;
+package ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom;
 
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import javafx.beans.property.SimpleStringProperty;
@@ -6,14 +6,8 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class ChatRoomModel {
-
     ObservableList<ChatMessage> chatMessageList;
-
     private StringProperty textInputContent;
 
     public ChatRoomModel() {

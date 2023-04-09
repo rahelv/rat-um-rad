@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
+package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.allGamesOverview;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;

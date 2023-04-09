@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.Game.chatRoom;
+package ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.IUserService;

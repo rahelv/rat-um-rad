@@ -61,7 +61,7 @@ public class LobbyController implements Initializable, IListener<GameBase> {
     public void joinGameAction(ActionEvent actionEvent) {
         //TODO: get gameId (bind to textfield wo id eingegeben wurde)
         System.out.println("joined game ");
-        //        //TODO: Anfrage an Server um Game zu jonen
+        //TODO: Anfrage an Server um Game zu joinen
     }
 
     @Override
