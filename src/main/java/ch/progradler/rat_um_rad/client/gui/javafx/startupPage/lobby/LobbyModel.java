@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.lobby;
+package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
 
 import ch.progradler.rat_um_rad.server.models.Game;

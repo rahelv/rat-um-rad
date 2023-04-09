@@ -18,6 +18,7 @@ public class GUI extends Application {
     private UsernameChangeModel usernameChangeModel;
     Stage window;
     Scene mainScene;
+
     /**
      * Launching this method will not work on some platforms.
      * What you should do is to create a separate main class and launch the GUI class from there as is done in {@link Main}
@@ -55,7 +56,20 @@ public class GUI extends Application {
         }
 
         UsernameChangeController controller = loader.getController();
-        controller.initData(this.usernameChangeModel);
+        controller.initData(this.usernameChangeModel, this.window);
+
+        this.window.show();
+        //TODO: when username is set, go on to startupPage
+    }
+
+    private void showStartupPage() { //TODO: call this method instead of the one in UsernameChangeController
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlView/mainPage.fxml"));
+
+        try {
+            this.window.setScene(new Scene(loader.load()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.window.show();
     }

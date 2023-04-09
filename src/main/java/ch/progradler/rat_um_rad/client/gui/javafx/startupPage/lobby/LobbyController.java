@@ -1,8 +1,9 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.lobby;
+package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
+import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.server.models.Game;
+import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,11 +11,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LobbyController implements Initializable {
+public class LobbyController implements Initializable, IListener<GameBase> {
     private IGameService gameService;
     private LobbyModel lobbyModel;
     public ListView<GameBase> openGamesListView;
@@ -22,13 +22,14 @@ public class LobbyController implements Initializable {
     public TextField gameIdTextField;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
         this.gameService = new GameService();
         this.lobbyModel = new LobbyModel();
-        try {
-            this.gameService.requestWaitingGames();
+       /** try {
+            //this.gameService.requestWaitingGames();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
         openGamesListView.setCellFactory(param -> new Cell());
@@ -50,7 +51,7 @@ public class LobbyController implements Initializable {
         //TODO: create Game dialog
         System.out.println("create game");
         try {
-            this.gameService.createGame(5);
+           // this.gameService.createGame(5);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,6 +62,11 @@ public class LobbyController implements Initializable {
         //TODO: get gameId (bind to textfield wo id eingegeben wurde)
         System.out.println("joined game ");
         //        //TODO: Anfrage an Server um Game zu jonen
+    }
+
+    @Override
+    public void serverResponseReceived(GameBase content) {
+        this.lobbyModel.addGameToLobby(content);
     }
 
     static class Cell extends ListCell<GameBase> {

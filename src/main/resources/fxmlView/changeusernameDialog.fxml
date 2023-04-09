@@ -6,9 +6,15 @@
 
 <?import javafx.scene.layout.GridPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController">
-   <GridPane hgap="10" vgap="10" padding="20, 150, 10, 10">
-      <Label text="Please enter your username"></Label>
-      <TextField fx:id="username"></TextField>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.skin.TabPaneSkin.TabHeaderArea?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController">
+   <GridPane hgap="10" vgap="10" style="-fx-padding: 20, 150, 10, 10">
+      <Label fx:id="usernameRulesLabel" GridPane.columnIndex="0" GridPane.rowIndex="0"></Label>
+      <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="Please enter your username"></Label>
+      <TextField  fx:id="username" GridPane.columnIndex="0" GridPane.rowIndex="2" onAction="#confirmButtonAction"></TextField>
+      <Label fx:id="invalidLabel" GridPane.columnIndex="0" GridPane.rowIndex="3" textFill="red"></Label>
+
+      <Button GridPane.columnIndex="0" GridPane.rowIndex="4" fx:id="ConfirmUsernameButton" onAction="#confirmButtonAction" text="OK"></Button>
    </GridPane>
 </AnchorPane>

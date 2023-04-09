@@ -2,7 +2,9 @@ package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
+import ch.progradler.rat_um_rad.client.gui.javafx.Game.chatRoom.ChatRoomController;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
 import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
@@ -54,7 +56,11 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case USERNAME_CONFIRMED -> {
                 UsernameChange change = (UsernameChange) packet.getContent();
-                usernameChangeController.setConfirmedUsername(change.getNewName()); //TODO: implement using Listener
+                    for(IListener<UsernameChange> listener : listeners) {
+                        if(listener instanceof UsernameChangeController) {
+                            listener.serverResponseReceived(change);
+                        }
+                    }
             }
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
@@ -66,16 +72,20 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ContentType contentType = packet.getContentType();
                 if (contentType == ContentType.CHAT_MESSAGE) {
                     for(IListener<ChatMessage> listener : listeners) {
-                        listener.serverResponseReceived((ChatMessage) content);
+                        if(listener instanceof ChatRoomController) {
+                            listener.serverResponseReceived((ChatMessage) content);
+                        }
                     }
                 }
             }
-            case SEND_GAMES -> {
+            case SEND_GAMES -> { //TODO: handle list of games received
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 if(contentType == ContentType.GAME_INFO_LIST) {
-                    for(IListener<GameBase> listener: listeners) {
-                        listener.serverResponseReceived((GameBase) content);
+                    for(IListener<GameBase> listener: listeners) { //TODO: find a better way to handle the listeners of different types
+                        if(listener instanceof LobbyController) {
+                            listener.serverResponseReceived((GameBase) content);
+                        }
                     }
                     //Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
                 }

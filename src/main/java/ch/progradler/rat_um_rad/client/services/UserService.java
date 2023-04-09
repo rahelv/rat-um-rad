@@ -16,7 +16,6 @@ public class UserService implements IUserService {
     private OutputPacketGateway outputPacketGateway;
 
     public UserService() {
-        //Do nothing TODO: remove this constructor!!!
         outputPacketGateway = OutputPacketGatewaySingleton.getOutputPacketGateway();
     }
 
