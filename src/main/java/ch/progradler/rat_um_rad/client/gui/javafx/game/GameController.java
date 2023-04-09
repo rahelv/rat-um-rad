@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.gui.javafx;
+package ch.progradler.rat_um_rad.client.gui.javafx.game;
 
 import javafx.fxml.Initializable;
 
