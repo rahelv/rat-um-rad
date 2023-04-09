@@ -1,15 +1,29 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
 
+import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.services.IUserService;
+import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
+import javafx.fxml.Initializable;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class UsernameChangeController {
+public class UsernameChangeController implements Initializable {
     private UsernameChangeDialogView usernameChangeDialogView;
     private UsernameChangeModel usernameChangeModel;
     private UsernameValidator usernameValidator = new UsernameValidator();
     private IUserService userService;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        this.userService = new UserService();
+    }
+
+    public void initData(UsernameChangeModel usernameChangeModel) {
+        this.usernameChangeModel = usernameChangeModel;
+    }
 
     interface UsernameEntered {
         /**
@@ -19,7 +33,6 @@ public class UsernameChangeController {
     }
 
     public UsernameChangeController(UsernameChangeModel usernameChangeModel, UsernameChangeDialogView usernameChangeDialogView, IUserService userService) {
-        this.usernameChangeModel = usernameChangeModel;
         this.usernameChangeDialogView = usernameChangeDialogView;
         this.userService = userService;
     }

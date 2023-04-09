@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.client.protocol;
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
+import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
@@ -53,7 +54,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case USERNAME_CONFIRMED -> {
                 UsernameChange change = (UsernameChange) packet.getContent();
-                usernameChangeController.setConfirmedUsername(change.getNewName());
+                usernameChangeController.setConfirmedUsername(change.getNewName()); //TODO: implement using Listener
             }
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions

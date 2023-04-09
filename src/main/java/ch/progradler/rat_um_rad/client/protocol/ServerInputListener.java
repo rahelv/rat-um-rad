@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
+import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.util.StreamUtils;
