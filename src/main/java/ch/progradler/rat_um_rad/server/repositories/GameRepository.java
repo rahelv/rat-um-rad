@@ -1,10 +1,13 @@
 package ch.progradler.rat_um_rad.server.repositories;
 
 import ch.progradler.rat_um_rad.server.models.Game;
+import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
 
 /**
  * Implementation of {@link IGameRepository}.
@@ -43,5 +46,29 @@ public class GameRepository implements IGameRepository {
     @Override
     public int getGamesCount() {
         return games.size();
+    }
+
+    public List<Game> getWaitingGames() {
+        return getGamesWithStatus(WAITING_FOR_PLAYERS);
+    }
+
+    /**
+     * Since started games can have one of the states {@link GameStatus#PREPARATION} amd
+     * {@link GameStatus#STARTED}, this method returns a list with both.
+     */
+    public List<Game> getStartedGames() {
+        List<Game> preparingGames = getGamesWithStatus(PREPARATION);
+        List<Game> startedGames = getGamesWithStatus(STARTED);
+        preparingGames.addAll(startedGames);
+        return preparingGames;
+    }
+
+    public List<Game> getFinishedGames() {
+        return getGamesWithStatus(FINISHED);
+    }
+
+    private List<Game> getGamesWithStatus(GameStatus gameStatus) {
+        return games.values().stream()
+                .filter((game) -> game.getStatus() == gameStatus).toList();
     }
 }

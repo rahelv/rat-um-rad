@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.InputPacketGateway;
 import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
+import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 /**
@@ -23,7 +24,7 @@ public class CommandHandler implements InputPacketGateway {
 
     /**
      * Receives from ClientInputListener the packet sent by client and corresponding ipAddress. This is the implementation of the protocol.
-     *
+     * <p>
      * For more information on the protocol, read the corresponding document or read the javadoc of the
      * commands in the switch cases or the used methods in the code block for each case.
      */
@@ -49,6 +50,23 @@ public class CommandHandler implements InputPacketGateway {
             case CREATE_GAME -> {
                 int requiredPlayerCount = (int) packet.getContent();
                 gameService.createGame(ipAddress, requiredPlayerCount);
+            }
+            case REQUEST_GAMES -> {
+                GameStatus status = (GameStatus) packet.getContent();
+                switch (status) {
+                    case WAITING_FOR_PLAYERS -> {
+                        gameService.getWaitingGames(ipAddress);
+                    }
+                    case PREPARATION -> {
+                        throw new IllegalArgumentException("Cannot request games in preparation");
+                    }
+                    case STARTED -> {
+                        gameService.getStartedGames(ipAddress);
+                    }
+                    case FINISHED -> {
+                        gameService.getFinishedGames(ipAddress);
+                    }
+                }
             }
         }
     }

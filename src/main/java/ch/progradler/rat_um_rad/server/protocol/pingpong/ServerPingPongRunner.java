@@ -41,7 +41,7 @@ public class ServerPingPongRunner implements Runnable {
     public void run() {
         int pingSentCount = 0;
         while (true) {
-           LOGGER.log(Level.forName("PINGPONG", 700),"Ping sent count: " + pingSentCount);
+            LOGGER.log(Level.forName("PINGPONG", 700), "Ping sent count: " + pingSentCount);
             waitTimeForDisconnect();
             synchronized (pingPongHandler) {
                 pingPongHandler.checkDisconnections(pingSentCount);

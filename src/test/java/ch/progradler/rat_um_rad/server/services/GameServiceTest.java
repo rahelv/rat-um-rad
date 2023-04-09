@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -132,5 +133,41 @@ class GameServiceTest {
         ClientGame sentGame = GameServiceUtil.toClientGame(createdGame, creatorIp);//new ClientGame(createdGame.getId())
         Packet packet = new Packet(Command.GAME_CREATED, sentGame, ContentType.GAME);
         verify(mockOutputPacketGateway).sendPacket(creatorIp, packet);
+    }
+
+    @Test
+    void handlesWaitingGamesRequest() {
+        String ipAddress = "ipAddressA";
+        when(mockGameRepository.getWaitingGames()).thenReturn(null);
+
+        gameService.getWaitingGames(ipAddress);
+
+        List<Game> waitingGames = verify(mockGameRepository).getWaitingGames();
+        Packet packet = new Packet(Command.SEND_GAMES, waitingGames, ContentType.GAME_INFO_LIST);
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
+    }
+
+    @Test
+    void handlesStartedGamesRequest() {
+        String ipAddress = "ipAddressA";
+        when(mockGameRepository.getStartedGames()).thenReturn(null);
+
+        gameService.getStartedGames(ipAddress);
+
+        List<Game> startedGames = verify(mockGameRepository).getStartedGames();
+        Packet packet = new Packet(Command.SEND_GAMES, startedGames, ContentType.GAME_INFO_LIST);
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
+    }
+
+    @Test
+    void handlesFinishedGamesRequest() {
+        String ipAddress = "ipAddressA";
+        when(mockGameRepository.getFinishedGames()).thenReturn(null);
+
+        gameService.getFinishedGames(ipAddress);
+
+        List<Game> finishedGames = verify(mockGameRepository).getFinishedGames();
+        Packet packet = new Packet(Command.SEND_GAMES, finishedGames, ContentType.GAME_INFO_LIST);
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 }

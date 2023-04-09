@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GameCoderTest {
+class ClientGameCoderTest {
 
     @Mock
     Coder<GameMap> gameMapCoderMock;
@@ -30,11 +30,11 @@ class GameCoderTest {
     @Mock
     Coder<Player> playerCoderMock;
 
-    private GameCoder gameCoder;
+    private ClientGameCoder clientGameCoder;
 
     @BeforeEach
     void setUp() {
-        gameCoder = new GameCoder(gameMapCoderMock, visiblePlayerCoderMock, playerCoderMock);
+        clientGameCoder = new ClientGameCoder(gameMapCoderMock, visiblePlayerCoderMock, playerCoderMock);
     }
 
     @Test
@@ -70,7 +70,7 @@ class GameCoderTest {
         String encodedPlayer = "encoded/player";
                 when(playerCoderMock.encode(ownPlayer, level + 1)).thenReturn(encodedPlayer);
 
-        String encoded = gameCoder.encode(game, level);
+        String encoded = clientGameCoder.encode(game, level);
 
         String expected = CoderHelper.encodeFields(level,
                 gameId,
@@ -122,7 +122,7 @@ class GameCoderTest {
                 String.valueOf(turn));
 
 
-        ClientGame decoded = gameCoder.decode(encoded, level);
+        ClientGame decoded = clientGameCoder.decode(encoded, level);
 
         ClientGame expected = new ClientGame(gameId,
                 status,

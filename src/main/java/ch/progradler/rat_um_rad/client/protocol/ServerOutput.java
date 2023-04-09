@@ -31,14 +31,15 @@ public class ServerOutput implements OutputPacketGateway {
 
     /**
      * Sends packet to the server.
+     *
      * @param packet
      * @throws IOException
      */
     @Override
-    public  void sendPacket(Packet packet) throws IOException {
+    public void sendPacket(Packet packet) throws IOException {
         // TODO: unittest
 
         String sendStr = packetCoder.encode(packet, 0);
-        StreamUtils.writeStringToStream(sendStr,outStream);
+        StreamUtils.writeStringToStream(sendStr, outStream);
     }
 }

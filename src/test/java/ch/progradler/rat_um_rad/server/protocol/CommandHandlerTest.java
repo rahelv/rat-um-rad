@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.server.protocol;
 import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
+import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -42,5 +43,35 @@ class CommandHandlerTest {
         commandHandler.handleClientCommand(packet, ipAddress);
 
         verify(mockGameService).createGame(ipAddress, requiredPlayers);
+    }
+
+    @Test
+    void handlesWaitingGamesRequest() {
+        String ipAddress = "clientA";
+        Packet packet = new Packet(Command.REQUEST_GAMES, GameStatus.WAITING_FOR_PLAYERS, ContentType.GAME_STATUS);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockGameService).getWaitingGames(ipAddress);
+    }
+
+    @Test
+    void handlesStartedGamesRequest() {
+        String ipAddress = "clientA";
+        Packet packet = new Packet(Command.REQUEST_GAMES, GameStatus.STARTED, ContentType.GAME_STATUS);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockGameService).getStartedGames(ipAddress);
+    }
+
+    @Test
+    void handlesFinishedGamesRequest() {
+        String ipAddress = "clientA";
+        Packet packet = new Packet(Command.REQUEST_GAMES, GameStatus.FINISHED, ContentType.GAME_STATUS);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockGameService).getFinishedGames(ipAddress);
     }
 }
