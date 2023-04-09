@@ -26,7 +26,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
 
     /**
      * Receives {@link Packet} from {@link ServerInputListener} sent by client. This is the implementation of the protocol.
-     *
+     * <p>
      * For more information on the protocol, read the corresponding document or read the javadoc of the
      * commands in the switch cases or the used methods in the code block for each case.
      */
@@ -46,6 +46,9 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
                 this.usernameHandler.chooseAndSendUsername(this.serverOutput);
+            }
+            case SEND_GAMES -> {
+                //TODO: implement
             }
             default -> presenter.display(packet);
         }

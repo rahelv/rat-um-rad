@@ -4,7 +4,7 @@ package ch.progradler.rat_um_rad.shared.protocol;
  * Possible commands of a packet.
  */
 public enum Command {
-    // shared commands: (sent from and to server)
+    // shared commands:
 
     SEND_CHAT,
     NEW_USER,
@@ -17,6 +17,7 @@ public enum Command {
     PONG,
     SET_USERNAME,
     CREATE_GAME,
+    REQUEST_GAMES,
 
     // server commands (sent from server to client):
     CHANGED_USERNAME,
@@ -28,6 +29,7 @@ public enum Command {
      */
     PING,
     INVALID_ACTION_WARNING,
-    INVALID_ACTION_FATAL
+    INVALID_ACTION_FATAL,
+    SEND_GAMES,
 
 }

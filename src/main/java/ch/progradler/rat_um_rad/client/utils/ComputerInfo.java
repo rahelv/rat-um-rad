@@ -1,14 +1,13 @@
 package ch.progradler.rat_um_rad.client.utils;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 public class ComputerInfo {
 
-    public ComputerInfo() {}
+    public ComputerInfo() {
+    }
 
     /**
      * returns the System username
+     *
      * @return String: system username
      */
     public String getSystemUsername() {

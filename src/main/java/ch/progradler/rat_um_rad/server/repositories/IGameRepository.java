@@ -23,6 +23,12 @@ public interface IGameRepository {
 
     int getGamesCount();
 
+    List<Game> getWaitingGames();
+
+    List<Game> getStartedGames();
+
+    List<Game> getFinishedGames();
+
     class DuplicateIdException extends Exception {
         private final String id;
 

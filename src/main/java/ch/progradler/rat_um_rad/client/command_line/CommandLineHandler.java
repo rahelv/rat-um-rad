@@ -51,8 +51,9 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
 
     /**
      * Listens for username changes, as CommandLineHandler only runs when user has set username.
+     *
      * @param evt A PropertyChangeEvent object describing the event source
-     *          and the property that has changed.
+     *            and the property that has changed.
      * @see Client (CommandLineHandler observes UsernameHandler)
      */
     @Override

@@ -45,10 +45,10 @@ public class ClientPingPongHandler {
             //TODO break up connection
             return;
         }
-        LOGGER.log(Level.forName("PINGPONG", 700),arrivedPingCounter + ". PING arrived");
+        LOGGER.log(Level.forName("PINGPONG", 700), arrivedPingCounter + ". PING arrived");
         try {
             outputPacketGateway.sendPacket(new Packet(Command.PONG, null, ContentType.NONE));
-            LOGGER.log(Level.forName("PINGPONG", 700),arrivedPingCounter + ". PONG sent");
+            LOGGER.log(Level.forName("PINGPONG", 700), arrivedPingCounter + ". PONG sent");
         } catch (IOException e) {
             e.printStackTrace();
             // TODO Exception handling

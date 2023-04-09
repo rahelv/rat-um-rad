@@ -12,11 +12,9 @@ import ch.progradler.rat_um_rad.server.services.GameService;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
 import ch.progradler.rat_um_rad.server.services.UserService;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
-import ch.progradler.rat_um_rad.shared.protocol.coder.ChatMessageCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.UsernameChangeCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.*;
 
 public class Server {
     public void start(int port) {
@@ -45,6 +43,19 @@ public class Server {
     }
 
     private static Coder<Packet> getPacketCoder() {
-        return new PacketCoder(new ChatMessageCoder(), new UsernameChangeCoder());
+        Coder<GameMap> gameMapCoder = new Coder<>() {
+            @Override
+            public String encode(GameMap object, int level) {
+                return null;
+            }
+
+            @Override
+            public GameMap decode(String encoded, int level) {
+                return null;
+            }
+        }; // TODO: implement correctly
+        return new PacketCoder(new ChatMessageCoder(),
+                new UsernameChangeCoder(),
+                new GameBaseCoder(gameMapCoder));
     }
 }

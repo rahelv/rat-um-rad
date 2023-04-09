@@ -2,6 +2,8 @@ package ch.progradler.rat_um_rad.shared.protocol.coder;
 
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -15,10 +17,12 @@ public class PacketCoder implements Coder<Packet> {
 
     private final Coder<ChatMessage> messageCoder;
     private final Coder<UsernameChange> usernameChangeCoder;
+    private final Coder<GameBase> gameBaseCoder;
 
-    public PacketCoder(Coder<ChatMessage> messageCoder, Coder<UsernameChange> usernameChangeCoder) {
+    public PacketCoder(Coder<ChatMessage> messageCoder, Coder<UsernameChange> usernameChangeCoder, Coder<GameBase> gameBaseCoder) {
         this.messageCoder = messageCoder;
         this.usernameChangeCoder = usernameChangeCoder;
+        this.gameBaseCoder = gameBaseCoder;
     }
 
     /**
@@ -75,12 +79,26 @@ public class PacketCoder implements Coder<Packet> {
             case USERNAME_CHANGE -> {
                 return usernameChangeCoder.encode((UsernameChange) content, level);
             }
+            case GAME -> {
+                // TODO: implement. User {@link ClientGameCoder}
+            }
+            case GAME_INFO_LIST -> {
+                return encodeGameInfoList((List<GameBase>) content, level);
+            }
+            case GAME_STATUS -> {
+                return ((GameStatus) content).name();
+            }
             case NONE -> {
                 return "null";
             }
         }
         // should never happen
         throw new IllegalArgumentException("Unrecognized contentType while encoding: " + contentType);
+    }
+
+    private String encodeGameInfoList(List<GameBase> games, int level) {
+        List<String> encodedGames = games.stream().map((g) -> gameBaseCoder.encode(g, level + 1)).toList();
+        return CoderHelper.encodeStringList(level, encodedGames);
     }
 
     /**
@@ -111,8 +129,21 @@ public class PacketCoder implements Coder<Packet> {
                 return usernameChangeCoder.decode(contentUnwrapped, level);
             }
 
+            case GAME -> {
+            }
+            case GAME_INFO_LIST -> {
+                return decodeGameInfoList(contentUnwrapped, level);
+            }
+            case GAME_STATUS -> {
+                return GameStatus.valueOf(contentUnwrapped);
+            }
         }
         // should never happen
         throw new IllegalArgumentException("Unrecognized contentType while decoding: " + contentType);
+    }
+
+    private List<GameBase> decodeGameInfoList(String content, int level) {
+        List<String> asStrings = CoderHelper.decodeStringList(level, content);
+        return asStrings.stream().map((encoded) -> gameBaseCoder.decode(encoded, level+1)).toList();
     }
 }

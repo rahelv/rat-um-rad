@@ -3,29 +3,29 @@ package ch.progradler.rat_um_rad.client;
 import ch.progradler.rat_um_rad.client.command_line.CommandLineHandler;
 import ch.progradler.rat_um_rad.client.command_line.InputReader;
 import ch.progradler.rat_um_rad.client.command_line.UsernameHandler;
-import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.presenter.CommandLinePresenter;
 import ch.progradler.rat_um_rad.client.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.protocol.ServerInputListener;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.protocol.ServerResponseHandler;
-import ch.progradler.rat_um_rad.shared.protocol.Packet;
-import ch.progradler.rat_um_rad.shared.protocol.coder.ChatMessageCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.UsernameChangeCoder;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
-import org.apache.logging.log4j.Logger;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
+import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.coder.*;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
 
-public class Client  {
+public class Client {
     public static final Logger LOGGER = LogManager.getLogger();
-    /** starts the client and creates a socket which tries connecting to the server on the specified host and port.
+
+    /**
+     * starts the client and creates a socket which tries connecting to the server on the specified host and port.
+     *
      * @param host: ip of the server
      * @param port: port of the server socket
      */
@@ -45,7 +45,7 @@ public class Client  {
             if (e instanceof ConnectException) {
                 LOGGER.error("Failed to connect socket. Is the server running on the same port?");
             }
-            if(e instanceof IOException) {
+            if (e instanceof IOException) {
                 LOGGER.error("Failed to connect socket");
             }
         }
@@ -53,6 +53,7 @@ public class Client  {
 
     /**
      * starts the Client Ping Pong Runner (Thread)
+     *
      * @param serverOutput
      * @return
      */
@@ -63,7 +64,9 @@ public class Client  {
         return clientPingPongRunner;
     }
 
-    /** starts the command handler in a new thread.
+    /**
+     * starts the command handler in a new thread.
+     *
      * @param serverOutput
      * @param host
      * @param usernameHandler
@@ -76,7 +79,9 @@ public class Client  {
         t.start();
     }
 
-    /** starts the ServerListener in a new thread, which listens to input from server.
+    /**
+     * starts the ServerListener in a new thread, which listens to input from server.
+     *
      * @param socket
      * @param packetCoder
      * @param usernameHandler
@@ -90,7 +95,20 @@ public class Client  {
     }
 
     private static Coder<Packet> getPacketCoder() {
-        return new PacketCoder(new ChatMessageCoder(), new UsernameChangeCoder());
+        Coder<GameMap> gameMapCoder = new Coder<>() {
+            @Override
+            public String encode(GameMap object, int level) {
+                return null;
+            }
+
+            @Override
+            public GameMap decode(String encoded, int level) {
+                return null;
+            }
+        }; // TODO: implement correctly
+        return new PacketCoder(new ChatMessageCoder(),
+                new UsernameChangeCoder(),
+                new GameBaseCoder(gameMapCoder));
     }
 }
 
