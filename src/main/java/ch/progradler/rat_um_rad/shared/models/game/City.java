@@ -16,6 +16,7 @@ public class City {
         this.name = name;
         this.point = point;
     }
+
     public String getId() {
         return id;
     }

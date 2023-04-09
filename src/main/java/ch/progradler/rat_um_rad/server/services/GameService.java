@@ -16,9 +16,10 @@ import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static ch.progradler.rat_um_rad.shared.protocol.Command.SEND_GAMES;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME_INFO_LIST;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
 
 /**
@@ -131,14 +132,20 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public List<Game> getWaitingGames() {
-        //TODO: implement
-        return null;
+    public void getWaitingGames(String ipAddress) {
+        Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
+        outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     @Override
-    public List<Game> getFinishedGames() {
-        //TODO: implement
-        return null;
+    public void getStartedGames(String ipAddress) {
+        Packet packet = new Packet(SEND_GAMES, gameRepository.getStartedGames(), GAME_INFO_LIST);
+        outputPacketGateway.sendPacket(ipAddress, packet);
+    }
+
+    @Override
+    public void getFinishedGames(String ipAddress) {
+        Packet packet = new Packet(SEND_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST);
+        outputPacketGateway.sendPacket(ipAddress, packet);
     }
 }

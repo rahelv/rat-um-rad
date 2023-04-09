@@ -12,13 +12,13 @@ import java.util.List;
 /**
  * Can en- and decode a {@link ClientGame}
  */
-public class GameCoder implements Coder<ClientGame> {
+public class ClientGameCoder implements Coder<ClientGame> {
 
     private final Coder<GameMap> gameMapCoder;
     private final Coder<VisiblePlayer> visiblePlayerCoder;
     private final Coder<Player> playerCoder;
 
-    public GameCoder(Coder<GameMap> gameMapCoder, Coder<VisiblePlayer> visiblePlayerCoder, Coder<Player> playerCoder) {
+    public ClientGameCoder(Coder<GameMap> gameMapCoder, Coder<VisiblePlayer> visiblePlayerCoder, Coder<Player> playerCoder) {
         this.gameMapCoder = gameMapCoder;
         this.visiblePlayerCoder = visiblePlayerCoder;
         this.playerCoder = playerCoder;

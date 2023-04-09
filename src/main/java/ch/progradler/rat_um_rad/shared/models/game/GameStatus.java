@@ -6,9 +6,9 @@ package ch.progradler.rat_um_rad.shared.models.game;
 public enum GameStatus {
     WAITING_FOR_PLAYERS,
     /**
-     * When separate the games into open, started and finished, PREPARATION falls under started.
+     * When the games are separated into open, started and finished, PREPARATION falls under started.
      */
     PREPARATION,
     STARTED,
-    FINISHED
+    FINISHED,
 }

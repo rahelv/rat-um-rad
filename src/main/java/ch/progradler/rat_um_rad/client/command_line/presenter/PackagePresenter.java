@@ -6,5 +6,5 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
  * Interface which allows correct displaying of packet.
  */
 public interface PackagePresenter {
-     void display(Packet packet);
+    void display(Packet packet);
 }

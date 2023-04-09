@@ -27,13 +27,13 @@ public class InputReader {
      * Displays prompt to user and takes user input.
      *
      * @param prompt: Is displayed to user
-     * @param strip: Whether to strip input before returning.
+     * @param strip:  Whether to strip input before returning.
      * @return String: User Input
      */
     public String readInputWithPrompt(String prompt, boolean strip) {
         System.out.println(prompt);
         String input = scanner.nextLine();
-        if(input == null) {
+        if (input == null) {
             return "";
         }
         if (strip) return input.strip();

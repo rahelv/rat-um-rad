@@ -69,6 +69,9 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                     }
                 }
             }
+            case SEND_GAMES -> {
+                //TODO: implement
+            }
             default -> presenter.display(packet);
         }
     }

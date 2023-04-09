@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
+import ch.progradler.rat_um_rad.client.Client;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -7,7 +8,11 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
+
+import static ch.progradler.rat_um_rad.client.command_line.UsernameHandler.PROPERTY_NAME_USERNAME;
 
 /**
  * Contains business logic by handling user input and possibly sending packet to server.
@@ -27,7 +32,9 @@ public class CommandLineHandler implements Runnable {
     }
 
     /**
-     * starts the CommandLineHandler.
+     * starts the CommandLineHandler. Condition: username has to be sent to the server, waits until username is set
+     *
+     * @see UsernameHandler#addUsernameObserver(PropertyChangeListener)
      */
     @Override
     public void run() {

@@ -11,10 +11,11 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 public class CommandLinePresenter implements PackagePresenter {
     /**
      * chooses how to display packet depending on command.
+     *
      * @param packet
      */
     @Override
-    public  void display(Packet packet) {
+    public void display(Packet packet) {
         Object content = packet.getContent();
         ContentType contentType = packet.getContentType();
 
@@ -45,11 +46,13 @@ public class CommandLinePresenter implements PackagePresenter {
         }
     }
 
-    /** decides which message to display depending on the result of the username change.
+    /**
+     * decides which message to display depending on the result of the username change.
+     *
      * @param usernameChange
      */
     private void displayUsernameChangeResult(UsernameChange usernameChange) {
-        if(!usernameChange.getOldName().equals(usernameChange.getNewName())) { //TODO: here oldname is the chosenname by user and new name is the name set by server
+        if (!usernameChange.getOldName().equals(usernameChange.getNewName())) { //TODO: here oldname is the chosenname by user and new name is the name set by server
             displayChangedUsernameAgainstUserChoice(usernameChange);
         } else {
             displayConfirmChangedUsername(usernameChange);
@@ -64,14 +67,18 @@ public class CommandLinePresenter implements PackagePresenter {
         System.out.println("User " + change.getOldName() + " changed name to " + change.getNewName());
     }
 
-    /** displays username change after username is changed. this method is called when the username confirmed by server matches the one chosen by user.
+    /**
+     * displays username change after username is changed. this method is called when the username confirmed by server matches the one chosen by user.
+     *
      * @param usernameChange
      */
     private void displayConfirmChangedUsername(UsernameChange usernameChange) {
         System.out.println("Your username has been changed to: " + usernameChange.getNewName());
     }
 
-    /** displays username change after username is changed, when the server didn't take the username chosen by the user.
+    /**
+     * displays username change after username is changed, when the server didn't take the username chosen by the user.
+     *
      * @param usernameChange
      */
     private void displayChangedUsernameAgainstUserChoice(UsernameChange usernameChange) {

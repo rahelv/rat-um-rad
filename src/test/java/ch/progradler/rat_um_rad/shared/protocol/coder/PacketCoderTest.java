@@ -2,6 +2,9 @@ package ch.progradler.rat_um_rad.shared.protocol.coder;
 
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
+import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -11,6 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -18,15 +26,16 @@ import static org.mockito.Mockito.when;
 public class PacketCoderTest {
     @Mock
     Coder<ChatMessage> messageCoderMock;
-
     @Mock
     Coder<UsernameChange> usernameChangeCoder;
+    @Mock
+    Coder<GameBase> gameBaseCoder;
 
     private PacketCoder packetCoder;
 
     @BeforeEach
     public void initPacketCoder() {
-        packetCoder = new PacketCoder(messageCoderMock, usernameChangeCoder);
+        packetCoder = new PacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder);
     }
 
     @Test
@@ -200,6 +209,121 @@ public class PacketCoderTest {
 
         // assert
         Packet expected = new Packet(command, content, contentType);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void encodeWorksForGameStatus() {
+        // prepare
+        int level = 0;
+
+        GameStatus content = GameStatus.FINISHED;
+
+        Command command = Command.REQUEST_GAMES;
+        ContentType contentType = ContentType.GAME_STATUS;
+
+
+        Packet packet = new Packet(command, content, contentType);
+
+        // execute
+        String result = packetCoder.encode(packet, level);
+
+        // assert
+        String expected = CoderHelper.encodeFields(level,
+                command.name(),
+                "{" + content.name() + "}",
+                contentType.name());
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void decodeWorksForGameStatus() {
+        // prepare
+        int level = 0;
+
+        GameStatus content = GameStatus.FINISHED;
+
+        Command command = Command.REQUEST_GAMES;
+        ContentType contentType = ContentType.GAME_STATUS;
+
+        String packetEncoded = CoderHelper.encodeFields(level, command.name(),
+                "{" + content.name() + "}",
+                contentType.name());
+
+        // execute
+        Packet result = packetCoder.decode(packetEncoded, level);
+
+        // assert
+        Packet expected = new Packet(command, content, contentType);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void encodeWorksForGameInfoList() {
+        // prepare
+        int level = 0;
+
+        Date createdAt1 = new Date(2022, Calendar.JUNE, 4, 9, 44, 50);
+        Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
+
+        List<GameBase> content = Arrays.asList(
+                new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3),
+                new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0)
+        );
+
+        Command command = Command.SEND_GAMES;
+        ContentType contentType = ContentType.GAME_INFO_LIST;
+
+
+        Packet packet = new Packet(command, content, contentType);
+
+        // execute
+        String result = packetCoder.encode(packet, level);
+
+        String expectedContent = CoderHelper.encodeStringList(level + 1,
+                content.stream().map((g) -> gameBaseCoder.encode(g, level + 2)).toList());
+        // assert
+        String expected = CoderHelper.encodeFields(level,
+                command.name(),
+                "{" + expectedContent + "}",
+                contentType.name());
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void decodeWorksForGameInfoList() {
+        // prepare
+        int level = 0;
+
+        Date createdAt1 = new Date(2022, Calendar.JUNE, 4, 9, 44, 50);
+        Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
+
+        GameBase game1 = new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3);
+        GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0);
+
+
+        Command command = Command.SEND_GAMES;
+        ContentType contentType = ContentType.GAME_INFO_LIST;
+
+        String game1Encoded = "game1Encoded";
+        String game2Encoded = "game2Encoded";
+
+        String packetEncoded = CoderHelper.encodeFields(level, command.name(),
+                "{" + CoderHelper.encodeStringList(level + 1, Arrays.asList(game1Encoded, game2Encoded)) + "}",
+                contentType.name());
+
+        when(gameBaseCoder.decode(game1Encoded, level + 2)).thenReturn(game1);
+        when(gameBaseCoder.decode(game2Encoded, level + 2)).thenReturn(game2);
+        
+        // execute
+        Packet result = packetCoder.decode(packetEncoded, level);
+
+        // assert
+        Packet expected = new Packet(command, Arrays.asList(game1, game2), contentType);
 
         assertEquals(expected, result);
     }

@@ -28,6 +28,7 @@ public class UserService implements IUserService {
 
     /**
      * Constructor for Testing purposes. TODO: decide if usernamevalidator should be given as parameter in normal constructor.
+     *
      * @param outputPacketGateway
      * @param userRepository
      * @param usernameValidator
@@ -42,7 +43,7 @@ public class UserService implements IUserService {
     public void handleNewUser(String username, String ipAddress) {
         System.out.println("handleNewUser angekommen");
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
-        if(!usernameValidator.isUsernameValid(chosenUsername)) {
+        if (!usernameValidator.isUsernameValid(chosenUsername)) {
             Packet errorPacket = new Packet(Command.INVALID_ACTION_FATAL, "Username invalid. Please try again", ContentType.STRING); //TODO: on client, user has to enter username again
             outputPacketGateway.sendPacket(ipAddress, errorPacket);
             return;
@@ -58,7 +59,7 @@ public class UserService implements IUserService {
     @Override
     public void updateUsername(String username, String ipAddress) {
         String oldName = userRepository.getUsername(ipAddress);
-        if(!usernameValidator.isUsernameValid(username)) {
+        if (!usernameValidator.isUsernameValid(username)) {
             Packet errorPacket = new Packet(Command.INVALID_ACTION_WARNING, "The chosen username was invalid. Please try again", ContentType.STRING); //on client: user has to trigger usernamechange dialog again
             outputPacketGateway.sendPacket(ipAddress, errorPacket);
             return;
