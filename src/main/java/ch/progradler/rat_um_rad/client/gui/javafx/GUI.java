@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class GUI extends Application {
         this.window = primaryStage;
 
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/fxmlView/mainPage.fxml"));
+        loader.setLocation(getClass().getResource("/views/mainPage.fxml"));
         try {
             Parent content = loader.load();
             this.mainScene = new Scene(content, 640, 480);
@@ -42,15 +43,16 @@ public class GUI extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         showUsernameChangeDialog();
     }
 
     private void showUsernameChangeDialog() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlView/changeusernameDialog.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/views/changeUsernameDialog.fxml"));
 
         try {
-            this.window.setScene(new Scene(loader.load()));
+            AnchorPane root = loader.load();
+            this.window.setScene(new Scene(root));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,7 +65,7 @@ public class GUI extends Application {
     }
 
     private void showStartupPage() { //TODO: call this method instead of the one in UsernameChangeController
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlView/mainPage.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/mainPage.fxml"));
 
         try {
             this.window.setScene(new Scene(loader.load()));

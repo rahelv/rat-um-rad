@@ -1,8 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
-import ch.progradler.rat_um_rad.client.gui.javafx.GUI;
-import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
@@ -14,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -24,7 +21,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class UsernameChangeController implements Initializable, IListener<UsernameChange> {
-    Stage window;
+    private Stage stage;
     @FXML
     private Label usernameRulesLabel;
     @FXML
@@ -43,7 +40,7 @@ public class UsernameChangeController implements Initializable, IListener<Userna
     }
 
     public void initData(UsernameChangeModel usernameChangeModel, Stage window) {
-        this.window = window;
+        this.stage = window;
         this.usernameChangeModel = usernameChangeModel;
 
         usernameRulesLabel.setText(usernameChangeModel.getUsernameRules());
@@ -88,14 +85,14 @@ public class UsernameChangeController implements Initializable, IListener<Userna
     }
 
     private void showStartupPage() { //TODO: move this method to class GUI
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlView/mainPage.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/game/gameView.fxml"));
 
         try {
-            this.window.setScene(new Scene(loader.load()));
+            this.stage.setScene(new Scene(loader.load()));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        this.window.show();
+        this.stage.show();
     }
 }

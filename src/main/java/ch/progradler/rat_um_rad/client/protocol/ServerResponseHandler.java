@@ -2,15 +2,16 @@ package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
-import ch.progradler.rat_um_rad.client.gui.javafx.Game.chatRoom.ChatRoomController;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
-import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -87,11 +88,18 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                             listener.serverResponseReceived((GameBase) content);
                         }
                     }
-                    //Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
                 }
-
+            }
+            case NEW_USER -> {
+                String content = (String) packet.getContent();
+                for(IListener listener: listeners) {
+                    if(listener instanceof ActivityController) {
+                        listener.serverResponseReceived(content + " entered the Game");
+                    }
+                }
             }
             default -> presenter.display(packet);
+            //TODO: send Activity to ActivityController when ein Spielzug passiert
         }
     }
 }

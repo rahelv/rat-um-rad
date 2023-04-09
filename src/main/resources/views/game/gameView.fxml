@@ -14,7 +14,8 @@
             <Font name="Arial Black" size="36.0" />
          </font>
       </Label>
+        <fx:include source="../mainMenu.fxml" />
         <fx:include source="chatRoomView.fxml" />
+        <fx:include source="activitiesList.fxml" />
     </VBox>
-     <fx:include source="mainMenu.fxml" />
 </AnchorPane>
