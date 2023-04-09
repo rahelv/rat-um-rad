@@ -5,9 +5,7 @@ import ch.progradler.rat_um_rad.client.models.GameInfo;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.HBox;
+
 
 public class LobbyModel {
     //Was braucht es hier?

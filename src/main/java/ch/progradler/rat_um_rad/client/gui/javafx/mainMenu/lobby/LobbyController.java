@@ -1,8 +1,10 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.lobby;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
@@ -20,6 +22,7 @@ public class LobbyController implements Initializable {
 
     private LobbyModel lobbyModel;
 
+
     //private ListView<String> listView;
 
     public LobbyController() {
@@ -29,10 +32,57 @@ public class LobbyController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         //this.openGamesListView.getItems().addAll(this.lobbyModel.getGameNamesList());
         this.openGamesListView.setItems(this.lobbyModel.getGameNamesList());
-        openGamesListView.setCellFactory(param -> new Cell());
-        //each item of listView should have 2 buttons:list players and join game
-    }
 
+        //each item of listView should have 2 buttons:list players and join game
+        openGamesListView.setCellFactory(param -> new CustomCell());
+
+
+        //populate the ListView with HBox
+        for(String item : lobbyModel.getGameNamesList()){
+            openGamesListView.setCellFactory(param -> new CustomCell());
+        }
+    }
+    static class CustomCell extends ListCell<String> {
+        HBox hbox;
+        Label nameLabel;
+        Button listPlayersBtn;
+        Button enterGameBtn;
+        public CustomCell() {
+            super();
+            hbox = new HBox();
+            nameLabel = new Label();
+            listPlayersBtn = new Button("list");
+            listPlayersBtn.setAlignment(Pos.CENTER_RIGHT);
+            enterGameBtn = new Button("join");
+            enterGameBtn.setAlignment(Pos.CENTER_RIGHT);
+            hbox.getChildren().addAll(nameLabel, listPlayersBtn, enterGameBtn);
+            setText(null);
+            //add button actions
+            listPlayersBtn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    //do something
+                }
+            });
+            enterGameBtn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    //do somthing
+                }
+            });
+        }
+        @Override
+        protected void updateItem(String item,boolean empty){
+            super.updateItem(item,empty);
+            setEditable(false);
+            if(item != null){
+                nameLabel.setText(item);
+                setGraphic(hbox);
+            }else{
+                setGraphic(null);
+            }
+        }
+    }
 
     @FXML
     public void showAllGamesAction(ActionEvent event){
@@ -50,28 +100,5 @@ public class LobbyController implements Initializable {
     @FXML
     public void joinAction(ActionEvent actionEvent) {
     }
-    static class Cell extends ListCell<String> { //to be continued,nicht so sicher
-        HBox hbox = new HBox();
-        Label nameLabel = new Label();
-        Button listPlayers = new Button("list");
-        Button enterGame = new Button("join");
-        public Cell() {
-            super();
-            hbox.getChildren().addAll(listPlayers,enterGame);
-            //add button actions
-        }
-        @Override
-        protected void updateItem(String name,boolean empty){
-            super.updateItem(name,empty);
-            setText(null);
-            setGraphic(null);
-            if(name != null && !empty){
-                nameLabel.setText(name);
-                setGraphic(hbox);
-            }
-        }
-    }
-    public void listPlayersInGame(){
 
-    }
 }
