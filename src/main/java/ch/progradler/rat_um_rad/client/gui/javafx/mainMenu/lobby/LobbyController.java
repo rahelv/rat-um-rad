@@ -47,7 +47,18 @@ public class LobbyController implements Initializable {
 
     @FXML
     public void showAllGamesAction(ActionEvent event){
-
+        System.out.println("show all games");
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/fxmlView/showAllGamesView.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Rat um Rad - show all games");
+            Scene scene = new Scene(root, 700, 600);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.out.println("load failed");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -67,8 +78,8 @@ public class LobbyController implements Initializable {
             Scene scene = new Scene(root, 600, 400);
             stage.setScene(scene);
             stage.show();
-
         } catch (Exception e) {
+            System.out.println("load failed");
             e.printStackTrace();
         }
 
