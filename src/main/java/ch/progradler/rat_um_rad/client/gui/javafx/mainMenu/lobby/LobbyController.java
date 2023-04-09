@@ -6,20 +6,30 @@ import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class LobbyController implements Initializable {
-    private IGameService gameService;
-    private LobbyModel lobbyModel;
+    public Button showAllGamesButton;
+    public Button leaveLobbyButton;
+    public Button createGameButton;
+    public Button joinButton;
     public ListView<GameBase> openGamesListView;
     public TextArea currentPlayersTextArea;
     public TextField gameIdTextField;
+
+    private IGameService gameService;
+    private LobbyModel lobbyModel;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.gameService = new GameService();
@@ -51,9 +61,17 @@ public class LobbyController implements Initializable {
         System.out.println("create game");
         try {
             this.gameService.createGame(5);
+            Parent root = FXMLLoader.load(getClass().getResource("/fxmlView/createGameView.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Rat um Rad - create game");
+            Scene scene = new Scene(root, 600, 400);
+            stage.setScene(scene);
+            stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     @FXML
