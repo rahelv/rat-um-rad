@@ -7,6 +7,7 @@ import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -51,7 +52,6 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 clientPingPongRunner.pingArrived();
             }
             case USERNAME_CONFIRMED -> {
-                System.out.println("angekommen");
                 UsernameChange change = (UsernameChange) packet.getContent();
                 usernameChangeController.setConfirmedUsername(change.getNewName());
             }
@@ -64,13 +64,21 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 if (contentType == ContentType.CHAT_MESSAGE) {
-                    for(IListener listener : listeners) {
-                        listener.chatMessageReceived((ChatMessage) content);
+                    for(IListener<ChatMessage> listener : listeners) {
+                        listener.serverResponseReceived((ChatMessage) content);
                     }
                 }
             }
             case SEND_GAMES -> {
-                //TODO: implement
+                Object content = packet.getContent();
+                ContentType contentType = packet.getContentType();
+                if(contentType == ContentType.GAME_INFO_LIST) {
+                    for(IListener<GameBase> listener: listeners) {
+                        listener.serverResponseReceived((GameBase) content);
+                    }
+                    //Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
+                }
+
             }
             default -> presenter.display(packet);
         }

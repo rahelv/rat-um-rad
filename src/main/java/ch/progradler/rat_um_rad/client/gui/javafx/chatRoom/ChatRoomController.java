@@ -16,7 +16,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 
-public class ChatRoomController implements Initializable, IListener {
+public class ChatRoomController implements Initializable, IListener<ChatMessage> {
     private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
     public Button sendButton;
@@ -28,7 +28,6 @@ public class ChatRoomController implements Initializable, IListener {
     public void sendChatMessageAction(ActionEvent event) {
         try {
             userService.sendChatMessageToServer(chatRoomModel.getTextInputContent());
-            System.out.println("trying to send message " + chatRoomModel.getTextInputContent());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,7 +55,7 @@ public class ChatRoomController implements Initializable, IListener {
     }
 
     @Override
-    public void chatMessageReceived(ChatMessage chatMessage) {
+    public void serverResponseReceived(ChatMessage chatMessage) {
         Platform.runLater(() -> {
             chatRoomModel.addChatMessageToList(chatMessage);
         });
