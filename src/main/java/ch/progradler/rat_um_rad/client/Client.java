@@ -1,21 +1,21 @@
 package ch.progradler.rat_um_rad.client;
 
-import ch.progradler.rat_um_rad.client.command_line.CommandLineHandler;
-import ch.progradler.rat_um_rad.client.command_line.InputReader;
-import ch.progradler.rat_um_rad.client.command_line.UsernameHandler;
-import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.client.command_line.presenter.CommandLinePresenter;
+import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
+import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
-import ch.progradler.rat_um_rad.client.presenter.CommandLinePresenter;
-import ch.progradler.rat_um_rad.client.presenter.PackagePresenter;
+import ch.progradler.rat_um_rad.client.gui.javafx.GUI;
 import ch.progradler.rat_um_rad.client.protocol.ServerInputListener;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.protocol.ServerResponseHandler;
+import ch.progradler.rat_um_rad.client.services.IUserService;
+import ch.progradler.rat_um_rad.client.services.UserService;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
-import ch.progradler.rat_um_rad.shared.protocol.coder.ChatMessageCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.UsernameChangeCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.*;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
+import javafx.application.Application;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -60,7 +60,7 @@ public class Client {
     }
 
     /**
-     * starts the Client Ping Pong Runner (Thread)
+     * starts the Client Ping-Pong Runner (Thread)
      *
      * @param serverOutput
      * @return

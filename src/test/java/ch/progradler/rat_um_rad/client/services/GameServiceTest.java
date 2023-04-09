@@ -24,7 +24,7 @@ class GameServiceTest {
 
     @BeforeEach
     void setUp() {
-        gameService = new GameService(mockOutputPacketGateway);
+        gameService = new GameService();
     }
 
     @Test

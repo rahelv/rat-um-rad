@@ -43,7 +43,6 @@ public class UsernameChangeController {
     }
 
     public void sendChosenUsernameToServer() {
-        System.out.println("username sent to server");
         try {
             this.userService.sendChosenUsernameToServer(this.usernameChangeModel.getChosenUsername());
         } catch (IOException e) {

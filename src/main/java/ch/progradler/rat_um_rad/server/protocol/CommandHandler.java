@@ -33,11 +33,9 @@ public class CommandHandler implements InputPacketGateway {
 
         switch (packet.getCommand()) {
             case NEW_USER -> {
-                System.out.println("NEW_USER angekommen");
                 userService.handleNewUser((String) packet.getContent(), ipAddress);
             }
             case SEND_CHAT -> {
-                System.out.println("message vom user angekommen beim server");
                 userService.handleMessageFromUser((String) packet.getContent(), ipAddress);
             }
             case USER_DISCONNECTED -> {
