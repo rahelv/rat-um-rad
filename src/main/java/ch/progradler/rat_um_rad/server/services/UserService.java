@@ -110,4 +110,10 @@ public class UserService implements IUserService {
         List<String> excludeFromBroadCast = Collections.singletonList(userIpAddress);
         outputPacketGateway.broadCast(packet, excludeFromBroadCast);
     }
+
+    @Override
+    public void requestOnlinePlayers(String ipAddress) {
+        List<String> listOfUsernames = userRepository.getAllUsernames();
+        outputPacketGateway.sendPacket(ipAddress, new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, listOfUsernames, ContentType.STRING_LIST));
+    }
 }

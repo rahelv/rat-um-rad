@@ -4,7 +4,7 @@ package ch.progradler.rat_um_rad.shared.protocol;
  * Possible commands of a packet.
  */
 public enum Command {
-    // shared commands:
+    // shared commands: (sent from and to server)
 
     SEND_BROADCAST_CHAT,
     SEND_WHISPER_CHAT,
@@ -19,12 +19,14 @@ public enum Command {
     SET_USERNAME,
     CREATE_GAME,
     REQUEST_GAMES,
+    REQUEST_ALL_CONNECTED_PLAYERS,
 
     // server commands (sent from server to client):
     CHANGED_USERNAME,
     USERNAME_CONFIRMED,
     USER_DISCONNECTED,
     GAME_CREATED,
+    SEND_ALL_CONNECTED_PLAYERS,
     /**
      * Is regularly sent from server to client in order to detect connection losses. Expects the client to send back a PONG command.
      */

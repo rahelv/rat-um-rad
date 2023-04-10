@@ -40,4 +40,10 @@ public class UserService implements IUserService {
                 ContentType.CHAT_MESSAGE);
         outputPacketGateway.sendPacket(packet);
     }
+
+    @Override
+    public void requestOnlinePlayers() throws IOException {
+        Packet packet = new Packet(Command.REQUEST_ALL_CONNECTED_PLAYERS, null, ContentType.NONE);
+        outputPacketGateway.sendPacket(packet);
+    }
 }

@@ -3,6 +3,8 @@ package ch.progradler.rat_um_rad.server.repositories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserRepositoryTest {
@@ -37,6 +39,17 @@ public class UserRepositoryTest {
         assertEquals(2, userRepository.getUserCount());
         userRepository.updateUsername("new user name 2", IP_ADDRESS_2);  // does nothing
         assertEquals(2, userRepository.getUserCount());
+    }
+
+    @Test
+    void getAllUsernamesTest() {
+        List<String> expected = Arrays.asList(NAME_1, NAME_2);
+        List<String> result = userRepository.getAllUsernames();
+
+        Collections.sort(result);
+        Collections.sort(expected);
+
+        assertEquals(expected, result);
     }
 
     @Test

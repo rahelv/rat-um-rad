@@ -72,6 +72,16 @@ class CommandHandlerTest {
     }
 
     @Test
+    void handlesAllConnectedPlayersRequest() {
+        String ipAddress = "clientA";
+        Packet packet = new Packet(Command.REQUEST_ALL_CONNECTED_PLAYERS, null, ContentType.NONE);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockUserService).requestOnlinePlayers(ipAddress);
+    }
+
+    @Test
     void handlesWaitingGamesRequest() {
         String ipAddress = "clientA";
         Packet packet = new Packet(Command.REQUEST_GAMES, GameStatus.WAITING_FOR_PLAYERS, ContentType.GAME_STATUS);

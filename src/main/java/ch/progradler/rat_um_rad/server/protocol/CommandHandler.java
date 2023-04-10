@@ -57,6 +57,9 @@ public class CommandHandler implements InputPacketGateway {
                 int requiredPlayerCount = (int) packet.getContent();
                 gameService.createGame(ipAddress, requiredPlayerCount);
             }
+            case REQUEST_ALL_CONNECTED_PLAYERS -> {
+                userService.requestOnlinePlayers(ipAddress);
+            }
             case REQUEST_GAMES -> {
                 GameStatus status = (GameStatus) packet.getContent();
                 switch (status) {

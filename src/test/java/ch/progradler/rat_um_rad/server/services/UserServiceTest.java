@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -287,5 +289,31 @@ public class UserServiceTest {
         when(userRepositoryMock.hasDuplicate("rahel4")).thenReturn(true);
 
         assertEquals("rahel5", userService.checkUsernameAndSuggestAlternative("rahel"));
+    }
+
+    @Test
+    void requestOnlinePlayersTest() {
+        List<String> names = new LinkedList<String>();
+        names.add("name1");
+        names.add("name2");
+        when(userRepositoryMock.getAllUsernames()).thenReturn(names);
+
+        String ipAddress = "ipAddressA";
+        Packet packet = new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, names, ContentType.STRING_LIST);
+
+        userService.requestOnlinePlayers(ipAddress);
+        verify(outputPacketGatewayMock).sendPacket(ipAddress, packet);
+    }
+
+    @Test
+    void requestOnlinePlayersWithEmptyNamelistTest() {
+        List<String> names = new LinkedList<>();
+        when(userRepositoryMock.getAllUsernames()).thenReturn(names);
+
+        String ipAddress = "ipAddressA";
+        Packet packet = new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, names, ContentType.STRING_LIST);
+
+        userService.requestOnlinePlayers(ipAddress);
+        verify(outputPacketGatewayMock).sendPacket(ipAddress, packet);
     }
 }
