@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
@@ -92,6 +93,9 @@ public class UsernameChangeController implements Initializable, IListener<Userna
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        StartupPageController controller = loader.getController();
+        controller.initData(this.usernameChangeModel, this.stage);
 
         this.stage.show();
     }

@@ -15,7 +15,7 @@
          </font>
       </Label>
         <HBox prefHeight="14.0" prefWidth="608.0">
-            <Label prefHeight="28.0" prefWidth="236.0" text="Hallo _username_" />
+            <Label prefHeight="28.0" prefWidth="236.0" fx:id="welcomeLabel"/>
             <Button onAction="#changeUsernameButtonTriggered" text="Change username" />
         </HBox>
         <fx:include source="lobbyView.fxml" />

@@ -11,7 +11,6 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController">
-        <fx:include source="mainMenu.fxml" />
    <Button fx:id="showAllGamesButton" layoutX="59.0" layoutY="366.0" mnemonicParsing="false" onAction="#showAllGamesAction" prefHeight="23.0" prefWidth="121.0" text="show all games" textFill="#4d5ad7" />
    <Label alignment="CENTER" layoutX="25.0" layoutY="134.0" prefHeight="26.0" prefWidth="188.0" text="Lobby(open games)">
       <font>
