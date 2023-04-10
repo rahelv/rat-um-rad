@@ -10,6 +10,8 @@ import ch.progradler.rat_um_rad.client.protocol.ServerInputListener;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.protocol.ServerResponseHandler;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
+import ch.progradler.rat_um_rad.client.services.IUserService;
+import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.*;
@@ -38,8 +40,9 @@ public class Client {
             ServerOutput serverOutput = new ServerOutput(socket, packetCoder);
             UsernameHandler usernameHandler = new UsernameHandler();
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
-            startCommandHandler(serverOutput, host, usernameHandler);
-            startServerListener(socket, packetCoder, clientPingPongRunner, usernameHandler, serverOutput);
+            IUserService userService = new UserService(serverOutput);
+            startCommandHandler(userService, host, usernameHandler);
+            startServerListener(socket, packetCoder, clientPingPongRunner, usernameHandler, userService);
         } catch (Exception e) {
             e.printStackTrace();
             if (e instanceof ConnectException) {
@@ -67,13 +70,13 @@ public class Client {
     /**
      * starts the command handler in a new thread.
      *
-     * @param serverOutput
+     * @param userService
      * @param host
      * @param usernameHandler
      */
-    private void startCommandHandler(ServerOutput serverOutput, String host, UsernameHandler usernameHandler) {
+    private void startCommandHandler(IUserService userService, String host, UsernameHandler usernameHandler) {
         InputReader inputReader = new InputReader();
-        CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, serverOutput, host, usernameHandler);
+        CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, userService, host, usernameHandler);
         usernameHandler.addUsernameObserver(commandLineHandler);
         Thread t = new Thread(commandLineHandler);
         t.start();
@@ -86,9 +89,9 @@ public class Client {
      * @param packetCoder
      * @param usernameHandler
      */
-    private void startServerListener(Socket socket, Coder<Packet> packetCoder, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler, ServerOutput serverOutput) {
+    private void startServerListener(Socket socket, Coder<Packet> packetCoder, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler, IUserService userService) {
         PackagePresenter presenter = new CommandLinePresenter();
-        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner, usernameHandler, serverOutput);
+        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner, usernameHandler, userService);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
         Thread t = new Thread(listener);
         t.start();

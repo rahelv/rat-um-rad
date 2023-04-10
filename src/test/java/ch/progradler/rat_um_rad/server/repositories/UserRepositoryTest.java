@@ -57,6 +57,11 @@ public class UserRepositoryTest {
     }
 
     @Test
+    void getIpAddress() {
+        assertEquals(IP_ADDRESS_2, userRepository.getIpAddress(NAME_2));
+    }
+
+    @Test
     void removeUsername() {
         assertEquals(NAME_1, userRepository.getUsername(IP_ADDRESS_1));
         userRepository.removeUsername(IP_ADDRESS_1);

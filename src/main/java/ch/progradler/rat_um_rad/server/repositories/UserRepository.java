@@ -24,6 +24,14 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
+    public String getIpAddress(String username) {
+        for (Map.Entry<String, String> entry : names.entrySet()) {
+            if (entry.getValue().equals(username)) return entry.getKey();
+        }
+        return null;
+    }
+
+    @Override
     public void updateUsername(String username, String ipAddress) {
         names.put(ipAddress, username);
     }
