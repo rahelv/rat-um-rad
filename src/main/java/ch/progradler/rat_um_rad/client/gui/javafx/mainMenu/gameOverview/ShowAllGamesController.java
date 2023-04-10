@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.lobby;
+package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.gameOverview;
 
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;

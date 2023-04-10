@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.lobby;
+package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.createGame;
 
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import javafx.event.ActionEvent;
