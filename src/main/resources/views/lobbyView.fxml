@@ -7,10 +7,9 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController">
+<AnchorPane pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController">
    <Button fx:id="showAllGamesButton" layoutX="59.0" layoutY="366.0" mnemonicParsing="false" onAction="#showAllGamesAction" prefHeight="23.0" prefWidth="121.0" text="show all games" textFill="#4d5ad7" />
    <Label alignment="CENTER" layoutX="25.0" layoutY="134.0" prefHeight="26.0" prefWidth="188.0" text="Lobby(open games)">
       <font>
@@ -18,8 +17,8 @@
       </font>
    </Label>
    <Button fx:id="leaveLobbyButton" layoutX="505.0" layoutY="1.0" onAction="#leaveLobbyAction" prefHeight="26.0" prefWidth="95.0" text="leave lobby" />
-   <Button fx:id="createGameButton" layoutX="236.0" layoutY="160.0" onAction="#createGameAction" prefHeight="26.0" prefWidth="102.0" style="-fx-background-color: Blue;" text="create game" textFill="WHITE" />
-   <TextArea fx:id="currentPlayersTextArea" layoutX="361.0" layoutY="161.0" prefHeight="82.0" prefWidth="200.0" text="current online players : 15" />
+   <Button fx:id="createGameButton" layoutX="247.0" layoutY="160.0" onAction="#createGameAction" prefHeight="26.0" prefWidth="87.0" style="-fx-background-color: Blue;" text="create game" textFill="WHITE" />
+   <TextArea fx:id="currentPlayersTextArea" layoutX="381.0" layoutY="161.0" prefHeight="63.0" prefWidth="188.0" text="current online players : 15" />
    <Label layoutX="236.0" layoutY="266.0" prefHeight="26.0" prefWidth="140.0" text="join with game ID : ">
       <font>
          <Font name="Arial Bold" size="13.0" />
@@ -27,8 +26,7 @@
    </Label>
    <TextField fx:id="gameIdTextField" layoutX="236.0" layoutY="291.0" promptText="game ID" />
    <Button fx:id="joinButton" layoutX="414.0" layoutY="292.0" mnemonicParsing="false" onAction="#joinGameAction" style="-fx-background-color: blue;" text="join" textFill="WHITE" />
-   <HBox layoutY="70.0" prefHeight="54.0" prefWidth="361.0" />
-   <ScrollPane layoutX="19.0" layoutY="160.0" prefHeight="200.0" prefWidth="200.0">
+   <ScrollPane layoutX="19.0" layoutY="160.0" pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
       <content>
          <ListView fx:id="openGamesListView" prefHeight="201.0" prefWidth="188.0" />
       </content>
