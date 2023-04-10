@@ -35,7 +35,7 @@ public class CommandLinePresenter implements PackagePresenter {
             case USER_DISCONNECTED -> {
                 displayUserDisconnected((String) content);
             }
-            case SEND_CHAT -> {
+            case SEND_BROADCAST_CHAT -> {
                 if (contentType == ContentType.CHAT_MESSAGE) {
                     displayChatMessage((ChatMessage) content);
                 }

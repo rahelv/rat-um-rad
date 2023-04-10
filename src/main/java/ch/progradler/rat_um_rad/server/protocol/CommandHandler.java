@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.InputPacketGateway;
 import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
+import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -32,11 +33,16 @@ public class CommandHandler implements InputPacketGateway {
         // TODO: unittest
 
         switch (packet.getCommand()) {
+            case SEND_WHISPER_CHAT -> {
+                ChatMessage chatMessage = (ChatMessage) packet.getContent();
+                userService.handleWhisperMessageFromUser(chatMessage.getMessage(),
+                        chatMessage.getUsername(), ipAddress);
+            }
             case NEW_USER -> {
                 userService.handleNewUser((String) packet.getContent(), ipAddress);
             }
-            case SEND_CHAT -> {
-                userService.handleMessageFromUser((String) packet.getContent(), ipAddress);
+            case SEND_BROADCAST_CHAT -> {
+                userService.handleBroadCastMessageFromUser((String) packet.getContent(), ipAddress);
             }
             case USER_DISCONNECTED -> {
                 userService.handleUserDisconnected(ipAddress);
@@ -50,6 +56,9 @@ public class CommandHandler implements InputPacketGateway {
             case CREATE_GAME -> {
                 int requiredPlayerCount = (int) packet.getContent();
                 gameService.createGame(ipAddress, requiredPlayerCount);
+            }
+            case REQUEST_ALL_CONNECTED_PLAYERS -> {
+                userService.requestOnlinePlayers(ipAddress);
             }
             case REQUEST_GAMES -> {
                 GameStatus status = (GameStatus) packet.getContent();

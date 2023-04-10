@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -233,7 +235,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void handleMessageBroadCastsThisMessageWIthCorrectUsernameToAllClientsExceptThatUser() {
+    void handleBroadCastMessageBroadCastsThisMessageWIthCorrectUsernameToAllClientsExceptThatUser() {
         // prepare
         String username = "Johnny";
         String message = "Hi!";
@@ -245,16 +247,38 @@ public class UserServiceTest {
                 .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
 
         // execute
-        userService.handleMessageFromUser(message, ipAddress);
+        userService.handleBroadCastMessageFromUser(message, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.SEND_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
+        Packet packet = new Packet(Command.SEND_BROADCAST_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         verify(outputPacketGatewayMock)
                 .broadCast(packet, Collections.singletonList(ipAddress));
     }
 
+    @Test
+    void handleWhisperMessageSendsThisMessageWIthCorrectUsernameToUserWithThatUsername() {
+        // prepare
+        String senderName = "Sendername";
+        String toName = "to name";
+        String message = "Hi!";
+        String senderIpAddress = "clientA";
+        String toIpAddress = "clientB";
+
+        when(userRepositoryMock.getUsername(senderIpAddress))
+                .thenReturn(senderName);
+        when(userRepositoryMock.getIpAddress(toName))
+                .thenReturn(toIpAddress);
+
+        // execute
+        userService.handleWhisperMessageFromUser(message, toName, senderIpAddress);
+
+        // assert
+        Packet packet = new Packet(Command.SEND_WHISPER_CHAT, new ChatMessage(senderName, message), ContentType.CHAT_MESSAGE);
+        verify(outputPacketGatewayMock).sendPacket(toIpAddress, packet);
+    }
+
     /**
-     * checks if sugggested alternative is the next same username with number that is not already used
+     * checks if suggested alternative is the next same username with number that is not already used
      */
     @Test
     void checkUsernameAndSuggestAlternative() {
@@ -265,5 +289,31 @@ public class UserServiceTest {
         when(userRepositoryMock.hasDuplicate("rahel4")).thenReturn(true);
 
         assertEquals("rahel5", userService.checkUsernameAndSuggestAlternative("rahel"));
+    }
+
+    @Test
+    void requestOnlinePlayersTest() {
+        List<String> names = new LinkedList<String>();
+        names.add("name1");
+        names.add("name2");
+        when(userRepositoryMock.getAllUsernames()).thenReturn(names);
+
+        String ipAddress = "ipAddressA";
+        Packet packet = new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, names, ContentType.STRING_LIST);
+
+        userService.requestOnlinePlayers(ipAddress);
+        verify(outputPacketGatewayMock).sendPacket(ipAddress, packet);
+    }
+
+    @Test
+    void requestOnlinePlayersWithEmptyNamelistTest() {
+        List<String> names = new LinkedList<>();
+        when(userRepositoryMock.getAllUsernames()).thenReturn(names);
+
+        String ipAddress = "ipAddressA";
+        Packet packet = new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, names, ContentType.STRING_LIST);
+
+        userService.requestOnlinePlayers(ipAddress);
+        verify(outputPacketGatewayMock).sendPacket(ipAddress, packet);
     }
 }

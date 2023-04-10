@@ -27,7 +27,7 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {
-            userService.sendChatMessageToServer(chatRoomModel.getTextInputContent());
+            userService.sendBroadCastMessage(chatRoomModel.getTextInputContent());
         } catch (IOException e) {
             e.printStackTrace();
         }
