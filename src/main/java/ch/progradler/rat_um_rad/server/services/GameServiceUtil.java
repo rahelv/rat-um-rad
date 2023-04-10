@@ -1,7 +1,7 @@
 package ch.progradler.rat_um_rad.server.services;
 
-import ch.progradler.rat_um_rad.client.models.ClientGame;
-import ch.progradler.rat_um_rad.client.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
@@ -47,10 +47,9 @@ class GameServiceUtil {
                 player.getColor(),
                 player.getScore(),
                 player.getWheelsRemaining(),
-                ipAddress,
+                player.getPlayingOrder(), ipAddress,
                 player.getWheelCards().size(),
-                player.getShortDestinationCards().size(),
-                player.getPlayingOrder()
+                player.getShortDestinationCards().size()
         );
     }
 }

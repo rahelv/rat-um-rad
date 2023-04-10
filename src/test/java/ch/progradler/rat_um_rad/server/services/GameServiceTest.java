@@ -1,6 +1,6 @@
 package ch.progradler.rat_um_rad.server.services;
 
-import ch.progradler.rat_um_rad.client.models.ClientGame;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;

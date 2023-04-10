@@ -13,8 +13,15 @@ import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.*;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.DestinationCardCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.WheelCardCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.CityCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
 import javafx.application.Application;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -118,7 +125,8 @@ public class Client {
         }; // TODO: implement correctly
         return new PacketCoder(new ChatMessageCoder(),
                 new UsernameChangeCoder(),
-                new GameBaseCoder(gameMapCoder));
+                new GameBaseCoder(gameMapCoder),
+                new ClientGameCoder(gameMapCoder, new VisiblePlayerCoder(), new PlayerCoder(new WheelCardCoder(), new DestinationCardCoder(new CityCoder(new PointCoder())))));
     }
 }
 

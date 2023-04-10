@@ -15,6 +15,14 @@ import ch.progradler.rat_um_rad.server.services.UserService;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.*;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.DestinationCardCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.WheelCardCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.CityCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.GameMapCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
 
 public class Server {
     public void start(int port) {
@@ -43,7 +51,7 @@ public class Server {
     }
 
     private static Coder<Packet> getPacketCoder() {
-        Coder<GameMap> gameMapCoder = new Coder<>() {
+        Coder<GameMap> gameMapCoder = new GameMapCoder(new CityCoder(new PointCoder()), new RoadCoder()) {
             @Override
             public String encode(GameMap object, int level) {
                 return null;
@@ -56,6 +64,7 @@ public class Server {
         }; // TODO: implement correctly
         return new PacketCoder(new ChatMessageCoder(),
                 new UsernameChangeCoder(),
-                new GameBaseCoder(gameMapCoder));
+                new GameBaseCoder(gameMapCoder),
+                new ClientGameCoder(gameMapCoder, new VisiblePlayerCoder(), new PlayerCoder(new WheelCardCoder(), new DestinationCardCoder(new CityCoder(new PointCoder())))));
     }
 }

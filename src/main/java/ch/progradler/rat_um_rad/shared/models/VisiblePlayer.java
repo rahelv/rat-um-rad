@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.models;
+package ch.progradler.rat_um_rad.shared.models;
 
 import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
@@ -17,10 +17,10 @@ public class VisiblePlayer extends PlayerBase {
                          WheelColor color,
                          int score,
                          int wheelsRemaining,
+                         int playingOrder,
                          String ipAddress,
                          int wheelCardsCount,
-                         int shortDestinationCardsCount,
-                         int playingOrder) {
+                         int shortDestinationCardsCount) {
         super(name, color, score, wheelsRemaining, playingOrder);
         this.ipAddress = ipAddress;
         this.wheelCardsCount = wheelCardsCount;

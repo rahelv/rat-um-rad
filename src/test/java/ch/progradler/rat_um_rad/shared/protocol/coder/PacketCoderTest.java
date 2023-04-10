@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder;
 
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
@@ -28,12 +29,14 @@ public class PacketCoderTest {
     Coder<UsernameChange> usernameChangeCoder;
     @Mock
     Coder<GameBase> gameBaseCoder;
+    @Mock
+    Coder<ClientGame> clientGameCoder;
 
     private PacketCoder packetCoder;
 
     @BeforeEach
     public void initPacketCoder() {
-        packetCoder = new PacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder);
+        packetCoder = new PacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder, clientGameCoder);
     }
 
     @Test
