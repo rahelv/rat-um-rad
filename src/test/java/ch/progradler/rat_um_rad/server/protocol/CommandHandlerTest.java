@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.server.protocol;
 import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
+import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -35,6 +36,31 @@ class CommandHandlerTest {
     }
 
     @Test
+    void handlesSendBroadCastChatPacketCorrectly() {
+        String message = "Hello";
+        String ipAddress = "clientA";
+        Packet packet = new Packet(Command.SEND_BROADCAST_CHAT, message, ContentType.STRING);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockUserService).handleBroadCastMessageFromUser(message, ipAddress);
+    }
+
+    @Test
+    void handlesSendWhisperChatPacketCorrectly() {
+        String message = "Hello";
+        String toUsername = "John";
+        String ipAddress = "clientA";
+
+        Packet packet = new Packet(Command.SEND_WHISPER_CHAT,
+                new ChatMessage(toUsername, message), ContentType.CHAT_MESSAGE);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockUserService).handleWhisperMessageFromUser(message, toUsername, ipAddress);
+    }
+
+    @Test
     void handlesCreateGamePacketCorrectly() {
         int requiredPlayers = 4;
         String ipAddress = "clientA";
@@ -43,6 +69,16 @@ class CommandHandlerTest {
         commandHandler.handleClientCommand(packet, ipAddress);
 
         verify(mockGameService).createGame(ipAddress, requiredPlayers);
+    }
+
+    @Test
+    void handlesAllConnectedPlayersRequest() {
+        String ipAddress = "clientA";
+        Packet packet = new Packet(Command.REQUEST_ALL_CONNECTED_PLAYERS, null, ContentType.NONE);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockUserService).requestOnlinePlayers(ipAddress);
     }
 
     @Test

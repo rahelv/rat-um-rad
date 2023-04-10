@@ -91,6 +91,9 @@ public class PacketCoder implements Coder<Packet> {
             case NONE -> {
                 return "null";
             }
+            case STRING_LIST -> {
+                return CoderHelper.encodeStringList(level, (List<String>) content);
+            }
         }
         // should never happen
         throw new IllegalArgumentException("Unrecognized contentType while encoding: " + contentType);
@@ -127,6 +130,9 @@ public class PacketCoder implements Coder<Packet> {
             }
             case USERNAME_CHANGE -> {
                 return usernameChangeCoder.decode(contentUnwrapped, level);
+            }
+            case STRING_LIST -> {
+                return CoderHelper.decodeStringList(level, contentUnwrapped);
             }
 
             case GAME -> {

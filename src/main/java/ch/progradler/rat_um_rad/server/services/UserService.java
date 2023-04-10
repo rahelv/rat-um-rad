@@ -92,14 +92,28 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void handleMessageFromUser(String message, String ipAddress) {
+    public void handleBroadCastMessageFromUser(String message, String ipAddress) {
         String username = userRepository.getUsername(ipAddress);
-        Packet packet = new Packet(Command.SEND_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
+        Packet packet = new Packet(Command.SEND_BROADCAST_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         broadcastExcludingUser(packet, ipAddress);
+    }
+
+    @Override
+    public void handleWhisperMessageFromUser(String message, String toUsername, String ipAddress) {
+        String toIpAddress = userRepository.getIpAddress(toUsername);
+        String senderName = userRepository.getUsername(ipAddress);
+        Packet packet = new Packet(Command.SEND_WHISPER_CHAT, new ChatMessage(senderName, message), ContentType.CHAT_MESSAGE);
+        outputPacketGateway.sendPacket(toIpAddress, packet);
     }
 
     private void broadcastExcludingUser(Packet packet, String userIpAddress) {
         List<String> excludeFromBroadCast = Collections.singletonList(userIpAddress);
         outputPacketGateway.broadCast(packet, excludeFromBroadCast);
+    }
+
+    @Override
+    public void requestOnlinePlayers(String ipAddress) {
+        List<String> listOfUsernames = userRepository.getAllUsernames();
+        outputPacketGateway.sendPacket(ipAddress, new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, listOfUsernames, ContentType.STRING_LIST));
     }
 }

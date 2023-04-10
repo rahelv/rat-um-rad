@@ -2,6 +2,10 @@ package ch.progradler.rat_um_rad.client.command_line;
 
 import ch.progradler.rat_um_rad.client.Client;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.models.User;
+import ch.progradler.rat_um_rad.client.services.IUserService;
+import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -22,12 +26,14 @@ public class CommandLineHandler implements Runnable {
 
     private final InputReader inputReader;
     private final OutputPacketGateway outputPacketGateway;
+    private IUserService userService;
     private final UsernameHandler usernameHandler;
     private boolean quit = false;
 
     public CommandLineHandler(InputReader inputReader, OutputPacketGateway outputPacketGateway, String host, UsernameHandler usernameHandler) {
+        this.userService = new UserService();
         this.inputReader = inputReader;
-        this.outputPacketGateway = outputPacketGateway;
+        this.outputPacketGateway = OutputPacketGatewaySingleton.getOutputPacketGateway();
         this.usernameHandler = usernameHandler;
     }
 

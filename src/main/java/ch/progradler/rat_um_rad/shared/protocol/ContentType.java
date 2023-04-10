@@ -8,6 +8,8 @@ import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 
 import java.util.List;
 
+import java.util.List;
+
 /**
  * Possible ContentType of packet content
  */
@@ -32,6 +34,10 @@ public enum ContentType {
      * Type of {@link ClientGame}
      */
     GAME,
+    /**
+     * Type of {@link List<String>}
+     */
+    STRING_LIST,
     /**
      * Type of {@link List<GameBase>}
      */
