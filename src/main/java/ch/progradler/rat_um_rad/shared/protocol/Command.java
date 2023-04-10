@@ -6,7 +6,8 @@ package ch.progradler.rat_um_rad.shared.protocol;
 public enum Command {
     // shared commands:
 
-    SEND_CHAT,
+    SEND_BROADCAST_CHAT,
+    SEND_WHISPER_CHAT,
     NEW_USER,
 
     // client commands (sent from client to server):

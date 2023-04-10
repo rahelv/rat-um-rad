@@ -5,6 +5,8 @@ public interface IUserRepository {
 
     String getUsername(String ipAddress);
 
+    String getIpAddress(String username);
+
     void updateUsername(String username, String ipAddress);
 
     String removeUsername(String ipAddress);

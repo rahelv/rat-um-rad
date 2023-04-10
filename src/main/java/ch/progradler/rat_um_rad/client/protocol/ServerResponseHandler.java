@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.client.command_line.UsernameHandler;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
+import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -15,13 +16,13 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
     private final ClientPingPongRunner clientPingPongRunner;
     private final UsernameHandler usernameHandler;
 
-    private final ServerOutput serverOutput;
+    private final IUserService userService;
 
-    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler, ServerOutput serverOutput) {
+    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler, IUserService userService) {
         this.presenter = presenter;
         this.clientPingPongRunner = clientPingPongRunner;
         this.usernameHandler = usernameHandler;
-        this.serverOutput = serverOutput;
+        this.userService = userService;
     }
 
     /**
@@ -45,7 +46,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
-                this.usernameHandler.chooseAndSendUsername(this.serverOutput);
+                this.usernameHandler.chooseAndSendUsername(userService);
             }
             case SEND_GAMES -> {
                 //TODO: implement

@@ -1,10 +1,7 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
-import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
-import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,18 +92,18 @@ public class UsernameHandler {
      *
      * @return username which was chosen by server
      */
-    public String chooseAndSendUsername(OutputPacketGateway outputPacketGateway) {
+    public String chooseAndSendUsername(IUserService userService) {
         String username = chooseUsername();
         while (!usernameValidator.isUsernameValid(username)) {
             username = reenterUsernameAfterInValidUsernameEntered();
         }
 
         try {
-            outputPacketGateway.sendPacket(new Packet(Command.NEW_USER, username, ContentType.STRING));
+            userService.sendUsername(username);
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.warn("Failed to send username to server!"); //TODO: choose appropriate logger levels for all logs
-            return chooseAndSendUsername(outputPacketGateway);
+            return chooseAndSendUsername(userService);
         }
         return username;
     }
@@ -145,23 +142,23 @@ public class UsernameHandler {
     /**
      * get new username from changeUsername() and send the new chosen Username to the Server.
      */
-    public void changeAndSendNewUsername(OutputPacketGateway outputPacketGateway) {
+    public void changeAndSendNewUsername(IUserService userService) {
         String chosenUsername = readNewUsernameToChange();
         while (!usernameValidator.isUsernameValid(chosenUsername)) {
             chosenUsername = reenterUsernameAfterInValidUsernameEntered();
         }
 
-        if (chosenUsername == this.username) {
+        if (chosenUsername.equals(this.username)) {
             System.out.println("Your username already is: " + chosenUsername); //TODO: implement using presenter 
             return;
         }
 
         try {
-            outputPacketGateway.sendPacket(new Packet(Command.SET_USERNAME, chosenUsername, ContentType.STRING)); //TODO: sanitize username
+            userService.changeUsername(chosenUsername); //TODO: sanitize username
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.warn("Failed to send username to server!");
-            changeAndSendNewUsername(outputPacketGateway);
+            changeAndSendNewUsername(userService);
         }
     }
 }

@@ -47,7 +47,7 @@ public class PacketCoderTest {
         when(messageCoderMock.encode(content, level + 1)).thenReturn("username:userA,message:Hi!");
 
 
-        Command command = Command.SEND_CHAT;
+        Command command = Command.SEND_BROADCAST_CHAT;
         ContentType contentType = ContentType.CHAT_MESSAGE;
         Packet packet = new Packet(command, content, contentType);
 
@@ -100,7 +100,7 @@ public class PacketCoderTest {
         ChatMessage expectedMessage = new ChatMessage("userA", "Hi!");
         when(messageCoderMock.decode(messageEncoded, level + 1)).thenReturn(expectedMessage);
 
-        Command command = Command.SEND_CHAT;
+        Command command = Command.SEND_BROADCAST_CHAT;
         ContentType contentType = ContentType.CHAT_MESSAGE;
 
         String packetEncoded = CoderHelper.encodeFields(level,
