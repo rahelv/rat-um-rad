@@ -14,13 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class PacketCoderTest {
@@ -318,12 +316,65 @@ public class PacketCoderTest {
 
         when(gameBaseCoder.decode(game1Encoded, level + 2)).thenReturn(game1);
         when(gameBaseCoder.decode(game2Encoded, level + 2)).thenReturn(game2);
-        
+
         // execute
         Packet result = packetCoder.decode(packetEncoded, level);
 
         // assert
         Packet expected = new Packet(command, Arrays.asList(game1, game2), contentType);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void encodeWorksForListOfAllConnectedPlayers() {
+
+        // prepare
+        List<String> content = new LinkedList<String>();
+        content.add("name1");
+        content.add("name2");
+        Command command = Command.SEND_ALL_CONNECTED_PLAYERS;
+        ContentType contentType = ContentType.STRING_LIST;
+
+        Packet packet = new Packet(command, content, contentType);
+        int level = 0;
+
+        //execute
+        String result = packetCoder.encode(packet, level);
+
+        String expectedContent = CoderHelper.encodeStringList(level + 1, content);
+
+        // assert
+        String expected = CoderHelper.encodeFields(level,
+                command.name(), "{" + expectedContent + "}",
+                contentType.name());
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void decodeWorksForListOfAllConnectedPlayers() {
+
+        // prepare
+        List<String> content = new LinkedList<>();
+        String name1 = "name1";
+        String name2 = "name2";
+        content.add(name1);
+        content.add(name2);
+        Command command = Command.SEND_ALL_CONNECTED_PLAYERS;
+        ContentType contentType = ContentType.STRING_LIST;
+
+        int level = 0;
+
+        String packetEncoded = CoderHelper.encodeFields(level, command.name(),
+                "{" + CoderHelper.encodeStringList(level + 1, content) + "}",
+                contentType.name());
+
+        //execute
+        Packet result = packetCoder.decode(packetEncoded, level);
+
+        //assert
+        Packet expected = new Packet(command, content, contentType);
 
         assertEquals(expected, result);
     }

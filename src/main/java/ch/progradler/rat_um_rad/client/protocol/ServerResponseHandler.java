@@ -48,6 +48,9 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 //TODO: differentiate further between fatal actions
                 this.usernameHandler.chooseAndSendUsername(userService);
             }
+            case SEND_ALL_CONNECTED_PLAYERS -> {
+                //TODO: implement
+            }
             case SEND_GAMES -> {
                 //TODO: implement
             }

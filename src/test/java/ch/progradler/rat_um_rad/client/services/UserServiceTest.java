@@ -70,4 +70,11 @@ class UserServiceTest {
                 ContentType.CHAT_MESSAGE);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
+
+    @Test
+    void requestOnlinePlayers() throws IOException {
+        userService.requestOnlinePlayers();
+        Packet expected = new Packet(Command.REQUEST_ALL_CONNECTED_PLAYERS, null, ContentType.NONE);
+        verify(mockOutputPacketGateway).sendPacket(expected);
+    }
 }
