@@ -72,9 +72,9 @@ public class CommandLineHandler implements Runnable {
             quit = true;
             return;
         } else if (message.toLowerCase().contains("changeusername")) {
-            usernameHandler.changeAndSendNewUsername(outputPacketGateway);
+            //userService.sendUsername(message);
         } else { //TODO: add more commands and handle seperately
-            Packet packet = new Packet(Command.SEND_CHAT,
+            Packet packet = new Packet(Command.SEND_BROADCAST_CHAT,
                     message,
                     ContentType.STRING);
             try {

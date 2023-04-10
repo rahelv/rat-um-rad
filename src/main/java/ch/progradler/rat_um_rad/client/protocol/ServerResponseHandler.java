@@ -66,7 +66,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case SEND_ALL_CONNECTED_PLAYERS -> {
                 //TODO: implement
             }
-            case SEND_CHAT -> {
+            case SEND_BROADCAST_CHAT -> {
                 //TODO: update chatRoomModel
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();

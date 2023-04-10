@@ -44,7 +44,7 @@ public class Client {
 
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
             //startCommandHandler(serverOutput, host);
-            startServerListener(socket, packetCoder, clientPingPongRunner, userService, serverOutput);
+            startServerListener(socket, packetCoder, clientPingPongRunner);
 
             Application.launch(GUI.class); //TODO: how to pass userService to this class
         } catch (Exception e) {
@@ -90,13 +90,10 @@ public class Client {
      *
      * @param socket
      * @param packetCoder
-     * @param userService
      */
     private void startServerListener(Socket socket,
                                      Coder<Packet> packetCoder,
-                                     ClientPingPongRunner clientPingPongRunner,
-                                     IUserService userService,
-                                     ServerOutput serverOutput) {
+                                     ClientPingPongRunner clientPingPongRunner ){
         PackagePresenter presenter = new CommandLinePresenter();
         ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);

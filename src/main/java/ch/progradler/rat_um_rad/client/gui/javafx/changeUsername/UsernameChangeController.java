@@ -68,7 +68,7 @@ public class UsernameChangeController implements Initializable, IListener<Userna
             return usernameChangeModel.getChosenUsername() + " is already your username";
             //TODO: tell user to choose another name or cancel the action
         }
-        this.userService.sendChosenUsernameToServer(usernameChangeModel.getChosenUsername());
+        this.userService.sendUsername(usernameChangeModel.getChosenUsername());
         return null;
     }
 
