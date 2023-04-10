@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -36,13 +38,15 @@ public class ShowAllGamesController implements Initializable {
         finishedGamesListView.setCellFactory(param -> new ShowAllGamesController.Cell());
     }
     static class OpenGameCell extends ListCell<GameBase> {
+        Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
         Button enterGameButton = new Button("join");
         public OpenGameCell() {
             super();
-            hbox.getChildren().addAll(nameLabel, listPlayersButton, enterGameButton);
+            hbox.getChildren().addAll(nameLabel,pane,listPlayersButton, enterGameButton);
+            hbox.setHgrow(pane, Priority.ALWAYS);
             enterGameButton.setOnAction(event -> {
                 System.out.println("wanting to join game " + getItem().getId());
                 //TODO: send anfrage to server: OutputPacketGatewaySingleton.;
@@ -62,12 +66,14 @@ public class ShowAllGamesController implements Initializable {
         }
     }
     static class Cell extends ListCell<GameBase>{
+        Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
         public Cell() {
             super();
-            hbox.getChildren().addAll(nameLabel, listPlayersButton);
+            hbox.getChildren().addAll(nameLabel,pane,listPlayersButton);
+            hbox.setHgrow(pane, Priority.ALWAYS);
             listPlayersButton.setOnAction(event -> {
                 System.out.println("listing all players in this game");
             });

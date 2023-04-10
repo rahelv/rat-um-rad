@@ -15,6 +15,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -59,6 +61,7 @@ public class LobbyController implements Initializable, IListener<GameBase> {
             Scene scene = new Scene(root, 700, 600);
             stage.setScene(scene);
             stage.show();
+
         } catch (IOException e) {
             System.out.println("load failed");
             e.printStackTrace();
@@ -99,13 +102,15 @@ public class LobbyController implements Initializable, IListener<GameBase> {
     }
 
     static class Cell extends ListCell<GameBase> {
+        Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
         Button enterGameButton = new Button("join");
         public Cell() {
             super();
-            hbox.getChildren().addAll(nameLabel, listPlayersButton, enterGameButton);
+            hbox.getChildren().addAll(nameLabel,pane,listPlayersButton, enterGameButton);
+            hbox.setHgrow(pane, Priority.ALWAYS);
             enterGameButton.setOnAction(event -> {
                 System.out.println("wanting to join game " + getItem().getId());
                 //TODO: send anfrage to server: OutputPacketGatewaySingleton.;
