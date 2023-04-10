@@ -1,7 +1,10 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.lobby;
+package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
+import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
+import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import javafx.event.ActionEvent;
@@ -50,7 +53,7 @@ public class LobbyController implements Initializable, IListener<GameBase> {
     public void showAllGamesAction(ActionEvent event){
         System.out.println("show all games");
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/fxmlView/showAllGamesView.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/views/showAllGamesView.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Rat um Rad - show all games");
             Scene scene = new Scene(root, 700, 600);
@@ -70,10 +73,8 @@ public class LobbyController implements Initializable, IListener<GameBase> {
     @FXML
     public void createGameAction(ActionEvent actionEvent) {
         //TODO: create Game dialog
-        System.out.println("create game");
         try {
-            this.gameService.createGame(5);
-            Parent root = FXMLLoader.load(getClass().getResource("/fxmlView/createGameView.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/views/createGameView.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Rat um Rad - create game");
             Scene scene = new Scene(root, 600, 400);

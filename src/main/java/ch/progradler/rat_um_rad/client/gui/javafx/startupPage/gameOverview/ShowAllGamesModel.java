@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.gameOverview;
+package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview;
 
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import javafx.collections.FXCollections;

@@ -1,4 +1,4 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.createGame;
+package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

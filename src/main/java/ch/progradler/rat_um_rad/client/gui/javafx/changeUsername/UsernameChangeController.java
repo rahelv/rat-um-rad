@@ -85,7 +85,7 @@ public class UsernameChangeController implements Initializable, IListener<Userna
     }
 
     private void showStartupPage() { //TODO: move this method to class GUI
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/game/gameView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/mainPage.fxml"));
 
         try {
             this.stage.setScene(new Scene(loader.load()));
