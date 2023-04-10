@@ -1,25 +1,35 @@
-package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
+package ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.lobby;
 
-import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class LobbyController implements Initializable, IListener<GameBase> {
-    private IGameService gameService;
-    private LobbyModel lobbyModel;
+    public Button showAllGamesButton;
+    public Button leaveLobbyButton;
+    public Button createGameButton;
+    public Button joinButton;
     public ListView<GameBase> openGamesListView;
     public TextArea currentPlayersTextArea;
     public TextField gameIdTextField;
+
+    private IGameService gameService;
+    private LobbyModel lobbyModel;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
@@ -38,7 +48,18 @@ public class LobbyController implements Initializable, IListener<GameBase> {
 
     @FXML
     public void showAllGamesAction(ActionEvent event){
-
+        System.out.println("show all games");
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/fxmlView/showAllGamesView.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Rat um Rad - show all games");
+            Scene scene = new Scene(root, 700, 600);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.out.println("load failed");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -51,8 +72,15 @@ public class LobbyController implements Initializable, IListener<GameBase> {
         //TODO: create Game dialog
         System.out.println("create game");
         try {
-           // this.gameService.createGame(5);
+            this.gameService.createGame(5);
+            Parent root = FXMLLoader.load(getClass().getResource("/fxmlView/createGameView.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Rat um Rad - create game");
+            Scene scene = new Scene(root, 600, 400);
+            stage.setScene(scene);
+            stage.show();
         } catch (Exception e) {
+            System.out.println("load failed");
             e.printStackTrace();
         }
     }
