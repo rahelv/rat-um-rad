@@ -47,6 +47,17 @@ class CommandHandlerTest {
     }
 
     @Test
+    void handlesSendGameInternalChatPacketCorrectly() {
+        String message = "Hello";
+        String ipAddress = "clientA";
+        Packet packet = new Packet(Command.SEND_GAME_INTERNAL_CHAT, message, ContentType.STRING);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockUserService).handleGameInternalMessageFromUser(message, ipAddress);
+    }
+
+    @Test
     void handlesSendWhisperChatPacketCorrectly() {
         String message = "Hello";
         String toUsername = "John";

@@ -21,6 +21,13 @@ public class WheelCard {
         return cardID;
     }
 
+    /**
+     * There are 8 colors (see {@link WheelColor}s).
+     * The color of a card is determined by the id,
+     * such that the index of the color is the rest of {@link WheelCard#cardID} divided by 10.
+     *
+     * @return the index of the color in {@link WheelColor}s
+     */
     private int colorIndicator() {
         int roundedTo10s = cardID - (cardID % 10);
         return (roundedTo10s) / 10; // how many times a 10 was subtracted

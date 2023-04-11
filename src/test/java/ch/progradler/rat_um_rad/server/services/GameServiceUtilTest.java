@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.server.services;
 import ch.progradler.rat_um_rad.client.models.ClientGame;
 import ch.progradler.rat_um_rad.client.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.server.models.Game;
+import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
@@ -25,6 +26,9 @@ class GameServiceUtilTest {
 
     @Mock
     IUserRepository mockUserRepository;
+
+    @Mock
+    IGameRepository mockGameRepository;
 
     @Test
     void toClientGame() {
@@ -91,5 +95,31 @@ class GameServiceUtilTest {
                 player.getPlayingOrder());
 
         assertEquals(expected, GameServiceUtil.toVisiblePlayer(player, ipAddress));
+    }
+
+    @Test
+    void getGameOfPlayer() {
+        String gameId = "gameA";
+        String playerIpAddress = "clientA";
+
+        Player playerA = new Player("player A", WheelColor.RED, 100, 10, 2);
+        Player playerB = new Player("player B", WheelColor.BLUE, 50, 15, 1);
+        Map<String, Player> players1 = Map.of(
+                playerIpAddress, playerA,
+                "clientB", playerB
+        );
+
+        Map<String, Player> players2 = Map.of(
+                "clientC", new Player("player C", WheelColor.RED, 100, 10, 2),
+                "clientD", new Player("player D", WheelColor.RED, 100, 10, 2)
+        );
+
+        Game game1 = new Game(gameId, null, null, null, "playerB", 4, players1, 0);
+        Game game2 = new Game(gameId, null, null, null, "playerD", 4, players2, 3);
+
+        when(mockGameRepository.getAllGames()).thenReturn(Arrays.asList(game1, game2));
+
+        Game result = GameServiceUtil.getCurrentGameOfPlayer(playerIpAddress, mockGameRepository);
+        assertEquals(game1, result);
     }
 }

@@ -1,6 +1,8 @@
 package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.server.models.Game;
+import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
@@ -9,6 +11,7 @@ import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,24 +21,21 @@ import java.util.List;
 public class UserService implements IUserService {
     private final OutputPacketGateway outputPacketGateway;
     private final IUserRepository userRepository;
-    private UsernameValidator usernameValidator;
-
-    public UserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository) {
-        this.outputPacketGateway = outputPacketGateway;
-        this.userRepository = userRepository;
-        this.usernameValidator = new UsernameValidator();
-    }
+    private final IGameRepository gameRepository;
+    private final UsernameValidator usernameValidator;
 
     /**
      * Constructor for Testing purposes. TODO: decide if usernamevalidator should be given as parameter in normal constructor.
      *
      * @param outputPacketGateway
      * @param userRepository
+     * @param gameRepository
      * @param usernameValidator
      */
-    public UserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, UsernameValidator usernameValidator) {
+    public UserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository, UsernameValidator usernameValidator) {
         this.outputPacketGateway = outputPacketGateway;
         this.userRepository = userRepository;
+        this.gameRepository = gameRepository;
         this.usernameValidator = usernameValidator;
     }
 
@@ -99,6 +99,19 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void handleGameInternalMessageFromUser(String message, String ipAddress) {
+        Game currentPlayerGame = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
+        if (currentPlayerGame == null) return; // TODO: send error message to sender?
+
+        List<String> otherPlayers = new ArrayList<>(currentPlayerGame.getPlayers().keySet());
+        otherPlayers.remove(ipAddress);
+
+        String username = userRepository.getUsername(ipAddress);
+        Packet packet = new Packet(Command.SEND_GAME_INTERNAL_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
+        outputPacketGateway.broadCastOnly(packet, otherPlayers);
+    }
+
+    @Override
     public void handleWhisperMessageFromUser(String message, String toUsername, String ipAddress) {
         String toIpAddress = userRepository.getIpAddress(toUsername);
         String senderName = userRepository.getUsername(ipAddress);
@@ -108,7 +121,7 @@ public class UserService implements IUserService {
 
     private void broadcastExcludingUser(Packet packet, String userIpAddress) {
         List<String> excludeFromBroadCast = Collections.singletonList(userIpAddress);
-        outputPacketGateway.broadCast(packet, excludeFromBroadCast);
+        outputPacketGateway.broadCastExclude(packet, excludeFromBroadCast);
     }
 
     @Override
