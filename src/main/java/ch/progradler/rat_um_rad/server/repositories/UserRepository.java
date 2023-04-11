@@ -1,6 +1,8 @@
 package ch.progradler.rat_um_rad.server.repositories;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +23,19 @@ public class UserRepository implements IUserRepository {
     @Override
     public String getUsername(String ipAddress) {
         return names.get(ipAddress);
+    }
+
+    @Override
+    public List<String> getAllUsernames() {
+        return new ArrayList<>(names.values());
+    }
+
+    @Override
+    public String getIpAddress(String username) {
+        for (Map.Entry<String, String> entry : names.entrySet()) {
+            if (entry.getValue().equals(username)) return entry.getKey();
+        }
+        return null;
     }
 
     @Override

@@ -1,23 +1,22 @@
 package ch.progradler.rat_um_rad.client;
 
-import ch.progradler.rat_um_rad.client.command_line.presenter.CommandLinePresenter;
-import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
-import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
-import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.command_line.CommandLineHandler;
+import ch.progradler.rat_um_rad.client.command_line.InputReader;
+import ch.progradler.rat_um_rad.client.command_line.UsernameHandler;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
-import ch.progradler.rat_um_rad.client.gui.javafx.GUI;
+import ch.progradler.rat_um_rad.client.presenter.CommandLinePresenter;
+import ch.progradler.rat_um_rad.client.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.protocol.ServerInputListener;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.protocol.ServerResponseHandler;
+import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.*;
-import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
-import javafx.application.Application;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -39,15 +38,11 @@ public class Client {
         try {
             Socket socket = new Socket(host, port);
             ServerOutput serverOutput = new ServerOutput(socket, packetCoder);
-
-            OutputPacketGatewaySingleton.setOutputPacketGateway(serverOutput);
-
-            IUserService userService = new UserService(serverOutput);
+            UsernameHandler usernameHandler = new UsernameHandler();
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
-            //startCommandHandler(serverOutput, host, userService);
-            startServerListener(socket, packetCoder, clientPingPongRunner, userService, serverOutput);
-
-            Application.launch(GUI.class); //TODO: how to pass userService to this class
+            IUserService userService = new UserService(serverOutput);
+            startCommandHandler(userService, host, usernameHandler);
+            startServerListener(socket, packetCoder, clientPingPongRunner, usernameHandler, userService);
         } catch (Exception e) {
             e.printStackTrace();
             if (e instanceof ConnectException) {
@@ -60,7 +55,7 @@ public class Client {
     }
 
     /**
-     * starts the Client Ping-Pong Runner (Thread)
+     * starts the Client Ping Pong Runner (Thread)
      *
      * @param serverOutput
      * @return
@@ -75,35 +70,29 @@ public class Client {
     /**
      * starts the command handler in a new thread.
      *
-     * @param serverOutput
-     * @param host
      * @param userService
-
-    private void startCommandHandler(ServerOutput serverOutput, String host, UserService userService) {
-    InputReader inputReader = new InputReader();
-    CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, serverOutput, host, userService);
-    Thread t = new Thread(commandLineHandler);
-    t.start();
-    }  */
+     * @param host
+     * @param usernameHandler
+     */
+    private void startCommandHandler(IUserService userService, String host, UsernameHandler usernameHandler) {
+        InputReader inputReader = new InputReader();
+        CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, userService, host, usernameHandler);
+        usernameHandler.addUsernameObserver(commandLineHandler);
+        Thread t = new Thread(commandLineHandler);
+        t.start();
+    }
 
     /**
      * starts the ServerListener in a new thread, which listens to input from server.
      *
      * @param socket
      * @param packetCoder
-     * @param userService
+     * @param usernameHandler
      */
-    private void startServerListener(Socket socket,
-                                     Coder<Packet> packetCoder,
-                                     ClientPingPongRunner clientPingPongRunner,
-                                     IUserService userService,
-                                     ServerOutput serverOutput) {
+    private void startServerListener(Socket socket, Coder<Packet> packetCoder, ClientPingPongRunner clientPingPongRunner, UsernameHandler usernameHandler, IUserService userService) {
         PackagePresenter presenter = new CommandLinePresenter();
-        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner);
+        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner, usernameHandler, userService);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
-
-        InputPacketGatewaySingleton.setInputPacketGateway(inputPacketGateway);
-
         Thread t = new Thread(listener);
         t.start();
     }
