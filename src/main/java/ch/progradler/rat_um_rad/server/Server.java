@@ -23,6 +23,7 @@ import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
+import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 
 public class Server {
     public void start(int port) {
@@ -34,15 +35,16 @@ public class Server {
         OutputPacketGateway outputPacketGateway = connectionsHandler.connectionPool;
 
         IUserRepository userRepository = new UserRepository();
+        IGameRepository gameRepository = new GameRepository();
         CommandHandler commandHandler = new CommandHandler(
                 serverPingPongRunner,
-                getUserService(outputPacketGateway, userRepository),
+                getUserService(outputPacketGateway, userRepository,gameRepository),
                 getGameService(outputPacketGateway, userRepository));
         connectionsHandler.start(port, commandHandler, serverPingPongRunner);
     }
 
-    private static IUserService getUserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository) {
-        return new UserService(outputPacketGateway, userRepository);
+    private static IUserService getUserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository) {
+        return new UserService(outputPacketGateway, userRepository,gameRepository,new UsernameValidator());
     }
 
     private static IGameService getGameService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository) {
