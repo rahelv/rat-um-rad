@@ -2,7 +2,7 @@
   <configuration default="false" name="StartServer" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="ch.progradler.rat_um_rad.Main" />
     <module name="rat-um-rad.main" />
-    <option name="PROGRAM_PARAMETERS" value="server" />
+    <option name="PROGRAM_PARAMETERS" value="server 8090" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

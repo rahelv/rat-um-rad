@@ -2,7 +2,7 @@
   <configuration default="false" name="StartClient" type="Application" factoryName="Application" singleton="false">
     <option name="MAIN_CLASS_NAME" value="ch.progradler.rat_um_rad.Main" />
     <module name="rat-um-rad.main" />
-    <option name="PROGRAM_PARAMETERS" value="client" />
+    <option name="PROGRAM_PARAMETERS" value="client localHost 8090" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

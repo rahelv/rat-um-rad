@@ -38,6 +38,11 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void sendGameInternalMessage(String message) throws IOException {
+
+    }
+
+    @Override
     public void sendWhisperMessage(String message, String toUsername) throws IOException {
         Packet packet = new Packet(Command.SEND_WHISPER_CHAT,
                 new ChatMessage(toUsername, message),
