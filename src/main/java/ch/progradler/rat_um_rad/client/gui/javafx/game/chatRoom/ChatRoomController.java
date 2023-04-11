@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,6 +18,7 @@ import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 
 public class ChatRoomController implements Initializable, IListener<ChatMessage> {
+    public ChoiceBox<String> chatChoiceBox;
     private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
     public Button sendButton;
@@ -27,7 +29,11 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {
-            userService.sendBroadCastMessage(chatRoomModel.getTextInputContent());
+            if(getTarget(event).equals("all")){
+                userService.sendBroadCastMessage(chatRoomModel.getTextInputContent());
+            }else{
+                userService.sendWhisperMessage(chatRoomModel.getTextInputContent(),getTarget(event));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,6 +53,9 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
         chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty());
         this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
 
+        chatChoiceBox.getItems().addAll(chatRoomModel.chatTargetsList);
+        chatChoiceBox.getSelectionModel().select(0);//select the first item in choiceBox:"all"
+        chatChoiceBox.setOnAction(this::getTarget);
         try {
             this.userService = ServiceLoader.load(UserService.class).iterator().next();
         } catch (Exception e) {
@@ -59,5 +68,8 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
         Platform.runLater(() -> {
             chatRoomModel.addChatMessageToList(chatMessage);
         });
+    }
+    public String getTarget(ActionEvent event){
+        return chatChoiceBox.getValue();
     }
 }
