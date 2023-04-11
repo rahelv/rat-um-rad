@@ -12,6 +12,9 @@ public interface IUserService {
 
     void sendBroadCastMessage(String message) throws IOException;
 
+    void sendGameInternalMessage(String message) throws IOException;
+
     void sendWhisperMessage(String message, String toUsername) throws IOException;
+
     void requestOnlinePlayers() throws IOException;
 }

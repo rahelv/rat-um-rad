@@ -7,6 +7,7 @@ public enum Command {
     // shared commands: (sent from and to server)
 
     SEND_BROADCAST_CHAT,
+    SEND_GAME_INTERNAL_CHAT,
     SEND_WHISPER_CHAT,
     NEW_USER,
 

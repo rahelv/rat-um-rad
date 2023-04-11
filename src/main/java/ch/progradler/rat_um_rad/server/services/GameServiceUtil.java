@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.server.services;
 import ch.progradler.rat_um_rad.client.models.ClientGame;
 import ch.progradler.rat_um_rad.client.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.server.models.Game;
+import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
@@ -16,7 +17,7 @@ import java.util.List;
  * Util class for {@link GameService} with complex methods that are used multiple times.
  * No methods are <code>public</code>.
  */
-class GameServiceUtil {
+public class GameServiceUtil {
     static ClientGame toClientGame(Game game, String forPlayerIpAddress) {
         List<VisiblePlayer> otherPlayers = new ArrayList<>();
         game.getPlayers().forEach((key, player) -> {
@@ -52,5 +53,13 @@ class GameServiceUtil {
                 player.getShortDestinationCards().size(),
                 player.getPlayingOrder()
         );
+    }
+
+    public static Game getCurrentGameOfPlayer(String playerIpAddress, IGameRepository mockGameRepository) {
+        List<Game> allGames = mockGameRepository.getAllGames();
+        for (Game game : allGames) {
+            if (game.getPlayers().containsKey(playerIpAddress)) return game;
+        }
+        return null;
     }
 }

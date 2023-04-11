@@ -59,6 +59,16 @@ class UserServiceTest {
     }
 
     @Test
+    void sendGameInternalMessage() throws IOException {
+        String message = "Hello!";
+
+        userService.sendGameInternalMessage(message);
+
+        Packet expected = new Packet(Command.SEND_GAME_INTERNAL_CHAT, message, ContentType.STRING);
+        verify(mockOutputPacketGateway).sendPacket(expected);
+    }
+
+    @Test
     void sendWhisperMessage() throws IOException {
         String message = "Hello!";
         String username = "John";

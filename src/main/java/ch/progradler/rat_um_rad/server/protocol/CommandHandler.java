@@ -44,6 +44,9 @@ public class CommandHandler implements InputPacketGateway {
             case SEND_BROADCAST_CHAT -> {
                 userService.handleBroadCastMessageFromUser((String) packet.getContent(), ipAddress);
             }
+            case SEND_GAME_INTERNAL_CHAT -> {
+                userService.handleGameInternalMessageFromUser((String) packet.getContent(), ipAddress);
+            }
             case USER_DISCONNECTED -> {
                 userService.handleUserDisconnected(ipAddress);
             }

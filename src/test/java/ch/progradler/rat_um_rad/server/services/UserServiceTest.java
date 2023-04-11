@@ -1,9 +1,13 @@
 package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.server.models.Game;
+import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -11,12 +15,11 @@ import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -31,13 +34,16 @@ public class UserServiceTest {
     IUserRepository userRepositoryMock;
 
     @Mock
+    IGameRepository gameRepositoryMock;
+
+    @Mock
     UsernameValidator usernameValidatorMock;
 
     private UserService userService;
 
     @BeforeEach
     public void initServiceTest() {
-        userService = new UserService(outputPacketGatewayMock, userRepositoryMock, usernameValidatorMock);
+        userService = new UserService(outputPacketGatewayMock, userRepositoryMock, gameRepositoryMock, usernameValidatorMock);
     }
 
     @Test
@@ -49,7 +55,7 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
 
         // execute
         userService.handleNewUser(username, ipAddress);
@@ -83,7 +89,7 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
         doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
@@ -92,7 +98,7 @@ public class UserServiceTest {
         // assert
         Packet packet = new Packet(Command.NEW_USER, username, ContentType.STRING);
         verify(outputPacketGatewayMock)
-                .broadCast(packet, Collections.singletonList(ipAddress));
+                .broadCastExclude(packet, Collections.singletonList(ipAddress));
     }
 
     @Test
@@ -104,7 +110,7 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
         doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
@@ -124,7 +130,7 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).updateUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
         doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
@@ -161,7 +167,7 @@ public class UserServiceTest {
         when(userRepositoryMock.getUsername(ipAddress)).thenReturn(oldUsername);
         doNothing().when(userRepositoryMock).updateUsername(newUsername, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
         doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
@@ -172,7 +178,7 @@ public class UserServiceTest {
                 new UsernameChange(oldUsername, newUsername),
                 ContentType.USERNAME_CHANGE);
         verify(outputPacketGatewayMock)
-                .broadCast(packet, Collections.singletonList(ipAddress));
+                .broadCastExclude(packet, Collections.singletonList(ipAddress));
     }
 
     @Test
@@ -184,7 +190,7 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).updateUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
         doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
 
         // execute
@@ -205,7 +211,7 @@ public class UserServiceTest {
         when(userRepositoryMock.removeUsername(ipAddress))
                 .thenReturn(username);
         doNothing().when(outputPacketGatewayMock)
-                .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
 
         // execute
         userService.handleUserDisconnected(ipAddress);
@@ -223,7 +229,7 @@ public class UserServiceTest {
         when(userRepositoryMock.removeUsername(ipAddress))
                 .thenReturn(username);
         doNothing().when(outputPacketGatewayMock)
-                .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
 
         // execute
         userService.handleUserDisconnected(ipAddress);
@@ -231,7 +237,7 @@ public class UserServiceTest {
         // assert
         Packet packet = new Packet(Command.USER_DISCONNECTED, username, ContentType.STRING);
         verify(outputPacketGatewayMock)
-                .broadCast(packet, Collections.singletonList(ipAddress));
+                .broadCastExclude(packet, Collections.singletonList(ipAddress));
     }
 
     @Test
@@ -244,7 +250,7 @@ public class UserServiceTest {
         when(userRepositoryMock.getUsername(ipAddress))
                 .thenReturn(username);
         doNothing().when(outputPacketGatewayMock)
-                .broadCast(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
 
         // execute
         userService.handleBroadCastMessageFromUser(message, ipAddress);
@@ -252,7 +258,66 @@ public class UserServiceTest {
         // assert
         Packet packet = new Packet(Command.SEND_BROADCAST_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         verify(outputPacketGatewayMock)
-                .broadCast(packet, Collections.singletonList(ipAddress));
+                .broadCastExclude(packet, Collections.singletonList(ipAddress));
+    }
+
+    @Test
+    void handleGameInternalMessageBroadCastsThisMessageWIthCorrectUsernameToAllPlayersInCurrentGameOfPlayerExceptTharPlayer() {
+        // prepare
+        String username = "Johnny";
+        String message = "Hi!";
+        String ipAddress = "clientJ";
+
+        String ipAddressPlayerB = "clientB";
+        String ipAddressPlayerC = "clientC";
+
+        Player playerA = new Player("player A", WheelColor.RED, 100, 10, 2);
+        Player playerB = new Player("player B", WheelColor.BLUE, 50, 15, 1);
+        Player playerC = new Player("player C", WheelColor.PINK, 50, 15, 1);
+        Map<String, Player> players = Map.of(
+                ipAddress, playerA,
+                ipAddressPlayerB, playerB,
+                ipAddressPlayerC, playerC
+        );
+
+        Game game1 = new Game("gameA", null, null, null, "playerB", 4, players, 0);
+
+        when(gameRepositoryMock.getAllGames()).thenReturn(Collections.singletonList(game1));
+
+        when(userRepositoryMock.getUsername(ipAddress))
+                .thenReturn(username);
+
+        // execute
+        userService.handleGameInternalMessageFromUser(message, ipAddress);
+
+        // assert
+        Packet packet = new Packet(Command.SEND_GAME_INTERNAL_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
+        ArgumentCaptor<List<String>> clientsArgCaptor = ArgumentCaptor.forClass(List.class);
+        verify(outputPacketGatewayMock)
+                .broadCastOnly(eq(packet), clientsArgCaptor.capture());
+        List<String> clients = clientsArgCaptor.getValue();
+        List<String> expectedClients = Arrays.asList(ipAddressPlayerB, ipAddressPlayerC);
+        Collections.sort(expectedClients);
+        Collections.sort(clients);
+        assertEquals(expectedClients, clients);
+    }
+
+    @Test
+    void handleGameInternalMessageDoesNotBroadCastsThisMessageIfPlayerInNoGameYet() {
+        // prepare
+        String message = "Hi!";
+        String ipAddress = "clientJ";
+
+        Map<String, Player> players = Map.of();
+        Game game1 = new Game("gameA", null, null, null, "playerB", 4, players, 0);
+
+        when(gameRepositoryMock.getAllGames()).thenReturn(Collections.singletonList(game1));
+
+        // execute
+        userService.handleGameInternalMessageFromUser(message, ipAddress);
+
+        // assert
+        verifyNoInteractions(outputPacketGatewayMock);
     }
 
     @Test

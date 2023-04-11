@@ -15,6 +15,7 @@ import ch.progradler.rat_um_rad.server.services.UserService;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.*;
+import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 
 public class Server {
     public void start(int port) {
@@ -26,19 +27,19 @@ public class Server {
         OutputPacketGateway outputPacketGateway = connectionsHandler.connectionPool;
 
         IUserRepository userRepository = new UserRepository();
+        IGameRepository gameRepository = new GameRepository();
         CommandHandler commandHandler = new CommandHandler(
                 serverPingPongRunner,
-                getUserService(outputPacketGateway, userRepository),
-                getGameService(outputPacketGateway, userRepository));
+                getUserService(outputPacketGateway, userRepository, gameRepository),
+                getGameService(outputPacketGateway, userRepository, gameRepository));
         connectionsHandler.start(port, commandHandler, serverPingPongRunner);
     }
 
-    private static IUserService getUserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository) {
-        return new UserService(outputPacketGateway, userRepository);
+    private static IUserService getUserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository) {
+        return new UserService(outputPacketGateway, userRepository, gameRepository, new UsernameValidator());
     }
 
-    private static IGameService getGameService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository) {
-        IGameRepository gameRepository = new GameRepository();
+    private static IGameService getGameService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository) {
         return new GameService(outputPacketGateway, gameRepository, userRepository);
     }
 

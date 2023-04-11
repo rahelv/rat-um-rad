@@ -1,6 +1,9 @@
 package ch.progradler.rat_um_rad.server.repositories;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of {@link IUserRepository}
@@ -24,9 +27,7 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public List<String> getAllUsernames() {
-        List<String> usernames = new LinkedList<String>();
-        usernames.addAll(names.values());
-        return usernames;
+        return new ArrayList<>(names.values());
     }
 
     @Override
