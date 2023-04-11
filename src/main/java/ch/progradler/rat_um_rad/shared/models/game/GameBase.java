@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.shared.models.game;
 
-import ch.progradler.rat_um_rad.client.models.ClientGame;
 import ch.progradler.rat_um_rad.server.models.Game;
 
 import java.util.Date;

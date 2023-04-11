@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Helper class for de- and encoding content.
  */
-class CoderHelper {
+public class CoderHelper {
     private final static DateFormat DATE_CODING_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     /**

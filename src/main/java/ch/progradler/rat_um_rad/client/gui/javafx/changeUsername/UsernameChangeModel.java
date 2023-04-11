@@ -38,4 +38,8 @@ public class UsernameChangeModel {
     public StringProperty chosenUsernameProperty() {
         return chosenUsername;
     }
+
+    public void setConfirmedUsername(String username) {
+        this.user.setUsername(username);
+    }
 }

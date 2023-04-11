@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder;
 
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
@@ -18,11 +19,13 @@ public class PacketCoder implements Coder<Packet> {
     private final Coder<ChatMessage> messageCoder;
     private final Coder<UsernameChange> usernameChangeCoder;
     private final Coder<GameBase> gameBaseCoder;
+    private final Coder<ClientGame> clientGameCoder;
 
-    public PacketCoder(Coder<ChatMessage> messageCoder, Coder<UsernameChange> usernameChangeCoder, Coder<GameBase> gameBaseCoder) {
+    public PacketCoder(Coder<ChatMessage> messageCoder, Coder<UsernameChange> usernameChangeCoder, Coder<GameBase> gameBaseCoder, Coder<ClientGame> clientGameCoder) {
         this.messageCoder = messageCoder;
         this.usernameChangeCoder = usernameChangeCoder;
         this.gameBaseCoder = gameBaseCoder;
+        this.clientGameCoder = clientGameCoder;
     }
 
     /**
@@ -80,6 +83,7 @@ public class PacketCoder implements Coder<Packet> {
                 return usernameChangeCoder.encode((UsernameChange) content, level);
             }
             case GAME -> {
+                return clientGameCoder.encode((ClientGame) content, level);
                 // TODO: implement. User {@link ClientGameCoder}
             }
             case GAME_INFO_LIST -> {
@@ -136,6 +140,7 @@ public class PacketCoder implements Coder<Packet> {
             }
 
             case GAME -> {
+
             }
             case GAME_INFO_LIST -> {
                 return decodeGameInfoList(contentUnwrapped, level);

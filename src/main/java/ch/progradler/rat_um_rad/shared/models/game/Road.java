@@ -19,4 +19,24 @@ public class Road {
         this.requiredWheels = requiredWheels;
         this.color = color;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getFromCityId() {
+        return fromCityId;
+    }
+
+    public String getToCityId() {
+        return toCityId;
+    }
+
+    public int getRequiredWheels() {
+        return requiredWheels;
+    }
+
+    public int getColor() {
+        return color;
+    }
 }
