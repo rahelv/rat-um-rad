@@ -58,19 +58,19 @@ public interface IGameService {
     void dontWantToFinishGame(String ipAddress);
 
     /**
-     * @para ipAddress of client who requested list of game instances that have not yet started.
+     * @param ipAddress of client who requested list of game instances that have not yet started.
      * (i.e. their {@link Game#getStatus()} is {@link GameStatus#WAITING_FOR_PLAYERS}
      */
     void getWaitingGames(String ipAddress);
 
     /**
-     * @para ipAddress of client who requested list of game instances that are finished.
+     * @param ipAddress of client who requested list of game instances that are finished.
      * (i.e. their {@link Game#getStatus()} is {@link GameStatus#PREPARATION} and {@link GameStatus#STARTED}
      */
     void getStartedGames(String ipAddress);
 
     /**
-     * @para ipAddress of client who requested list of game instances that are finished.
+     * @param ipAddress of client who requested list of game instances that are finished.
      * (i.e. their {@link Game#getStatus()} is {@link GameStatus#FINISHED}
      */
     void getFinishedGames(String ipAddress);
