@@ -121,4 +121,16 @@ class CommandHandlerTest {
 
         verify(mockGameService).getFinishedGames(ipAddress);
     }
+
+    @Test
+    void requestOnJoiningGameIsHandledCorrectly() {
+        String ipAddress = "clientA";
+        String gameId = "gameIdA";
+        Packet packet = new Packet(Command.WANT_JOIN_GAME, gameId, ContentType.STRING);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockGameService).joinGame(ipAddress, gameId);
+    }
+
 }

@@ -110,6 +110,10 @@ public class GameService implements IGameService {
         }
     }
 
+    private void startGame() {
+        //TODO: implement
+    }
+
     @Override
     public void sendMessageTo(String ipAddressFrom, String ipAddressTo) {
         //TODO: implement
@@ -186,9 +190,5 @@ public class GameService implements IGameService {
     public void getFinishedGames(String ipAddress) {
         Packet packet = new Packet(SEND_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
-    }
-
-    private void startGame() {
-        //TODO: implement
     }
 }
