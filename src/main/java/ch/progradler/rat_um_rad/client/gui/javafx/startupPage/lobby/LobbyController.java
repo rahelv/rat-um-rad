@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
@@ -9,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -74,13 +76,17 @@ public class LobbyController implements Initializable, ServerResponseListener<Ga
     @FXML
     public void createGameAction(ActionEvent actionEvent) {
         //TODO: create Game dialog
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/createGameView.fxml"));
+
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/createGameView.fxml"));
-            Stage stage = new Stage();
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             stage.setTitle("Rat um Rad - create game");
-            Scene scene = new Scene(root, 600, 400);
+            Scene scene = new Scene(loader.load(), 640, 480);
             stage.setScene(scene);
             stage.show();
+
+            CreateGameController controller = loader.getController();
+            controller.initData(stage);
         } catch (Exception e) {
             System.out.println("load failed");
             e.printStackTrace();

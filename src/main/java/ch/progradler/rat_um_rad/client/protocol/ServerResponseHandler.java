@@ -5,10 +5,12 @@ import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -75,6 +77,10 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case NEW_USER -> {
                 String content = (String) packet.getContent();
                 notifyListenersOfType(content + " entered the game", ActivityController.class);
+            }
+            case GAME_CREATED -> {
+                ClientGame content = (ClientGame) packet.getContent();
+                notifyListenersOfType(content, CreateGameController.class);
             }
             default -> presenter.display(packet);
             //TODO: send Activity to ActivityController when ein Spielzug passiert

@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.layout.GridPane?>
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.game.GameController">
     <VBox layoutY="28.0" prefHeight="670.0" prefWidth="608.0" AnchorPane.rightAnchor="0.0">
         <Label prefHeight="75.0" prefWidth="315.0" text="Rat um Rad" textAlignment="CENTER">
@@ -15,6 +16,12 @@
          </font>
       </Label>
         <fx:include source="../mainMenu.fxml" />
+        <GridPane>
+            <Label  GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="gameID"></Label>
+            <Label  GridPane.rowIndex="1" GridPane.columnIndex="0" fx:id="status"></Label>
+            <Label  GridPane.rowIndex="2" GridPane.columnIndex="0" fx:id="createdAt"></Label>
+            <Label  GridPane.rowIndex="3" GridPane.columnIndex="0" fx:id="requiredPlayers"></Label>
+        </GridPane>
         <fx:include source="chatRoomView.fxml" />
         <fx:include source="activitiesList.fxml" />
     </VBox>
