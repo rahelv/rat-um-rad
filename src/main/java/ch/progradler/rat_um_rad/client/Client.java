@@ -27,11 +27,11 @@ public class Client {
 
     /**
      * starts the client and creates a socket which tries connecting to the server on the specified host and port.
-     *
-     * @param host: ip of the server
-     * @param port: port of the server socket
+     *  @param host : ip of the server
+     * @param port : port of the server socket
+     * @param username
      */
-    public void start(String host, int port) {
+    public void start(String host, int port, String username) {
         System.out.format("Starting Client on %s %d\n", host, port);
 
         Coder<Packet> packetCoder = getPacketCoder();
@@ -41,7 +41,7 @@ public class Client {
             UsernameHandler usernameHandler = new UsernameHandler();
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
             IUserService userService = new UserService(serverOutput);
-            startCommandHandler(userService, host, usernameHandler);
+            startCommandHandler(userService, host, usernameHandler, username);
             startServerListener(socket, packetCoder, clientPingPongRunner, usernameHandler, userService);
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,9 +74,9 @@ public class Client {
      * @param host
      * @param usernameHandler
      */
-    private void startCommandHandler(IUserService userService, String host, UsernameHandler usernameHandler) {
+    private void startCommandHandler(IUserService userService, String host, UsernameHandler usernameHandler, String initialUsername) {
         InputReader inputReader = new InputReader();
-        CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, userService, host, usernameHandler);
+        CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, userService, host, usernameHandler, initialUsername);
         usernameHandler.addUsernameObserver(commandLineHandler);
         Thread t = new Thread(commandLineHandler);
         t.start();

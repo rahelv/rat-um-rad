@@ -36,14 +36,14 @@ public class ServerInputListener implements Runnable {
     @Override
     public void run() {
         while (true) { //so it keeps listening
-            String encodedPacket = null;
+            String encodedPacket;
             try {
                 encodedPacket = StreamUtils.readStringFromStream(inputStream);
             } catch (IOException e) {
                 e.printStackTrace();
+                continue;
                 // TODO: display error to user?
             }
-            if (encodedPacket == null) continue;
             Packet packet = packetCoder.decode(encodedPacket, 0);
             inputPacketGateway.handleResponse(packet);
         }
