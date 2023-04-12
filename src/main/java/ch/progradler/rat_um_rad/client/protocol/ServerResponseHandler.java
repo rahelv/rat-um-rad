@@ -8,6 +8,9 @@ import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
+
 /**
  * Handles incoming responses from server.
  */
@@ -45,13 +48,25 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 presenter.display(packet);
             }
             case INVALID_ACTION_FATAL -> {
-                //TODO: differentiate further between fatal actions
-                this.usernameHandler.chooseAndSendUsername(userService);
+                switch((String) packet.getContent()) {
+                    case JOINING_NOT_POSSIBLE -> {
+                        //TODO: implement
+                    }
+                    case USERNAME_INVALID -> {
+                        this.usernameHandler.chooseAndSendUsername(userService);
+                    }
+                }
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
                 //TODO: implement
             }
             case SEND_GAMES -> {
+                //TODO: implement
+            }
+            case GAME_JOINED -> {
+                //TODO: implement
+            }
+            case NEW_PLAYER -> {
                 //TODO: implement
             }
             default -> presenter.display(packet);

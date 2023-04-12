@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
+import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +42,7 @@ class GameServiceUtilTest {
         int turn = 20;
 
         Player creator = new Player("player A", WheelColor.RED, 100, 10, 2);
-        Player otherPlayer = new Player("player B", WheelColor.BLUE, 50, 15, 1);
+        Player otherPlayer = new Player("player B", BLUE, 50, 15, 1);
         String otherPlayerIp = "clientB";
         Map<String, Player> players = Map.of(
                 creatorIp, creator,
@@ -68,12 +69,18 @@ class GameServiceUtilTest {
     void createNewPlayer() {
         String ipAddress = "clientA";
         String name = "John";
+        Set<WheelColor> takenColors = new HashSet<WheelColor>();
+        List<WheelColor> someColors = Arrays.asList(RED, BLUE, ORANGE, GREEN, PINK, BLACK, WHITE, JOKER);
+        takenColors.addAll(someColors);
 
         when(mockUserRepository.getUsername(ipAddress)).thenReturn(name);
 
-        Player player = GameServiceUtil.createNewPlayer(ipAddress, mockUserRepository);
+        Player player = GameServiceUtil.createNewPlayer(ipAddress, mockUserRepository, takenColors);
         assertEquals(name, player.getName());
         assertNotNull(player.getColor());
+        for (WheelColor color: takenColors) {
+            assertNotEquals(player.getColor(), color);
+        }
         assertEquals(0, player.getScore());
         assertEquals(0, player.getPlayingOrder());
         assertEquals(GameConfig.STARTING_WHEELS_PER_PLAYER, player.getWheelsRemaining());
@@ -103,7 +110,7 @@ class GameServiceUtilTest {
         String playerIpAddress = "clientA";
 
         Player playerA = new Player("player A", WheelColor.RED, 100, 10, 2);
-        Player playerB = new Player("player B", WheelColor.BLUE, 50, 15, 1);
+        Player playerB = new Player("player B", BLUE, 50, 15, 1);
         Map<String, Player> players1 = Map.of(
                 playerIpAddress, playerA,
                 "clientB", playerB

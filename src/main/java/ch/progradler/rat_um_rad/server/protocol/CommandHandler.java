@@ -80,6 +80,9 @@ public class CommandHandler implements InputPacketGateway {
                     }
                 }
             }
+            case WANT_JOIN_GAME -> {
+                gameService.joinGame(ipAddress, (String) packet.getContent());
+            }
         }
     }
 }

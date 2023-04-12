@@ -15,8 +15,13 @@ public interface IGameService {
 
     /**
      * Called when a new player connects to the game.
+     *
+     * If number of players is equal to requiredPlayers, then:
+     * - status must be changed to PREPARATION,
+     * - all players must get a long destination card
+     * - all players must get a proposal of destination cards
      */
-    void addPlayer(String ipAddress);
+    void joinGame(String ipAddress, String gameIp);
 
     void sendMessageTo(String ipAddressFrom, String ipAddressTo);
 

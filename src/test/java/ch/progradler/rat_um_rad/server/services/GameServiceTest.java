@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -112,7 +113,7 @@ class GameServiceTest {
         Game game = gameCaptor.getValue();
         assertEquals(1, game.getPlayers().size());
         Player creator = game.getPlayers().get(creatorIp);
-        Player expected = GameServiceUtil.createNewPlayer(creatorIp, mockUserRepository);
+        Player expected = GameServiceUtil.createNewPlayer(creatorIp, mockUserRepository, new HashSet<>());
         expected.setColor(creator.getColor()); // color is randomly generated so has to be the same
 
         assertEquals(expected, creator);
