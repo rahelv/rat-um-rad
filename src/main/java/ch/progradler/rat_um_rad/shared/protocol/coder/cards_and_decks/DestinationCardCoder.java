@@ -16,6 +16,9 @@ public class DestinationCardCoder implements Coder<DestinationCard> {
     }
     @Override
     public String encode(DestinationCard card, int level) {
+        if(card == null) {
+            return "null";
+        }
         String destination1Encoded = cityCoder.encode(card.getDestination1(), level + 1);
         String destination2Encoded = cityCoder.encode(card.getDestination2(), level + 1);
 
@@ -28,12 +31,15 @@ public class DestinationCardCoder implements Coder<DestinationCard> {
 
     @Override
     public DestinationCard decode(String encoded, int level) {
+        System.out.println(encoded);
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
         String cardID = fields.get(0);
-        int color = Integer.parseInt(fields.get(1));
-        City destination1 = cityCoder.decode(fields.get(2), level + 1);
-        City destination2 = cityCoder.decode(fields.get(3), level + 1);
-        int points = Integer.parseInt(fields.get(4));
+        City destination1 = cityCoder.decode(fields.get(1), level + 1);
+        City destination2 = cityCoder.decode(fields.get(2), level + 1);
+        int points = Integer.parseInt(fields.get(3));
         return new DestinationCard(cardID, destination1, destination2, points);
     }
 }

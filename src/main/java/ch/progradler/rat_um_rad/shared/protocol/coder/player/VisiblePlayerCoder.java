@@ -10,6 +10,9 @@ import java.util.List;
 public class VisiblePlayerCoder implements Coder<VisiblePlayer> {
     @Override
     public String encode(VisiblePlayer player, int level) {
+        if(player == null) {
+            return "null";
+        }
         return CoderHelper.encodeFields(level,
                 player.getName(),
                 player.getColor().toString(),
@@ -23,6 +26,9 @@ public class VisiblePlayerCoder implements Coder<VisiblePlayer> {
 
     @Override
     public VisiblePlayer decode(String encoded, int level) {
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
         String name = fields.get(0);
         WheelColor color = WheelColor.valueOf(fields.get(1));

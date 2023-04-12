@@ -9,6 +9,9 @@ import java.util.List;
 public class PointCoder implements Coder<Point> {
     @Override
     public String encode(Point point, int level) {
+        if(point == null) {
+            return "null";
+        }
         return CoderHelper.encodeFields(level,
                 String.valueOf(point.getX()),
                 String.valueOf(point.getY()));
@@ -16,6 +19,9 @@ public class PointCoder implements Coder<Point> {
 
     @Override
     public Point decode(String encoded, int level) {
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
         Double x = Double.parseDouble(fields.get(0));
         Double y = Double.parseDouble(fields.get(1));

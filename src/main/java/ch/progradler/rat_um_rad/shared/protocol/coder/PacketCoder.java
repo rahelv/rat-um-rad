@@ -140,7 +140,7 @@ public class PacketCoder implements Coder<Packet> {
             }
 
             case GAME -> {
-
+                return clientGameCoder.decode(contentUnwrapped, level);
             }
             case GAME_INFO_LIST -> {
                 return decodeGameInfoList(contentUnwrapped, level);

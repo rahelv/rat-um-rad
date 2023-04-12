@@ -19,6 +19,9 @@ public class PlayerCoder implements Coder<Player> {
      }
     @Override
     public String encode(Player player, int level) {
+         if(player == null) {
+             return "null";
+         }
         List<String> wheelCardsList = player.getWheelCards().stream()
                 .map((wheelCard) -> wheelCardCoder.encode(wheelCard, level + 2))
                 .toList();
@@ -41,6 +44,10 @@ public class PlayerCoder implements Coder<Player> {
 
     @Override
     public Player decode(String encoded, int level) {
+         System.out.println("playerencoded: " + encoded);
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
         String name = fields.get(0);
         WheelColor color = WheelColor.valueOf(fields.get(1));
@@ -49,7 +56,13 @@ public class PlayerCoder implements Coder<Player> {
         int playingOrder = Integer.parseInt(fields.get(4));
         List<String> wheelCardsListStrings = CoderHelper.decodeStringList(level + 1, fields.get(5));
         List<WheelCard> wheelCardsList = wheelCardsListStrings.stream()
-                .map((s) -> wheelCardCoder.decode(s, level + 2)).toList();
+                .map((s) -> {
+                    if(wheelCardsListStrings.equals("[]")) {
+                        return null;
+                    }
+                    return  wheelCardCoder.decode(s, level + 2);
+                }).toList();
+        System.out.println(wheelCardsListStrings);
         DestinationCard longDestinationCard = destinationCardCoder.decode(fields.get(6), level + 1);
         List<String> shortDestinationCardsListStrings = CoderHelper.decodeStringList(level + 1, fields.get(7));
         List<DestinationCard> shortDestinationCardsList = shortDestinationCardsListStrings.stream()

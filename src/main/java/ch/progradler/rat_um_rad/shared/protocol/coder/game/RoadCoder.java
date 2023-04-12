@@ -11,6 +11,9 @@ import java.util.List;
 public class RoadCoder implements Coder<Road> {
     @Override
     public String encode(Road road, int level) {
+        if(road == null) {
+            return "null";
+        }
         return CoderHelper.encodeFields(level,
                 road.getId(),
                 road.getFromCityId(),
@@ -21,6 +24,9 @@ public class RoadCoder implements Coder<Road> {
 
     @Override
     public Road decode(String encoded, int level) {
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
         String id = fields.get(0);
         String fromCityId = fields.get(1);
