@@ -72,3 +72,12 @@ jar {
     }
     duplicatesStrategy(DuplicatesStrategy.INCLUDE)
 }
+
+tasks.register('build-cs108') {
+    dependsOn build
+    dependsOn javadoc
+    dependsOn clean
+
+    javadoc.mustRunAfter(clean)
+    build.mustRunAfter(javadoc)
+}
