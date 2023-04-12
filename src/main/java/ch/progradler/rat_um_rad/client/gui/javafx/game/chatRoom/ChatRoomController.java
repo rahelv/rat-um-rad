@@ -6,7 +6,6 @@ import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,7 +22,6 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
     public TextField chatMsgTextField;
     public Button sendButton;
     public ListView chatPaneListView;
-
     private IUserService userService;
 
     @FXML
@@ -67,6 +65,7 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
     public void serverResponseReceived(ChatMessage chatMessage) {
         Platform.runLater(() -> {
             chatRoomModel.addChatMessageToList(chatMessage);
+            chatRoomModel.addPlayersToTargetList(chatMessage.getUsername());
         });
     }
     public String getTarget(ActionEvent event){

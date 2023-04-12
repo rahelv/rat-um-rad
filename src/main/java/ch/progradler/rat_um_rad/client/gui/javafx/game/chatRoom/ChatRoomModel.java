@@ -12,16 +12,12 @@ public class ChatRoomModel {
 
     ObservableList<String> chatTargetsList;
     public ChatRoomModel() {
+
         this.textInputContent = new SimpleStringProperty("");
         this.chatMessageList = FXCollections.observableArrayList();
 
-        this.chatTargetsList = FXCollections.observableArrayList();
+        this.chatTargetsList = FXCollections.observableArrayList();//TODO: get player list from server
         chatTargetsList.add("all");
-        chatTargetsList.add("cherry");
-        chatTargetsList.add("catty");
-        chatTargetsList.add("sleepy");
-        chatTargetsList.add("adele");
-
     }
 
     public StringProperty TextInputContentProperty() {
@@ -34,5 +30,8 @@ public class ChatRoomModel {
 
     public void addChatMessageToList(ChatMessage chatMessage) {
         this.chatMessageList.add(chatMessage);
+    }
+    public void addPlayersToTargetList(String userName){
+        chatTargetsList.add(userName);
     }
 }
