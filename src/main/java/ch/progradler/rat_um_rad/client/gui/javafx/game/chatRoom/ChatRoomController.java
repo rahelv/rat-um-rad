@@ -5,6 +5,7 @@ import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -72,7 +73,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
      * @param chatMessage
      */
     @Override
-    public void serverResponseReceived(ChatMessage chatMessage) {
+    public void serverResponseReceived(ChatMessage chatMessage, ContentType contentType) {
         Platform.runLater(() -> {
             chatRoomModel.addChatMessageToList(chatMessage);
         });

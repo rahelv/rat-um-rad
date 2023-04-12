@@ -40,6 +40,9 @@ public enum ContentType {
      * Type of {@link List<GameBase>}
      */
     GAME_INFO_LIST,
+    GAME_INFO_LIST_STARTED,
+    GAME_INFO_LIST_WAITING,
+    GAME_INFO_LIST_FINISHED,
     /**
      * Type of {@link GameStatus}
      */

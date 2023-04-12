@@ -1,7 +1,7 @@
 package ch.progradler.rat_um_rad.client.models;
 
 public class User {
-    private String username;
+    private String username = "";
 
     public String getUsername() {
         return username;

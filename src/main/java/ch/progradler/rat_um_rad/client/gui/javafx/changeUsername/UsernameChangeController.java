@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -90,8 +91,20 @@ public class UsernameChangeController implements Initializable, ServerResponseLi
             return usernameChangeModel.getChosenUsername() + " is already your username";
             //TODO: tell user to choose another name or cancel the action
         }
-        this.userService.sendUsername(usernameChangeModel.getChosenUsername());
+        try {
+            sendUsernameToServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
+    }
+
+    private void sendUsernameToServer() throws IOException {
+        if(this.usernameChangeModel.getCurrentUsername().equals("")) {
+            this.userService.sendUsername(usernameChangeModel.getChosenUsername());
+        } else {
+            this.userService.changeUsername(usernameChangeModel.getChosenUsername());
+        }
     }
 
     /**
@@ -106,7 +119,7 @@ public class UsernameChangeController implements Initializable, ServerResponseLi
      * @param content
      */
     @Override
-    public void serverResponseReceived(UsernameChange content) {
+    public void serverResponseReceived(UsernameChange content, ContentType contentType) {
         this.usernameChangeModel.setConfirmedUsername(content.getNewName());
         //TODO: Confirm UsernameChange for User And Next View...
         Platform.runLater(() -> {

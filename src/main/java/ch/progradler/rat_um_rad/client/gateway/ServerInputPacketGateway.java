@@ -9,7 +9,5 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 public interface ServerInputPacketGateway {
      void handleResponse(Packet packet);
 
-     //void setUsernameChangeController(UsernameChangeController usernameChangeController);
-
      void addListener(ServerResponseListener<?> listenerToAdd);
 }

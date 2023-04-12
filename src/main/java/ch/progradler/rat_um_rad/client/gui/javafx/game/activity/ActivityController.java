@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game.activity;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -36,7 +37,7 @@ public class ActivityController implements Initializable, ServerResponseListener
      * @param activity
      */
     @Override
-    public void serverResponseReceived(String activity) {
+    public void serverResponseReceived(String activity, ContentType contentType) {
         Platform.runLater(() -> {
             activityModel.addActivity(activity);
         });

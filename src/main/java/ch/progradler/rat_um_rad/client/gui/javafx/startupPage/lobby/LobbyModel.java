@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LobbyModel {
     //Was braucht es hier?
@@ -24,6 +25,10 @@ public class LobbyModel {
 
     public void addGameToLobby(GameBase game) {
         this.gameInfoList.add(game);
+    }
+
+    public void updateGameList(List<GameBase> gameList) {
+        this.gameInfoList = FXCollections.observableArrayList(gameList);
     }
 
     public ObservableList<GameBase> getGameInfoList() {

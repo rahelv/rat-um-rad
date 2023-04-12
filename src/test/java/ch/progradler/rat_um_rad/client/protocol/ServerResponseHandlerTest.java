@@ -39,6 +39,6 @@ class ServerResponseHandlerTest {
         Packet packet = new Packet(Command.USERNAME_CONFIRMED, change, ContentType.USERNAME_CHANGE);
         serverResponseHandler.handleResponse(packet);
 
-        verify(mockController).serverResponseReceived(change);
+        verify(mockController).serverResponseReceived(change, ContentType.USERNAME_CHANGE);
     }
 }

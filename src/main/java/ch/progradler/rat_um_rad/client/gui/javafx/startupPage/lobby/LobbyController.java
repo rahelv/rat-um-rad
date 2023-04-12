@@ -5,7 +5,9 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateG
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,9 +23,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
-public class LobbyController implements Initializable, ServerResponseListener<GameBase> {
+public class LobbyController implements Initializable, ServerResponseListener<List<GameBase>> {
     public Button showAllGamesButton;
     public Button leaveLobbyButton;
     public Button createGameButton;
@@ -40,8 +43,8 @@ public class LobbyController implements Initializable, ServerResponseListener<Ga
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
         this.gameService = new GameService();
         this.lobbyModel = new LobbyModel();
-       /** try {
-            //this.gameService.requestWaitingGames();
+       /**try {
+            this.gameService.requestWaitingGames();
         } catch (IOException e) {
             e.printStackTrace();
         }*/
@@ -49,6 +52,10 @@ public class LobbyController implements Initializable, ServerResponseListener<Ga
         this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
         openGamesListView.setCellFactory(param -> new Cell());
         //each item of listView should have 2 buttons:list players and join game
+    }
+
+    public void getOpenGamesFromServer() throws IOException{
+        this.gameService.requestWaitingGames();
     }
 
     @FXML
@@ -101,8 +108,8 @@ public class LobbyController implements Initializable, ServerResponseListener<Ga
     }
 
     @Override
-    public void serverResponseReceived(GameBase content) {
-        this.lobbyModel.addGameToLobby(content);
+    public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
+        this.lobbyModel.updateGameList(content);
     }
 
     static class Cell extends ListCell<GameBase> {
