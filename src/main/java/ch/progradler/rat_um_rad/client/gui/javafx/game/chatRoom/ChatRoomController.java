@@ -21,7 +21,6 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
     public TextField chatMsgTextField;
     public Button sendButton;
     public ListView chatPaneListView;
-
     private IUserService userService;
 
     @FXML

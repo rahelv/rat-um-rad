@@ -20,6 +20,11 @@ public class GameService implements IGameService {
         this.outputPacketGateway = OutputPacketGatewaySingleton.getOutputPacketGateway();
     }
 
+    public GameService(OutputPacketGateway outputPacketGateway) {
+        this.outputPacketGateway = outputPacketGateway;
+    }
+
+
     @Override
     public void createGame(int requiredPlayerCount) throws IOException {
         Packet packet = new Packet(Command.CREATE_GAME, requiredPlayerCount, ContentType.INTEGER);

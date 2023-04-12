@@ -20,6 +20,10 @@ public class UserService implements IUserService {
         outputPacketGateway = OutputPacketGatewaySingleton.getOutputPacketGateway();
     }
 
+    public UserService(OutputPacketGateway outputPacketGateway) {
+        this.outputPacketGateway = outputPacketGateway;
+    }
+
     public void sendUsername(String username) throws IOException {
         Packet packet = new Packet(Command.NEW_USER, username, ContentType.STRING);
         outputPacketGateway.sendPacket(packet);

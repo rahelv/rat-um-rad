@@ -23,7 +23,7 @@ import java.util.List;
  * Handles incoming responses from server.
  */
 public class ServerResponseHandler implements ServerInputPacketGateway {
-    private List<IListener> listeners = new ArrayList<IListener>();
+    private final List<IListener> listeners = new ArrayList<>();
     private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
 
