@@ -11,5 +11,5 @@ public interface ServerInputPacketGateway {
 
      //void setUsernameChangeController(UsernameChangeController usernameChangeController);
 
-     public void addListener(ServerResponseListener listenerToAdd);
+     void addListener(ServerResponseListener<?> listenerToAdd);
 }
