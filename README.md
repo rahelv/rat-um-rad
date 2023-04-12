@@ -40,5 +40,5 @@ einem Browser.
 
 | Befehl                 | Beschreibung                                                                                                                 |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| client \<ip\> \<port\> | startet den Client und stellt eine socket-Verbindung zur gewählten IP und Port her |
-| client                 | zu Testzwecken, startet den Client mit Default-Parametern Host: localhost und Port: 8090                                     |
+| client \<hostaddress\>:\<port\> [\<username\>] | startet den Client und stellt eine socket-Verbindung zur gewählten Host-IP-Adresse des Servers und Port her. Der username ist optional und der Client wird (falls angegeben) damit eingeloggt.  |
+| client                 | zu Testzwecken, startet der Client mit Default-Parametern Host: localhost und Port: 8090                                     |

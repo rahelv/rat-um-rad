@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.client.command_line;
 
 import ch.progradler.rat_um_rad.client.Client;
 import ch.progradler.rat_um_rad.client.services.IUserService;
+import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,22 +21,24 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
     private final InputReader inputReader;
     private final IUserService userService;
     private final UsernameHandler usernameHandler;
+    private final String initialUsername;
     private boolean quit = false;
 
-    public CommandLineHandler(InputReader inputReader, IUserService userService, String host, UsernameHandler usernameHandler) {
+    public CommandLineHandler(InputReader inputReader, IUserService userService, String host, UsernameHandler usernameHandler, String initialUsername) {
         this.inputReader = inputReader;
         this.userService = userService;
         this.usernameHandler = usernameHandler;
+        this.initialUsername = initialUsername;
     }
 
     /**
-     * starts the CommandLineHandler. Condition: username has to be sent to the server, waits until username is set
+     * starts the CommandLineHandler. Condition: waits until username is set before it listens to general input commands.
      *
      * @see UsernameHandler#addUsernameObserver(PropertyChangeListener)
      */
     @Override
     public void run() {
-        usernameHandler.chooseAndSendUsername(userService);
+        sendUsername();
         try {
             synchronized (this) {
                 wait();
@@ -44,6 +47,23 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
             e.printStackTrace();
         }
         listenToCommands();
+    }
+
+    private void sendUsername() {
+        if (initialUsername != null) {
+            if (new UsernameValidator().isUsernameValid(initialUsername)) {
+                try {
+                    userService.sendUsername(initialUsername);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Entered starting username invalid!");
+                usernameHandler.chooseAndSendUsername(userService);
+            }
+        } else {
+            usernameHandler.chooseAndSendUsername(userService);
+        }
     }
 
     /**
