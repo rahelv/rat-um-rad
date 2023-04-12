@@ -16,6 +16,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 
+/**
+ * Controller for the lobby internal chat (for view chatRoomView.fxml)
+ */
 public class ChatRoomController implements Initializable, IListener<ChatMessage> {
     private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
@@ -23,6 +26,9 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
     public ListView chatPaneListView;
     private IUserService userService;
 
+    /** send chat message to server through userService
+     * @param event
+     */
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {
@@ -34,16 +40,25 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
         chatMsgTextField.clear();
     }
 
+    /** adds the own written message to ChatPanel
+     * @param content
+     */
     public void addMyOwnChatContentToChatPaneList(String content){
         chatRoomModel.addChatMessageToList(new ChatMessage("You", content));
     }
 
+    /**
+     * @param location  The location used to resolve relative paths for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object, or {@code null} if
+     *                  the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this); //add listener for ServerResponses
 
         this.chatRoomModel = new ChatRoomModel();
-        chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty());
+        chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty()); //bind TextField for Chat Input to model
         this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
 
         try {
@@ -53,6 +68,9 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
         }
     }
 
+    /** when a chatMessage is received on the ServerResponseHandler, adds the received message to the list.
+     * @param chatMessage
+     */
     @Override
     public void serverResponseReceived(ChatMessage chatMessage) {
         Platform.runLater(() -> {

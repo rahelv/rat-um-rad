@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 
+/**
+ * Displays the Handbook for the game. Handbook is stored in file handbuch.htm
+ */
 public class HandbookPopup extends Stage {
     ScrollPane scrollPane = new ScrollPane();
     private WebEngine webEngine;

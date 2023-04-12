@@ -5,6 +5,9 @@ import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * Model for UsernameChange (stores the User)
+ */
 public class UsernameChangeModel {
     ComputerInfo computerInfo;
     private String systemUsername;

@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for changeUsernameDialog.fxml (in resources/views)
+ */
 public class UsernameChangeController implements Initializable, IListener<UsernameChange> {
     private Stage stage;
     @FXML
@@ -34,12 +37,23 @@ public class UsernameChangeController implements Initializable, IListener<Userna
     private UsernameValidator usernameValidator = new UsernameValidator();
     private IUserService userService;
 
+    /**
+     * @param location  The location used to resolve relative paths for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object, or {@code null} if
+     *                  the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
         this.userService = new UserService();
     }
 
+    /**
+     * used to initialize the Model (instead of a constructor, because class is loaded through FXML loader=
+     * @param usernameChangeModel
+     * @param window
+     */
     public void initData(UsernameChangeModel usernameChangeModel, Stage window) {
         this.stage = window;
         this.usernameChangeModel = usernameChangeModel;
@@ -49,6 +63,10 @@ public class UsernameChangeController implements Initializable, IListener<Userna
         username.textProperty().bindBidirectional(usernameChangeModel.chosenUsernameProperty());
     }
 
+    /** triggered when the ok button is clicked. checks the chosen username and sets an error if username is not valid.
+     * @param event
+     * @throws IOException
+     */
     @FXML
     private void confirmButtonAction(ActionEvent event) throws IOException {
         String error = checkUsernameAndSendToServerIfValid();
@@ -61,6 +79,10 @@ public class UsernameChangeController implements Initializable, IListener<Userna
         }
     }
 
+    /** checks if the chosenusername is valid and if it's valid sends it to server, otherwise returns error message.
+     * @return
+     * @throws IOException
+     */
     private String checkUsernameAndSendToServerIfValid() throws IOException {
         String username = usernameChangeModel.getChosenUsername();
         if(!validateUsername(username)) return "Invalid username. See: " + usernameChangeModel.getUsernameRules();
@@ -72,10 +94,17 @@ public class UsernameChangeController implements Initializable, IListener<Userna
         return null;
     }
 
+    /**
+     * @param username
+     * @return whether the username is valid or not
+     */
     public boolean validateUsername(String username) {
         return usernameValidator.isUsernameValid(username);
     }
 
+    /** listens to changes from the ServerResponseHandler and reacts accordingly. (When username confirmation is received from the server, goes to next page)
+     * @param content
+     */
     @Override
     public void serverResponseReceived(UsernameChange content) {
         this.usernameChangeModel.setConfirmedUsername(content.getNewName());
@@ -85,6 +114,9 @@ public class UsernameChangeController implements Initializable, IListener<Userna
         });
     }
 
+    /**
+     * sets the scene to the Startup Page
+     */
     private void showStartupPage() { //TODO: move this method to class GUI
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/mainPage.fxml"));
 
