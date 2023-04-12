@@ -70,7 +70,7 @@ class GameServiceUtilTest {
         String ipAddress = "clientA";
         String name = "John";
         Set<WheelColor> takenColors = new HashSet<WheelColor>();
-        List<WheelColor> someColors = Arrays.asList(RED, BLUE, ORANGE, GREEN, PINK, BLACK, WHITE, JOKER);
+        List<WheelColor> someColors = Arrays.asList(RED, BLUE, ORANGE, GREEN, PINK);
         takenColors.addAll(someColors);
 
         when(mockUserRepository.getUsername(ipAddress)).thenReturn(name);

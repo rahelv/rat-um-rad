@@ -92,16 +92,17 @@ public class GameService implements IGameService {
             game.getPlayers().put(ipAddress, newPlayer);
 
             //inform all players with the required information
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, game.getCreatorPlayerIpAddress());
-            for (Player player: game.getPlayers().values()) {
-                if (! player.equals(newPlayer)) {
-                    String playerIpAddress = userRepository.getIpAddress(player.getName());
+            for (String playerIpAddress: game.getPlayers().keySet()) {
+                if (! playerIpAddress.equals(ipAddress)) {
+                    ClientGame clientGame = GameServiceUtil.toClientGame(game, playerIpAddress);
                     outputPacketGateway.sendPacket(playerIpAddress, new Packet(NEW_PLAYER, clientGame, GAME));
                 }
             }
-            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, ContentType.GAME));
+            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
+            return;
         }
 
         //check, whether there are enough players. If yes, start Game.

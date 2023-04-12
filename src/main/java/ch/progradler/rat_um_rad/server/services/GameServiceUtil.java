@@ -10,9 +10,7 @@ import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Util class for {@link GameService} with complex methods that are used multiple times.
@@ -40,7 +38,12 @@ public class GameServiceUtil {
 
     static Player createNewPlayer(String ipAddress, IUserRepository userRepository, Set<WheelColor> takenColors) {
         String name = userRepository.getUsername(ipAddress);
-        WheelColor color = RandomGenerator.randomFromArray(WheelColor.values());
+        Set<WheelColor> allColors = new HashSet<>(Arrays.asList(WheelColor.values()));
+        for (WheelColor color: takenColors) {
+            allColors.remove(color);
+        }
+        WheelColor[] availableColors = allColors.toArray(new WheelColor[0]);
+        WheelColor color = RandomGenerator.randomFromArray(availableColors);
         while (takenColors.contains(color)) {
             RandomGenerator.randomFromArray(WheelColor.values());
         }
