@@ -23,6 +23,7 @@ test:
   stage: test
   script:
     - gradle test # jacocoTestReport
+  coverage: '/Total.*?([0-9]{1,3})%/'
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
