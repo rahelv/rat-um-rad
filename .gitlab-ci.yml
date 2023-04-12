@@ -5,6 +5,15 @@ stages:
   - test
 #  - converage
 
+# good coverage links:
+# https://docs.gitlab.com/ee/ci/testing/test_coverage_visualization.html
+# https://docs.gitlab.com/ee/ci/pipelines/settings.html#merge-request-test-coverage-results
+# https://notes.jfsanchez.net/2022/07/15/gitlab-coverage-from-jacoco-reports/
+# https://stackoverflow.com/questions/72381020/gitlab-cicd-test-coverage-with-jacoco
+# https://docs.gitlab.com/ee/ci/yaml/#coverage
+# https://github.com/Slickteam/gitlab-ci_dev_testing/blob/main/.gitlab-ci.yml
+# https://medium.com/slickteam/manage-tests-and-coverage-in-gitlab-ci-4ccf0ddae34a
+
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
   - export GRADLE_USER_HOME
