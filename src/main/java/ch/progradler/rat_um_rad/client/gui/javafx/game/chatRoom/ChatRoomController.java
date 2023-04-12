@@ -3,7 +3,7 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom;
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -19,7 +19,7 @@ import java.util.ServiceLoader;
 /**
  * Controller for the lobby internal chat (for view chatRoomView.fxml)
  */
-public class ChatRoomController implements Initializable, IListener<ChatMessage> {
+public class ChatRoomController implements Initializable, ServerResponseListener<ChatMessage> {
     private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
     public Button sendButton;

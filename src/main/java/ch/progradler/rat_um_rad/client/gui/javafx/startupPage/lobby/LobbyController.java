@@ -1,11 +1,9 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
-import ch.progradler.rat_um_rad.server.models.Game;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,7 +21,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LobbyController implements Initializable, IListener<GameBase> {
+public class LobbyController implements Initializable, ServerResponseListener<GameBase> {
     public Button showAllGamesButton;
     public Button leaveLobbyButton;
     public Button createGameButton;

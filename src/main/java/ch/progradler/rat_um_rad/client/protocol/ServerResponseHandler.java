@@ -7,12 +7,10 @@ import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomControll
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
-import ch.progradler.rat_um_rad.client.services.IUserService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -23,12 +21,12 @@ import java.util.List;
  * Handles incoming responses from server.
  */
 public class ServerResponseHandler implements ServerInputPacketGateway {
-    private final List<IListener> listeners = new ArrayList<>();
+    private final List<ServerResponseListener> listeners = new ArrayList<>();
     private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
 
     @Override
-    public void addListener(IListener listenerToAdd) {
+    public void addListener(ServerResponseListener listenerToAdd) {
         this.listeners.add(listenerToAdd);
     }
 
@@ -53,11 +51,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case USERNAME_CONFIRMED -> {
                 UsernameChange change = (UsernameChange) packet.getContent();
-                    for(IListener<UsernameChange> listener : listeners) {
-                        if(listener instanceof UsernameChangeController) {
-                            listener.serverResponseReceived(change);
-                        }
-                    }
+                notifyUsernameChangeListeners(change);
             }
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
@@ -70,35 +64,52 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 //TODO: update chatRoomModel
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
-                if (contentType == ContentType.CHAT_MESSAGE) {
-                    for(IListener<ChatMessage> listener : listeners) {
-                        if(listener instanceof ChatRoomController) {
-                            listener.serverResponseReceived((ChatMessage) content);
-                        }
-                    }
-                }
+                notifyChatMessageListeners((ChatMessage) content);
             }
             case SEND_GAMES -> { //TODO: handle list of games received
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 if(contentType == ContentType.GAME_INFO_LIST) {
-                    for(IListener<GameBase> listener: listeners) { //TODO: find a better way to handle the listeners of different types
-                        if(listener instanceof LobbyController) {
-                            listener.serverResponseReceived((GameBase) content);
-                        }
-                    }
+                    notifyGameListeners((GameBase) content);
                 }
             }
             case NEW_USER -> {
                 String content = (String) packet.getContent();
-                for(IListener listener: listeners) {
-                    if(listener instanceof ActivityController) {
-                        listener.serverResponseReceived(content + " entered the Game");
-                    }
-                }
+                notifyActivityListeners(content + " entered the game");
             }
             default -> presenter.display(packet);
             //TODO: send Activity to ActivityController when ein Spielzug passiert
+        }
+    }
+    private void notifyUsernameChangeListeners(UsernameChange change) {
+        for(ServerResponseListener<UsernameChange> listener : listeners) {
+            if(listener instanceof UsernameChangeController) {
+                listener.serverResponseReceived(change);
+            }
+        }
+    }
+
+    private void notifyChatMessageListeners(ChatMessage message) {
+        for (ServerResponseListener<ChatMessage> listener : listeners) {
+            if (listener instanceof ChatRoomController) {
+                listener.serverResponseReceived(message);
+            }
+        }
+    }
+
+    private void notifyGameListeners(GameBase content) {
+        for(ServerResponseListener<GameBase> listener: listeners) { //TODO: find a better way to handle the listeners of different types
+            if(listener instanceof LobbyController) {
+                listener.serverResponseReceived(content);
+            }
+        }
+    }
+
+    private void notifyActivityListeners(String activity) {
+        for(ServerResponseListener listener: listeners) {
+            if(listener instanceof ActivityController) {
+                listener.serverResponseReceived(activity);
+            }
         }
     }
 }

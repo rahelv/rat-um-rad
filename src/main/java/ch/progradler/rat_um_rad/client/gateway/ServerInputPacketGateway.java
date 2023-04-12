@@ -1,8 +1,6 @@
 package ch.progradler.rat_um_rad.client.gateway;
 
-import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
-import ch.progradler.rat_um_rad.client.models.User;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 /**
@@ -13,5 +11,5 @@ public interface ServerInputPacketGateway {
 
      //void setUsernameChangeController(UsernameChangeController usernameChangeController);
 
-     public void addListener(IListener listenerToAdd);
+     public void addListener(ServerResponseListener listenerToAdd);
 }

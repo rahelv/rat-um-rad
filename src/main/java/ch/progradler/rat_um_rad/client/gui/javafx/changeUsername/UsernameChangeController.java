@@ -4,7 +4,7 @@ import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import javafx.application.Platform;
@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
 /**
  * Controller for changeUsernameDialog.fxml (in resources/views)
  */
-public class UsernameChangeController implements Initializable, IListener<UsernameChange> {
+public class UsernameChangeController implements Initializable, ServerResponseListener<UsernameChange> {
     private Stage stage;
     @FXML
     private Label usernameRulesLabel;

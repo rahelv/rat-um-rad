@@ -1,9 +1,7 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.activity;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomModel;
-import ch.progradler.rat_um_rad.client.services.UserService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,12 +9,11 @@ import javafx.scene.control.ListView;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.ServiceLoader;
 
 /**
  * Controller for activitiesList.fxml. Activities that happened in the game are displayed in a list.
  */
-public class ActivityController implements Initializable, IListener<String> {
+public class ActivityController implements Initializable, ServerResponseListener<String> {
     private ActivityModel activityModel;
     @FXML
     private ListView activitiesListView;
