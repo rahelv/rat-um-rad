@@ -49,6 +49,7 @@ public class CommandHandler implements InputPacketGateway {
             }
             case USER_DISCONNECTED -> {
                 userService.handleUserDisconnected(ipAddress);
+                int todo =6; // remove
             }
             case PONG -> {
                 serverPingPongRunner.setPongArrived(ipAddress);
