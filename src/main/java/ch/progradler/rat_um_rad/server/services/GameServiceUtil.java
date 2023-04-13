@@ -44,9 +44,6 @@ public class GameServiceUtil {
         }
         WheelColor[] availableColors = allColors.toArray(new WheelColor[0]);
         WheelColor color = RandomGenerator.randomFromArray(availableColors);
-        while (takenColors.contains(color)) {
-            RandomGenerator.randomFromArray(WheelColor.values());
-        }
         return new Player(name, color, 0, GameConfig.STARTING_WHEELS_PER_PLAYER, 0);
     }
 
