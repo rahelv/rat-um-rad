@@ -20,6 +20,9 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
+
 /**
  * Handles incoming responses from server.
  */
@@ -59,6 +62,14 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
                 //this.userService.chooseAndSendUsername(this.serverOutput);
+                switch((String) packet.getContent()) {
+                    case JOINING_NOT_POSSIBLE -> {
+                        //TODO: implement
+                    }
+                    case USERNAME_INVALID -> {
+                        //this.usernameHandler.chooseAndSendUsername(userService);
+                    }
+                }
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
                 //TODO: implement
@@ -88,6 +99,12 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case GAME_CREATED -> {
                 ClientGame content = (ClientGame) packet.getContent();
                 notifyListenersOfType(content, CreateGameController.class, packet.getContentType());
+            }
+            case GAME_JOINED -> {
+                //TODO: implement
+            }
+            case NEW_PLAYER -> {
+                //TODO: implement
             }
             default -> presenter.display(packet);
             //TODO: send Activity to ActivityController when ein Spielzug passiert

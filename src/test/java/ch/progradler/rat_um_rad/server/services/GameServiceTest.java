@@ -5,24 +5,31 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
-import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCardDeck;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
+import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -112,7 +119,7 @@ class GameServiceTest {
         Game game = gameCaptor.getValue();
         assertEquals(1, game.getPlayers().size());
         Player creator = game.getPlayers().get(creatorIp);
-        Player expected = GameServiceUtil.createNewPlayer(creatorIp, mockUserRepository);
+        Player expected = GameServiceUtil.createNewPlayer(creatorIp, mockUserRepository, new HashSet<>());
         expected.setColor(creator.getColor()); // color is randomly generated so has to be the same
 
         assertEquals(expected, creator);
@@ -133,6 +140,98 @@ class GameServiceTest {
         ClientGame sentGame = GameServiceUtil.toClientGame(createdGame, creatorIp);//new ClientGame(createdGame.getId())
         Packet packet = new Packet(Command.GAME_CREATED, sentGame, ContentType.GAME);
         verify(mockOutputPacketGateway).sendPacket(creatorIp, packet);
+    }
+
+    @Test
+    void requestToJoinAlreadyStartedGameFails() {
+        String gameId = "idA";
+        String ipAddress = "ipAddressA";
+        Game game;
+        when(mockGameRepository.getGame(gameId)).thenReturn(game = new Game(gameId, PREPARATION, null, null, 5, new HashMap<>()));
+        gameService.joinGame(ipAddress, gameId);
+        ClientGame clientGame = GameServiceUtil.toClientGame(game, game.getCreatorPlayerIpAddress());
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
+        verify(mockOutputPacketGateway, never()).sendPacket(ipAddress, new Packet(NEW_PLAYER, clientGame, GAME));
+        verify(mockOutputPacketGateway, never()).sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
+    }
+
+    @Test
+    void requestToJoinWaitingGameWorks() {
+
+        String ipAddressJoiner = "ipAddressJoiner";
+        ClientGame clientGameForJoiner = mock(ClientGame.class);
+
+        String ipAddressB = "ipAddressB";
+        ClientGame clientGameB = mock(ClientGame.class);
+        Player playerB = mock(Player.class);
+        when(playerB.getColor()).thenReturn(WheelColor.BLACK);
+        List<Player> players = new LinkedList<>();
+        players.add(playerB);
+        Set<String> ipAddresses = new HashSet<>();
+        ipAddresses.add(ipAddressB);
+
+        String gameId = "idA";
+        Game game = mock(Game.class);
+        when(mockGameRepository.getGame(gameId)).thenReturn(game);
+        Map<String, Player> playerMap = mock(HashMap.class);
+        when(game.getPlayers()).thenReturn(playerMap);
+        when(game.getStatus()).thenReturn(WAITING_FOR_PLAYERS);
+        when(playerMap.values()).thenReturn(players);
+        when(playerMap.keySet()).thenReturn(ipAddresses);
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressJoiner))
+                    .thenReturn(clientGameForJoiner);
+            utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressB))
+                        .thenReturn(clientGameB);
+
+            gameService.joinGame(ipAddressJoiner, gameId);
+            verify(mockOutputPacketGateway, never()).sendPacket(ipAddressJoiner, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
+            verify(mockOutputPacketGateway).sendPacket(ipAddressB, new Packet(NEW_PLAYER, clientGameB, GAME));
+            verify(mockOutputPacketGateway).sendPacket(ipAddressJoiner, new Packet(GAME_JOINED, clientGameForJoiner, GAME));
+
+        }
+    }
+
+    @Test
+    void whenEnoughPlayersAreInTheGameMethodStartGameShouldBeCalled() {
+
+        String ipAddressJoiner = "ipAddressJoiner";
+        ClientGame clientGameForJoiner = mock(ClientGame.class);
+
+        String ipAddressB = "ipAddressB";
+        ClientGame clientGameB = mock(ClientGame.class);
+        Player playerB = mock(Player.class);
+        when(playerB.getColor()).thenReturn(WheelColor.BLACK);
+        List<Player> players = new LinkedList<>();
+        players.add(playerB);
+        Set<String> ipAddresses = new HashSet<>();
+        ipAddresses.add(ipAddressB);
+        ipAddresses.add(ipAddressJoiner);
+
+        String gameId = "idA";
+        Game game = mock(Game.class);
+        when(mockGameRepository.getGame(gameId)).thenReturn(game);
+        Map<String, Player> playerMap = mock(HashMap.class);
+        when(game.getPlayers()).thenReturn(playerMap);
+        when(game.getStatus()).thenReturn(WAITING_FOR_PLAYERS);
+        when(playerMap.values()).thenReturn(players);
+        when(playerMap.keySet()).thenReturn(ipAddresses);
+        int actualPlayerCount = playerMap.keySet().size();
+        when(playerMap.size()).thenReturn(actualPlayerCount);
+        when(game.getRequiredPlayerCount()).thenReturn(2);
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressJoiner))
+                    .thenReturn(clientGameForJoiner);
+            utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressB))
+                    .thenReturn(clientGameB);
+
+            gameService.joinGame(ipAddressJoiner, gameId);
+
+            //startGame() is called
+            assertEquals(game.getRequiredPlayerCount(), playerMap.size());
+        }
     }
 
     @Test
