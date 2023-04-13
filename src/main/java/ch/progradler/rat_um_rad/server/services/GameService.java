@@ -101,58 +101,8 @@ public class GameService implements IGameService {
 
         //check, whether there are enough players. If yes, start Game.
         if (game.getRequiredPlayerCount() == game.getPlayers().size()) {
-            startGame(gameId);
+            GameServiceUtil.startGame(gameId, gameRepository, outputPacketGateway);
         }
-    }
-
-    private void startGame(String gameId) {
-        Game game = gameRepository.getGame(gameId);
-        game.setStatus(PREPARATION);
-        for (String ipAddress: game.getPlayers().keySet()) {
-            handOutLongDestinationCard(gameId, ipAddress);
-            handOutShortDestinationCards(gameId, ipAddress);
-        }
-        for (String ipAddress: game.getPlayers().keySet()) {
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, clientGame, GAME));
-        }
-    }
-
-    private void handOutLongDestinationCard(String gameId, String ipAddress) {
-        Game game = gameRepository.getGame(gameId);
-        Player player = game.getPlayers().get(ipAddress);
-        DestinationCardDeck longDestinationCardDeck = game.getDecksOfGame().getLongDestinationCardDeck();
-        DestinationCard longDestinationCard = RandomGenerator.randomFromArray(longDestinationCardDeck.getCardDeck().toArray( new DestinationCard[0]));
-        longDestinationCardDeck.getCardDeck().remove(longDestinationCard);
-        // TODO: clarify: am I right, that now the longDestinationCard is removed from the game even if I didn't use a setter?
-        player.setLongDestinationCard(longDestinationCard);
-        gameRepository.updateGame(game);
-    }
-
-    private void handOutShortDestinationCards(String gameId, String ipAddress) {
-        Game game = gameRepository.getGame(gameId);
-        Player player = game.getPlayers().get(ipAddress);
-        DestinationCardDeck shortDestinationCardDeck = game.getDecksOfGame().getShortDestinationCardDeck();
-
-        List<DestinationCard> newShortDestinationCards = new LinkedList<>();
-        for (int i = 0; i < 3; i++ ) {
-            DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(shortDestinationCardDeck.getCardDeck().toArray( new DestinationCard[0]));
-            shortDestinationCardDeck.getCardDeck().remove(shortDestinationCard);
-            // TODO: clarify: am I right, that now the longDestinationCard is removed from the game even if I didn't use a setter?
-            newShortDestinationCards.add(shortDestinationCard);
-        }
-        player.setShortDestinationCards(newShortDestinationCards);
-        gameRepository.updateGame(game);
-    }
-
-    @Override
-    public void sendMessageTo(String ipAddressFrom, String ipAddressTo) {
-        //TODO: implement
-    }
-
-    @Override
-    public void sendMessageToAll(String ipAddressFrom) {
-        //TODO: implement
     }
 
     @Override
@@ -161,7 +111,37 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void selectShortDestinationCards(String ipAddress, DestinationCardDeck destinationCardDeck) {
+    public void selectShortDestinationCards(String ipAddress, List<String> listOfCardIds) {
+        Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
+        GameStatus gameStatus = game.getStatus();
+        Player player = game.getPlayers().get(ipAddress);
+        switch(gameStatus) {
+            case PREPARATION -> {
+                for (DestinationCard shortDestinationCard: player.getShortDestinationCards()) {
+                    if (! listOfCardIds.contains(shortDestinationCard.getCardID())) {
+                        putBackDestinationCard(ipAddress, player.getShortDestinationCards().indexOf(shortDestinationCard));
+                    }
+                }
+                game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, true);
+                if (! game.getPlayersHaveChosenShortDestinationCards().containsValue(false)) {
+                    startGameRounds(game.getId());
+                }
+            }
+            case STARTED -> {
+                //TODO: implement
+            }
+        }
+    }
+
+    private void putBackDestinationCard(String ipAddress, int indexOfCard) {
+        Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
+        Player player = game.getPlayers().get(ipAddress);
+        DestinationCard destinationCard = player.getShortDestinationCards().get(indexOfCard);
+        player.getShortDestinationCards().remove(destinationCard);
+        game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck().add(destinationCard);
+    }
+
+    private void startGameRounds(String gameId) {
         //TODO: implement
     }
 

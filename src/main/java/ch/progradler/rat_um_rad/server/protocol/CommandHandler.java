@@ -8,6 +8,8 @@ import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
+import java.util.List;
+
 /**
  * Handles incoming commands by clients.
  */
@@ -82,6 +84,9 @@ public class CommandHandler implements InputPacketGateway {
             }
             case WANT_JOIN_GAME -> {
                 gameService.joinGame(ipAddress, (String) packet.getContent());
+            }
+            case SHORT_DESTINATOIN_CARDS_SELECTED_IN_PREPARATION -> {
+                gameService.selectShortDestinationCards(ipAddress, (List<String>) packet.getContent());
             }
         }
     }

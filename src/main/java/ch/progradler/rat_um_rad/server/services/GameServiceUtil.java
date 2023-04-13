@@ -7,6 +7,8 @@ import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -15,6 +17,10 @@ import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
 import java.util.*;
+
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
+import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
 
 /**
  * Util class for {@link GameService} with complex methods that are used multiple times.
@@ -81,5 +87,45 @@ public class GameServiceUtil {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet(command, clientGame, ContentType.GAME));
         }
+    }
+
+    public static void startGame(String gameId, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
+        Game game = gameRepository.getGame(gameId);
+        game.setStatus(PREPARATION);
+        for (String ipAddress: game.getPlayers().keySet()) {
+            GameServiceUtil.handOutLongDestinationCard(gameId, ipAddress, gameRepository);
+            GameServiceUtil.handOutShortDestinationCards(gameId, ipAddress, gameRepository);
+            game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, false);
+        }
+        gameRepository.updateGame(game);
+        for (String ipAddress: game.getPlayers().keySet()) {
+            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, clientGame, GAME));
+        }
+    }
+
+    public static void handOutLongDestinationCard(String gameId, String ipAddress, IGameRepository gameRepository) {
+        Game game = gameRepository.getGame(gameId);
+        Player player = game.getPlayers().get(ipAddress);
+        DestinationCardDeck longDestinationCardDeck = game.getDecksOfGame().getLongDestinationCardDeck();
+        DestinationCard longDestinationCard = RandomGenerator.randomFromArray(longDestinationCardDeck.getCardDeck().toArray( new DestinationCard[0]));
+        longDestinationCardDeck.getCardDeck().remove(longDestinationCard);
+        player.setLongDestinationCard(longDestinationCard);
+        gameRepository.updateGame(game);
+    }
+
+    public static void handOutShortDestinationCards(String gameId, String ipAddress, IGameRepository gameRepository) {
+        Game game = gameRepository.getGame(gameId);
+        Player player = game.getPlayers().get(ipAddress);
+        DestinationCardDeck shortDestinationCardDeck = game.getDecksOfGame().getShortDestinationCardDeck();
+
+        List<DestinationCard> playerShortDestinationCards = player.getShortDestinationCards();
+        for (int i = 0; i < 3; i++ ) {
+            DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(shortDestinationCardDeck.getCardDeck().toArray( new DestinationCard[0]));
+            shortDestinationCardDeck.getCardDeck().remove(shortDestinationCard);
+            playerShortDestinationCards.add(shortDestinationCard);
+        }
+        player.setShortDestinationCards(playerShortDestinationCards);
+        gameRepository.updateGame(game);
     }
 }

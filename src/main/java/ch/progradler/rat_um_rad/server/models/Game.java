@@ -7,6 +7,7 @@ import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,6 +19,7 @@ public class Game extends GameBase {
      */
     private Map<String, Player> players;
     private DecksOfGame decksOfGame;
+    private Map<String, Boolean> playersHaveChosenShortDestinationCards = new HashMap<String, Boolean>();
 
     public Game(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount, Map<String, Player> players) {
         super(id, status, map, creatorPlayerIpAddress, requiredPlayerCount);
@@ -44,5 +46,13 @@ public class Game extends GameBase {
 
     public Map<String, Player> getPlayers() {
         return players;
+    }
+
+    public Map<String, Boolean> getPlayersHaveChosenShortDestinationCards() {
+        return playersHaveChosenShortDestinationCards;
+    }
+
+    public void setPlayersHaveChosenShortDestinationCards(Map<String, Boolean> playersHaveChosenShortDestinationCards) {
+        this.playersHaveChosenShortDestinationCards = playersHaveChosenShortDestinationCards;
     }
 }

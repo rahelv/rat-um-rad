@@ -147,8 +147,8 @@ class GameServiceTest {
     void requestToJoinAlreadyStartedGameFails() {
         String gameId = "idA";
         String ipAddress = "ipAddressA";
-        Game game;
-        when(mockGameRepository.getGame(gameId)).thenReturn(game = new Game(gameId, PREPARATION, null, null, 5, new HashMap<>()));
+        Game game = new Game(gameId, PREPARATION, null, null, 5, new HashMap<>());
+        when(mockGameRepository.getGame(gameId)).thenReturn(game);
         ClientGame clientGame = GameServiceUtil.toClientGame(game, game.getCreatorPlayerIpAddress());
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             gameService.joinGame(ipAddress, gameId);
@@ -205,23 +205,24 @@ class GameServiceTest {
         ClientGame clientGameB = mock(ClientGame.class);
         Player playerB = mock(Player.class);
         when(playerB.getColor()).thenReturn(WheelColor.BLACK);
-        List<Player> players = new LinkedList<>();
+        /*List<Player> players = new LinkedList<>();
         players.add(playerB);
         Set<String> ipAddresses = new HashSet<>();
         ipAddresses.add(ipAddressB);
-        ipAddresses.add(ipAddressJoiner);
+        ipAddresses.add(ipAddressJoiner);*/
 
         String gameId = "idA";
         Game game = mock(Game.class);
         when(mockGameRepository.getGame(gameId)).thenReturn(game);
-        Map<String, Player> playerMap = mock(HashMap.class);
+        Map<String, Player> playerMap = new HashMap<>();
+        playerMap.put(ipAddressB, playerB);
         when(game.getPlayers()).thenReturn(playerMap);
         when(game.getStatus()).thenReturn(WAITING_FOR_PLAYERS);
-        when(playerMap.values()).thenReturn(players);
-        when(playerMap.keySet()).thenReturn(ipAddresses);
-        int actualPlayerCount = playerMap.keySet().size();
-        when(playerMap.size()).thenReturn(actualPlayerCount);
+        /*int actualPlayerCount = playerMap.keySet().size();
+        when(playerMap.size()).thenReturn(actualPlayerCount);*/
         when(game.getRequiredPlayerCount()).thenReturn(2);
+
+        //add these line because game.start() as a non mocked method is called
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressJoiner))
