@@ -33,7 +33,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {
-            userService.sendBroadCastMessage(chatRoomModel.getTextInputContent());
+            userService.sendGameInternalMessage(chatRoomModel.getTextInputContent());
         } catch (IOException e) {
             e.printStackTrace();
         }
