@@ -96,7 +96,6 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
                 this.window.show();
             }
         }
-
     }
 
     /** Listener for createGameView --> creates the game model, instantiates the game View
