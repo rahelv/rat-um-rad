@@ -63,6 +63,7 @@ public class ClientInputListener implements Runnable {
 
             while (true) {
                 String encoded = StreamUtils.readStringFromStream(inputStream);
+                //System.out.println("encoded packet " + encoded);
                 Packet packet = packetCoder.decode(encoded, 0);
                 inputPacketGateway.handleClientCommand(packet, ipAddress);
                 // TODO: unittest

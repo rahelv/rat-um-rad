@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * Validator for username
  */
 public class UsernameValidator {
-    private static final String USERNAME_REGEX = "^[A-Za-z][A-Za-z0-9_]{4,29}$";
+    private static final String USERNAME_REGEX = "^[A-Za-z][A-Za-z0-9_]{2,29}$";
 
     /**
      * Method to validate a given username.

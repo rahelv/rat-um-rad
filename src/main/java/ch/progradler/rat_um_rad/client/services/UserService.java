@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.client.services;
 
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -8,14 +9,21 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
 
+/**
+ * Implementation of {@link IUserService}.
+ * Uses {@link OutputPacketGateway} to send correct {@link Packet}s to server.
+ */
 public class UserService implements IUserService {
-    private final OutputPacketGateway outputPacketGateway;
+    private OutputPacketGateway outputPacketGateway;
+
+    public UserService() {
+        outputPacketGateway = OutputPacketGatewaySingleton.getOutputPacketGateway();
+    }
 
     public UserService(OutputPacketGateway outputPacketGateway) {
         this.outputPacketGateway = outputPacketGateway;
     }
 
-    @Override
     public void sendUsername(String username) throws IOException {
         Packet packet = new Packet(Command.NEW_USER, username, ContentType.STRING);
         outputPacketGateway.sendPacket(packet);

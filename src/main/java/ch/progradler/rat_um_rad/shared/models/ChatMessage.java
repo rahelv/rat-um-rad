@@ -40,4 +40,9 @@ public class ChatMessage {
     public int hashCode() {
         return Objects.hash(username, message);
     }
+
+   @Override
+    public String toString() {
+        return this.username + ": " + this.message;
+   }
 }

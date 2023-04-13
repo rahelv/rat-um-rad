@@ -1,7 +1,7 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder;
 
-import ch.progradler.rat_um_rad.client.models.ClientGame;
-import ch.progradler.rat_um_rad.client.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
@@ -51,7 +51,7 @@ class ClientGameCoderTest {
 
         Player ownPlayer = new Player("player A", WheelColor.RED, 100, 10, 2);
         VisiblePlayer otherPlayer = new VisiblePlayer("player B", WheelColor.BLUE,
-                50, 15, "clientB", 15, 3, 1);
+                50, 15, 1, "clientB", 15, 3);
         List<VisiblePlayer> otherPlayers = Collections.singletonList(otherPlayer);
 
         ClientGame game = new ClientGame(gameId,
@@ -99,7 +99,7 @@ class ClientGameCoderTest {
 
         Player ownPlayer = new Player("player A", WheelColor.RED, 100, 10, 2);
         VisiblePlayer otherPlayer = new VisiblePlayer("player B", WheelColor.BLUE,
-                50, 15, "clientB", 15, 3, 1);
+                50, 15, 1, "clientB", 15, 3);
         List<VisiblePlayer> otherPlayers = Collections.singletonList(otherPlayer);
 
         String encodedMap = "encoded/map";

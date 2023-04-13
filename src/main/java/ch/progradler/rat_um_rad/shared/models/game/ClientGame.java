@@ -1,9 +1,6 @@
-package ch.progradler.rat_um_rad.client.models;
+package ch.progradler.rat_um_rad.shared.models.game;
 
-import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
-import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 
 import java.util.Date;
 import java.util.List;

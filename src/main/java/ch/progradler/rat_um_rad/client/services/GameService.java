@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.client.services;
 
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -15,9 +16,14 @@ import java.io.IOException;
 public class GameService implements IGameService {
     private final OutputPacketGateway outputPacketGateway;
 
+    public GameService() {
+        this.outputPacketGateway = OutputPacketGatewaySingleton.getOutputPacketGateway();
+    }
+
     public GameService(OutputPacketGateway outputPacketGateway) {
         this.outputPacketGateway = outputPacketGateway;
     }
+
 
     @Override
     public void createGame(int requiredPlayerCount) throws IOException {
