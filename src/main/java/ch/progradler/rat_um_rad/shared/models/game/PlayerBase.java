@@ -1,6 +1,6 @@
 package ch.progradler.rat_um_rad.shared.models.game;
 
-import ch.progradler.rat_um_rad.client.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
 import java.util.Objects;

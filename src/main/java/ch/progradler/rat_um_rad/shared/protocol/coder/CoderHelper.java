@@ -3,14 +3,12 @@ package ch.progradler.rat_um_rad.shared.protocol.coder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Helper class for de- and encoding content.
  */
-class CoderHelper {
+public class CoderHelper {
     private final static DateFormat DATE_CODING_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     /**
@@ -61,10 +59,30 @@ class CoderHelper {
     }
 
     public static String encodeStringList(int separatorLevel, List<String> list) {
+        if (list.isEmpty()) {
+            return null;
+        }
         return encodeFields(separatorLevel, list.toArray(new String[0]));
     }
 
     public static List<String> decodeStringList(int separatorLevel, String encoded) {
+        if(encoded.equals("null")) {
+            return Collections.emptyList();
+        }
         return decodeFields(separatorLevel, encoded);
+    }
+
+    public static String encodeNullableField(Object object) {
+        if(object == null) {
+            return "null";
+        }
+        return "";
+    }
+
+    public static Object decodeNullableField(String encoded) {
+        if(encoded.equals("null")) {
+            return null;
+        }
+        return new String("");
     }
 }

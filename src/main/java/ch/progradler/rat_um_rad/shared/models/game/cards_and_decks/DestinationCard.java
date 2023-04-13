@@ -7,14 +7,12 @@ import ch.progradler.rat_um_rad.shared.models.game.City;
  */
 public class DestinationCard {
     private final String cardID;
-    private final int color;
     private final City destination1;
     private final City destination2;
     private final int points;
 
-    public DestinationCard(String cardID, int color, City destination1, City destination2, int points) {
+    public DestinationCard(String cardID, City destination1, City destination2, int points) {
         this.cardID = cardID;
-        this.color = color;
         this.destination1 = destination1;
         this.destination2 = destination2;
         this.points = points;
@@ -22,10 +20,6 @@ public class DestinationCard {
 
     public String getCardID() {
         return cardID;
-    }
-
-    public int getColor() {
-        return color;
     }
 
     public City getDestination1() {
