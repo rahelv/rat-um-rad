@@ -3,7 +3,6 @@ package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame;
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -27,6 +26,13 @@ public class CreateGameController implements Initializable, ServerResponseListen
     public Button createGameButton;
     private CreateGameModel createGameModel;
     private IGameService gameService;
+
+    /** initializes the controller.
+     * @param location  The location used to resolve relative paths for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object, or {@code null} if
+     *                  the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
@@ -40,11 +46,18 @@ public class CreateGameController implements Initializable, ServerResponseListen
        //groupNameTextField.textProperty().bindBidirectional(createGameModel.getGroupNameInputProperty());
     }
 
+    /** initializes the model which comes from the GUI class.
+     * @param createGameModel
+     * @param window
+     */
     public void initData(CreateGameModel createGameModel, Stage window) {
         this.createGameModel = createGameModel;
         this.stage = window;
     }
 
+    /** bound to createGameButton in View. sends request to server to create game through gameService.
+     * @param actionEvent
+     */
     @FXML
     public void createGameButtonAction(ActionEvent actionEvent) {
         Integer playerCount = playerNumSpinner.getValue();
@@ -55,6 +68,10 @@ public class CreateGameController implements Initializable, ServerResponseListen
         }
     }
 
+    /** listener for @ServerResponseHandler. When game is created, sends notification to listener (here GUI class) so it can set the according scene.
+     * @param clientGame
+     * @param contentType
+     */
     @Override
     public void serverResponseReceived(ClientGame clientGame, ContentType contentType) {
         //TODO: open game view as soon as game is received.

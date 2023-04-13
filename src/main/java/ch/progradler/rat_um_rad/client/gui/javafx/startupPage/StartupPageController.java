@@ -1,7 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.startupPage;
 
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeModel;
-import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,7 +37,6 @@ public class StartupPageController implements Initializable {
     }
 
     private void showUsernameChangeDialog() {
-        System.out.println("show usernamechangedialog");
         Platform.runLater(() -> {
             startupPageModel.getListener().controllerChanged("showUsernameChange");
         });

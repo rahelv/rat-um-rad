@@ -53,11 +53,18 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
         //TODO: Anfrage an Server um Game zu joinen
     }
 
+    /** Updates the GameList when a Server Response is received. (Listens to ServerResponseHandler)
+     * @param content
+     * @param contentType
+     */
     @Override
     public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
         this.lobbyModel.updateGameList(content);
     }
 
+    /**
+     * Cell Class to set the Cells in the List View. Add two Buttons to each cell (players and join) and sets the id as text.)
+     */
     static class Cell extends ListCell<GameBase> {
         Pane pane = new Pane();
         HBox hbox = new HBox();
