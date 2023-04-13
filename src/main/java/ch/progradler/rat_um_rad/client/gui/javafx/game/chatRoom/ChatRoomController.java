@@ -10,7 +10,10 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.net.URL;
@@ -28,10 +31,11 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {
-            if(getTarget(event).equals("all")){
+            String target = getTarget();
+            if (target.equals("all")) {
                 userService.sendBroadCastMessage(chatRoomModel.getTextInputContent());
-            }else{
-                userService.sendWhisperMessage(chatRoomModel.getTextInputContent(),getTarget(event));
+            } else {
+                userService.sendWhisperMessage(chatRoomModel.getTextInputContent(), target);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,7 +59,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
         //chatChoiceBox.getItems().addAll(chatRoomModel.chatTargetsList);
         chatChoiceBox.setItems(chatRoomModel.chatTargetsList);
         chatChoiceBox.getSelectionModel().select(0);//select the first item in choiceBox:"all"
-        chatChoiceBox.setOnAction(this::getTarget);
+        chatChoiceBox.setOnAction((e) -> getTarget());
         try {
             this.userService = ServiceLoader.load(UserService.class).iterator().next();
         } catch (Exception e) {
@@ -69,7 +73,8 @@ public class ChatRoomController implements Initializable, ServerResponseListener
             chatRoomModel.addChatMessageToList(chatMessage);
         });
     }
-    public String getTarget(ActionEvent event){
+
+    private String getTarget() {
         return chatChoiceBox.getValue();
     }
 }
