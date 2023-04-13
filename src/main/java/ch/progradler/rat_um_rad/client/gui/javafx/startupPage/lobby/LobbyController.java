@@ -1,16 +1,18 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -21,9 +23,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
-public class LobbyController implements Initializable, IListener<GameBase> {
+public class LobbyController implements Initializable, ServerResponseListener<List<GameBase>> {
     public Button showAllGamesButton;
     public Button leaveLobbyButton;
     public Button createGameButton;
@@ -40,8 +43,8 @@ public class LobbyController implements Initializable, IListener<GameBase> {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
         this.gameService = new GameService();
         this.lobbyModel = new LobbyModel();
-       /** try {
-            //this.gameService.requestWaitingGames();
+       /**try {
+            this.gameService.requestWaitingGames();
         } catch (IOException e) {
             e.printStackTrace();
         }*/
@@ -49,6 +52,10 @@ public class LobbyController implements Initializable, IListener<GameBase> {
         this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
         openGamesListView.setCellFactory(param -> new Cell());
         //each item of listView should have 2 buttons:list players and join game
+    }
+
+    public void getOpenGamesFromServer() throws IOException{
+        this.gameService.requestWaitingGames();
     }
 
     @FXML
@@ -76,13 +83,17 @@ public class LobbyController implements Initializable, IListener<GameBase> {
     @FXML
     public void createGameAction(ActionEvent actionEvent) {
         //TODO: create Game dialog
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/createGameView.fxml"));
+
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/createGameView.fxml"));
-            Stage stage = new Stage();
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             stage.setTitle("Rat um Rad - create game");
-            Scene scene = new Scene(root, 600, 400);
+            Scene scene = new Scene(loader.load(), 640, 480);
             stage.setScene(scene);
             stage.show();
+
+            CreateGameController controller = loader.getController();
+            controller.initData(stage);
         } catch (Exception e) {
             System.out.println("load failed");
             e.printStackTrace();
@@ -97,8 +108,8 @@ public class LobbyController implements Initializable, IListener<GameBase> {
     }
 
     @Override
-    public void serverResponseReceived(GameBase content) {
-        this.lobbyModel.addGameToLobby(content);
+    public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
+        this.lobbyModel.updateGameList(content);
     }
 
     static class Cell extends ListCell<GameBase> {

@@ -4,8 +4,9 @@ import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -21,7 +22,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class UsernameChangeController implements Initializable, IListener<UsernameChange> {
+/**
+ * Controller for changeUsernameDialog.fxml (in resources/views)
+ */
+public class UsernameChangeController implements Initializable, ServerResponseListener<UsernameChange> {
     private Stage stage;
     @FXML
     private Label usernameRulesLabel;
@@ -34,12 +38,23 @@ public class UsernameChangeController implements Initializable, IListener<Userna
     private UsernameValidator usernameValidator = new UsernameValidator();
     private IUserService userService;
 
+    /**
+     * @param location  The location used to resolve relative paths for the root object, or
+     *                  {@code null} if the location is not known.
+     * @param resources The resources used to localize the root object, or {@code null} if
+     *                  the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
         this.userService = new UserService();
     }
 
+    /**
+     * used to initialize the Model (instead of a constructor, because class is loaded through FXML loader=
+     * @param usernameChangeModel
+     * @param window
+     */
     public void initData(UsernameChangeModel usernameChangeModel, Stage window) {
         this.stage = window;
         this.usernameChangeModel = usernameChangeModel;
@@ -49,6 +64,10 @@ public class UsernameChangeController implements Initializable, IListener<Userna
         username.textProperty().bindBidirectional(usernameChangeModel.chosenUsernameProperty());
     }
 
+    /** triggered when the ok button is clicked. checks the chosen username and sets an error if username is not valid.
+     * @param event
+     * @throws IOException
+     */
     @FXML
     private void confirmButtonAction(ActionEvent event) throws IOException {
         String error = checkUsernameAndSendToServerIfValid();
@@ -61,6 +80,10 @@ public class UsernameChangeController implements Initializable, IListener<Userna
         }
     }
 
+    /** checks if the chosenusername is valid and if it's valid sends it to server, otherwise returns error message.
+     * @return
+     * @throws IOException
+     */
     private String checkUsernameAndSendToServerIfValid() throws IOException {
         String username = usernameChangeModel.getChosenUsername();
         if(!validateUsername(username)) return "Invalid username. See: " + usernameChangeModel.getUsernameRules();
@@ -68,16 +91,35 @@ public class UsernameChangeController implements Initializable, IListener<Userna
             return usernameChangeModel.getChosenUsername() + " is already your username";
             //TODO: tell user to choose another name or cancel the action
         }
-        this.userService.sendUsername(usernameChangeModel.getChosenUsername());
+        try {
+            sendUsernameToServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
+    private void sendUsernameToServer() throws IOException {
+        if(this.usernameChangeModel.getCurrentUsername().equals("")) {
+            this.userService.sendUsername(usernameChangeModel.getChosenUsername());
+        } else {
+            this.userService.changeUsername(usernameChangeModel.getChosenUsername());
+        }
+    }
+
+    /**
+     * @param username
+     * @return whether the username is valid or not
+     */
     public boolean validateUsername(String username) {
         return usernameValidator.isUsernameValid(username);
     }
 
+    /** listens to changes from the ServerResponseHandler and reacts accordingly. (When username confirmation is received from the server, goes to next page)
+     * @param content
+     */
     @Override
-    public void serverResponseReceived(UsernameChange content) {
+    public void serverResponseReceived(UsernameChange content, ContentType contentType) {
         this.usernameChangeModel.setConfirmedUsername(content.getNewName());
         //TODO: Confirm UsernameChange for User And Next View...
         Platform.runLater(() -> {
@@ -85,6 +127,9 @@ public class UsernameChangeController implements Initializable, IListener<Userna
         });
     }
 
+    /**
+     * sets the scene to the Startup Page
+     */
     private void showStartupPage() { //TODO: move this method to class GUI
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/mainPage.fxml"));
 

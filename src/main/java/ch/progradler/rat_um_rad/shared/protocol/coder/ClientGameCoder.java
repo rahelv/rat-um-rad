@@ -46,6 +46,9 @@ public class ClientGameCoder implements Coder<ClientGame> {
 
     @Override
     public ClientGame decode(String encoded, int level) {
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
         String gameId = fields.get(0);
         GameStatus status = GameStatus.valueOf(fields.get(1));

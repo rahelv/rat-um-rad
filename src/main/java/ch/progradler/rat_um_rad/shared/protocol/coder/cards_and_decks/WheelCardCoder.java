@@ -12,13 +12,18 @@ import java.util.List;
 public class WheelCardCoder implements Coder<WheelCard> {
     @Override
     public String encode(WheelCard card, int level) {
-
+        if(card == null) {
+            return "null";
+        }
         return CoderHelper.encodeFields(level,
                 String.valueOf(card.getCardID()));
     }
 
     @Override
     public WheelCard decode(String encoded, int level) {
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
         int cardID = Integer.parseInt(fields.get(0));
         return new WheelCard(cardID);

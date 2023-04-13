@@ -11,6 +11,9 @@ import java.util.List;
 public class PlayerBaseCoder implements Coder<PlayerBase> {
     @Override
     public String encode(PlayerBase player, int level) {
+        if(player == null) {
+            return "null";
+        }
         return CoderHelper.encodeFields(level,
                 player.getName(),
                 player.getColor().toString(),
@@ -21,6 +24,9 @@ public class PlayerBaseCoder implements Coder<PlayerBase> {
 
     @Override
     public PlayerBase decode(String encoded, int level) {
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
         String name = fields.get(0);
         WheelColor color = WheelColor.valueOf(fields.get(1));

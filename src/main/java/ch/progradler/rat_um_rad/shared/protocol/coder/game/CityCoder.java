@@ -15,6 +15,9 @@ public class CityCoder implements Coder<City> {
     }
     @Override
     public String encode(City city, int level) {
+        if(city == null) {
+            return "null";
+        }
         String pointEncoded = pointCoder.encode(city.getPoint(), level + 1);
         return CoderHelper.encodeFields(level,
                 city.getId(),
@@ -24,6 +27,9 @@ public class CityCoder implements Coder<City> {
 
     @Override
     public City decode(String encoded, int level) {
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
         String id = fields.get(0);
         String name = fields.get(1);

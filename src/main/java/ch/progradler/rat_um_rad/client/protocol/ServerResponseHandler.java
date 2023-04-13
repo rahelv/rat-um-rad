@@ -2,17 +2,18 @@ package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
+import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
-import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
-import ch.progradler.rat_um_rad.client.services.IUserService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -23,18 +24,18 @@ import java.util.List;
  * Handles incoming responses from server.
  */
 public class ServerResponseHandler implements ServerInputPacketGateway {
-    private List<IListener> listeners = new ArrayList<IListener>();
+    private final List<ServerResponseListener<?>> listeners = new ArrayList<>();
     private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
-
-    @Override
-    public void addListener(IListener listenerToAdd) {
-        this.listeners.add(listenerToAdd);
-    }
 
     public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner) {
         this.presenter = presenter;
         this.clientPingPongRunner = clientPingPongRunner;
+    }
+
+    @Override
+    public void addListener(ServerResponseListener<?> listenerToAdd) {
+        this.listeners.add(listenerToAdd);
     }
 
     /**
@@ -53,11 +54,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case USERNAME_CONFIRMED -> {
                 UsernameChange change = (UsernameChange) packet.getContent();
-                    for(IListener<UsernameChange> listener : listeners) {
-                        if(listener instanceof UsernameChangeController) {
-                            listener.serverResponseReceived(change);
-                        }
-                    }
+                notifyListenersOfType(change, UsernameChangeController.class, packet.getContentType());
             }
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
@@ -68,37 +65,40 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case SEND_BROADCAST_CHAT -> {
                 //TODO: update chatRoomModel
-                Object content = packet.getContent();
+                ChatMessage message = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
-                if (contentType == ContentType.CHAT_MESSAGE) {
-                    for(IListener<ChatMessage> listener : listeners) {
-                        if(listener instanceof ChatRoomController) {
-                            listener.serverResponseReceived((ChatMessage) content);
-                        }
-                    }
-                }
+                notifyListenersOfType(message, ChatRoomController.class, packet.getContentType());
             }
-            case SEND_GAMES -> { //TODO: handle list of games received
+            case SEND_GAMES -> {
+                System.out.println("sendgames " + packet);
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 if(contentType == ContentType.GAME_INFO_LIST) {
-                    for(IListener<GameBase> listener: listeners) { //TODO: find a better way to handle the listeners of different types
-                        if(listener instanceof LobbyController) {
-                            listener.serverResponseReceived((GameBase) content);
-                        }
-                    }
+                    // TODO: Lobby should only get list when it's calling for it
+                    notifyListenersOfType((List<GameBase>) content, LobbyController.class, packet.getContentType());
+                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                } else {
+                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
                 }
             }
             case NEW_USER -> {
                 String content = (String) packet.getContent();
-                for(IListener listener: listeners) {
-                    if(listener instanceof ActivityController) {
-                        listener.serverResponseReceived(content + " entered the Game");
-                    }
-                }
+               // notifyListenersOfType(content + " entered the game", ActivityController.class, packet.getContentType());
+            }
+            case GAME_CREATED -> {
+                ClientGame content = (ClientGame) packet.getContent();
+                notifyListenersOfType(content, CreateGameController.class, packet.getContentType());
             }
             default -> presenter.display(packet);
             //TODO: send Activity to ActivityController when ein Spielzug passiert
+        }
+    }
+
+    private <T> void notifyListenersOfType(T event, Class<? extends ServerResponseListener<T>> cls, ContentType contentType) {
+        for (ServerResponseListener<?> listener : listeners) {
+            if (listener.getClass().equals(cls)) {
+                ((ServerResponseListener<T>) listener).serverResponseReceived(event, contentType);
+            }
         }
     }
 }

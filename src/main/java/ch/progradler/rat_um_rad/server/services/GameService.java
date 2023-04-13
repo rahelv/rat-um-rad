@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static ch.progradler.rat_um_rad.shared.protocol.Command.SEND_GAMES;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME_INFO_LIST;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
 
 /**
@@ -133,19 +133,19 @@ public class GameService implements IGameService {
 
     @Override
     public void getWaitingGames(String ipAddress) {
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
+        Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST_WAITING);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     @Override
     public void getStartedGames(String ipAddress) {
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getStartedGames(), GAME_INFO_LIST);
+        Packet packet = new Packet(SEND_GAMES, gameRepository.getStartedGames(), GAME_INFO_LIST_STARTED);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     @Override
     public void getFinishedGames(String ipAddress) {
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST);
+        Packet packet = new Packet(SEND_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST_FINISHED);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 }

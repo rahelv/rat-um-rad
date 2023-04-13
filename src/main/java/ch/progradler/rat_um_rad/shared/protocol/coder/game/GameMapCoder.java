@@ -18,6 +18,9 @@ public class GameMapCoder implements Coder<GameMap> {
      }
     @Override
     public String encode(GameMap map, int level) {
+        if(map == null) {
+            return "null";
+        }
         List<String> citiesList = map.getCities().stream()
                 .map((city) -> cityCoder.encode(city, level + 2))
                 .toList();
@@ -35,6 +38,9 @@ public class GameMapCoder implements Coder<GameMap> {
 
     @Override
     public GameMap decode(String encoded, int level) {
+        if(encoded.equals("") || encoded.equals("null")) {
+            return null;
+        }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
 
         List<String> citiesListString = CoderHelper.decodeStringList(level + 1, fields.get(0));

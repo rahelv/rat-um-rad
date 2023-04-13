@@ -5,12 +5,15 @@ import ch.progradler.rat_um_rad.client.utils.ComputerInfo;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * Model for UsernameChange (stores the User)
+ */
 public class UsernameChangeModel {
     ComputerInfo computerInfo;
     private String systemUsername;
-    private User user;
+    private final User user;
     private StringProperty chosenUsername;
-    private String usernameRules = "Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!\n";
+    private static final String usernameRules = "Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!\n";
 
     public UsernameChangeModel(User user) {
         computerInfo = new ComputerInfo();

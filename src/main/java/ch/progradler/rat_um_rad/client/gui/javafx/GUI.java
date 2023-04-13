@@ -11,12 +11,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This is the Rat um Rad JavaFX-Application.
  */
 public class GUI extends Application {
     private UsernameChangeModel usernameChangeModel;
+    private UsernameChangeController usernameChangeController;
     Stage window;
     Scene mainScene;
 
@@ -57,8 +59,8 @@ public class GUI extends Application {
             e.printStackTrace();
         }
 
-        UsernameChangeController controller = loader.getController();
-        controller.initData(this.usernameChangeModel, this.window);
+        this.usernameChangeController = loader.getController();
+        usernameChangeController.initData(this.usernameChangeModel, this.window);
 
         this.window.show();
         //TODO: when username is set, go on to startupPage
