@@ -77,6 +77,7 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         switch (command) {
             case "showStartupPage" -> {
                 StartupPageController startupPageController = this.loadFXMLView("/views/mainPage.fxml").getController();
+                //TODO: handle initialization of included lobby controller https://stackoverflow.com/questions/47295128/javafx-include-fxml-with-an-event-in-it
                 startupPageController.initData(this.usernameChangeModel, this.startupPageModel, this.window);
                 this.window.show();
             }

@@ -15,11 +15,6 @@
          </font>
       </Label>
       <Button fx:id="backToLobbyButton" layoutX="505.0" layoutY="1.0" mnemonicParsing="false" text="back to Lobby" onAction="#returnButtonAction"/>
-      <Label layoutX="50.0" layoutY="106.0" prefHeight="26.0" prefWidth="129.0" text="Lobby (open games)">
-         <font>
-            <Font name="Arial Bold" size="13.0" />
-         </font>
-      </Label>
       <Label alignment="CENTER" layoutX="236.0" layoutY="106.0" prefHeight="26.0" prefWidth="129.0" text="Ongoing">
          <font>
             <Font name="Arial Bold" size="13.0" />
@@ -32,7 +27,7 @@
       </Label>
       <ScrollPane layoutX="33.0" layoutY="151.0" prefHeight="194.0" prefWidth="163.0">
          <content>
-            <ListView fx:id="openGamesListView" prefHeight="193.0" prefWidth="162.0" />
+            <fx:include source="lobbyView.fxml"/>
          </content>
       </ScrollPane>
       <ScrollPane layoutX="219.0" layoutY="151.0" prefHeight="194.0" prefWidth="163.0">

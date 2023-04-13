@@ -75,7 +75,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case SEND_ALL_CONNECTED_PLAYERS -> {
                 //TODO: implement
             }
-            case SEND_BROADCAST_CHAT -> {
+            case SEND_GAME_INTERNAL_CHAT -> {
                 //TODO: update chatRoomModel
                 ChatMessage message = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
@@ -87,7 +87,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 if(contentType == ContentType.GAME_INFO_LIST_WAITING) {
                     // TODO: Lobby should only get list when it's calling for it
                     notifyListenersOfType((List<GameBase>) content, LobbyController.class, packet.getContentType());
-                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                   //notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
                 } else {
                     notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
                 }

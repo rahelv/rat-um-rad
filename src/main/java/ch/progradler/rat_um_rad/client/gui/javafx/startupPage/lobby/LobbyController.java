@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class LobbyController implements Initializable, ServerResponseListener<List<GameBase>> {
-    public Button joinButton;
     public ListView<GameBase> openGamesListView;
     public TextField gameIdTextField;
     private IGameService gameService;
@@ -44,20 +44,18 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
         this.gameService.requestWaitingGames();
     }
 
-    @FXML
-    public void joinGame(ActionEvent actionEvent) {
-       //TODO: get TextInput and send Request to Service (to join game)
-    }
-
     /** Updates the GameList when a Server Response is received. (Listens to ServerResponseHandler)
      * @param content
      * @param contentType
      */
     @Override
     public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
+        Platform.runLater(() -> {
             this.lobbyModel.updateGameList(content);
+            this.openGamesListView.getItems().clear();
             this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
             openGamesListView.setCellFactory(param -> new Cell(this.gameService));
+        });
     }
 
     /**

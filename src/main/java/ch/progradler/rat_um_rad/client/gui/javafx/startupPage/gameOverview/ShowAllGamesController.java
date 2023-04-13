@@ -47,32 +47,12 @@ public class ShowAllGamesController implements Initializable, ServerResponseList
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        this.openGamesListView.setItems(this.showAllGamesModel.getOpenGameList());
-        openGamesListView.setCellFactory(param -> new ShowAllGamesController.OpenGameCell());
-
-        this.onGoingListView.setItems(this.showAllGamesModel.getOngoingGameList());
-        onGoingListView.setCellFactory(param -> new ShowAllGamesController.Cell());
-
-        this.finishedGamesListView.setItems(this.showAllGamesModel.getFinishedGameList());
-        finishedGamesListView.setCellFactory(param -> new ShowAllGamesController.Cell());
     }
 
     private void requestListsFromServer() throws IOException {
         this.gameService.requestWaitingGames();
         this.gameService.requestStartedGames();
         this.gameService.requestFinishedGames();
-    }
-
-    private void reloadScene() { //TODO: überarbeiten
-        this.openGamesListView.setItems(this.showAllGamesModel.getOpenGameList());
-        openGamesListView.setCellFactory(param -> new ShowAllGamesController.OpenGameCell());
-
-        this.onGoingListView.setItems(this.showAllGamesModel.getOngoingGameList());
-        onGoingListView.setCellFactory(param -> new ShowAllGamesController.Cell());
-
-        this.finishedGamesListView.setItems(this.showAllGamesModel.getFinishedGameList());
-        finishedGamesListView.setCellFactory(param -> new ShowAllGamesController.Cell());
     }
 
     @FXML
@@ -87,15 +67,18 @@ public class ShowAllGamesController implements Initializable, ServerResponseList
         switch(contentType) {
             case GAME_INFO_LIST_WAITING -> {
                 this.showAllGamesModel.setOpenGameList(content);
-                this.reloadScene();
+                this.openGamesListView.setItems(this.showAllGamesModel.getOpenGameList());
+                openGamesListView.setCellFactory(param -> new ShowAllGamesController.OpenGameCell());
             }
             case GAME_INFO_LIST_STARTED -> {
                 this.showAllGamesModel.setOngoingGameList(content);
-                this.reloadScene();
+                this.onGoingListView.setItems(this.showAllGamesModel.getOngoingGameList());
+                onGoingListView.setCellFactory(param -> new ShowAllGamesController.Cell());
             }
             case GAME_INFO_LIST_FINISHED -> {
                 this.showAllGamesModel.setFinishedGameList(content);
-                this.reloadScene();
+                this.finishedGamesListView.setItems(this.showAllGamesModel.getFinishedGameList());
+                finishedGamesListView.setCellFactory(param -> new ShowAllGamesController.Cell());
             }
         }
     }
