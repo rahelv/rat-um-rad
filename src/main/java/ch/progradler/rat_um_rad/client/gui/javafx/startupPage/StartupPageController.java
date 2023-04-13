@@ -1,6 +1,10 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.startupPage;
 
+import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeModel;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,7 +15,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class StartupPageController implements Initializable {
+public class StartupPageController implements Initializable, ServerResponseListener<ClientGame> {
     private StartupPageModel startupPageModel;
     Stage stage;
     UsernameChangeModel usernameChangeModel;
@@ -26,7 +30,7 @@ public class StartupPageController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //TODO: add username to label
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
     }
 
     public void initData(UsernameChangeModel usernameChangeModel, StartupPageModel startupPageModel, Stage stage) {
@@ -53,6 +57,13 @@ public class StartupPageController implements Initializable {
     public void createGameAction(ActionEvent actionEvent) {
         Platform.runLater(() -> {
             startupPageModel.getListener().controllerChanged("createGame");
+        });
+    }
+
+    @Override
+    public void serverResponseReceived(ClientGame content, ContentType contentType) {
+        Platform.runLater(() -> {
+            startupPageModel.getListener().gameCreated(content);
         });
     }
 }

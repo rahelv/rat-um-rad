@@ -32,14 +32,12 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
         this.gameService = new GameService();
         this.lobbyModel = new LobbyModel();
         try {
-            this.gameService.requestWaitingGames();
+            getOpenGamesFromServer();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
-        openGamesListView.setCellFactory(param -> new Cell());
-        //each item of listView should have 2 buttons:list players and join game
+        openGamesListView.setCellFactory(param -> new Cell(this.gameService)); //TODO: find a better way to handle buttonAction from Cell
     }
 
     public void getOpenGamesFromServer() throws IOException {
@@ -47,10 +45,8 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
     }
 
     @FXML
-    public void joinGameAction(ActionEvent actionEvent) {
-        //TODO: get gameId (bind to textfield wo id eingegeben wurde)
-        System.out.println("joined game ");
-        //TODO: Anfrage an Server um Game zu joinen
+    public void joinGame(ActionEvent actionEvent) {
+       //TODO: get TextInput and send Request to Service (to join game)
     }
 
     /** Updates the GameList when a Server Response is received. (Listens to ServerResponseHandler)
@@ -59,26 +55,34 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
      */
     @Override
     public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
-        this.lobbyModel.updateGameList(content);
+            this.lobbyModel.updateGameList(content);
+            this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
+            openGamesListView.setCellFactory(param -> new Cell(this.gameService));
     }
 
     /**
      * Cell Class to set the Cells in the List View. Add two Buttons to each cell (players and join) and sets the id as text.)
      */
     static class Cell extends ListCell<GameBase> {
+        private IGameService gameService;
         Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
         Button enterGameButton = new Button("join");
 
-        public Cell() {
+        public Cell(IGameService gameService) {
             super();
+            this.gameService = gameService;
             hbox.getChildren().addAll(nameLabel, pane, listPlayersButton, enterGameButton);
             hbox.setHgrow(pane, Priority.ALWAYS);
             enterGameButton.setOnAction(event -> {
                 System.out.println("wanting to join game " + getItem().getId());
-                //TODO: send anfrage to server: OutputPacketGatewaySingleton.;
+                try {
+                    this.gameService.joinGame(getItem().getId());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             });
             listPlayersButton.setOnAction(event -> {
                 System.out.println("listing all players in this game");

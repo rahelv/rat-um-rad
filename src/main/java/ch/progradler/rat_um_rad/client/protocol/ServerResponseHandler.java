@@ -5,6 +5,7 @@ import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
@@ -81,10 +82,9 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(message, ChatRoomController.class, packet.getContentType());
             }
             case SEND_GAMES -> {
-                System.out.println("sendgames " + packet);
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
-                if(contentType == ContentType.GAME_INFO_LIST) {
+                if(contentType == ContentType.GAME_INFO_LIST_WAITING) {
                     // TODO: Lobby should only get list when it's calling for it
                     notifyListenersOfType((List<GameBase>) content, LobbyController.class, packet.getContentType());
                     notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
@@ -101,7 +101,8 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(content, CreateGameController.class, packet.getContentType());
             }
             case GAME_JOINED -> {
-                //TODO: implement
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, StartupPageController.class, packet.getContentType());
             }
             case NEW_PLAYER -> {
                 //TODO: implement

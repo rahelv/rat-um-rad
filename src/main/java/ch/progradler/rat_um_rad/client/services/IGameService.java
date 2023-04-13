@@ -8,6 +8,8 @@ import java.io.IOException;
 public interface IGameService {
     void createGame(int requiredPlayerCount) throws IOException;
 
+    void joinGame(String gameId) throws IOException;
+
     void requestWaitingGames() throws IOException;
 
     void requestStartedGames() throws IOException;

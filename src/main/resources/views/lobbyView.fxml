@@ -26,7 +26,7 @@
       </ScrollPane>
       <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.columnSpan="2">
          <TextField fx:id="gameIdTextField" promptText="join with game ID" />
-         <Button fx:id="joinButton" onAction="#joinGameAction" text="join" />
+         <Button fx:id="joinButton" onAction="#joinGame" text="join" />
       </HBox>
    </GridPane>
 </AnchorPane>

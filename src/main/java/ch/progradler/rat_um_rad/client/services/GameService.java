@@ -24,10 +24,15 @@ public class GameService implements IGameService {
         this.outputPacketGateway = outputPacketGateway;
     }
 
-
     @Override
     public void createGame(int requiredPlayerCount) throws IOException {
         Packet packet = new Packet(Command.CREATE_GAME, requiredPlayerCount, ContentType.INTEGER);
+        outputPacketGateway.sendPacket(packet);
+    }
+
+    @Override
+    public void joinGame(String gameId) throws IOException {
+        Packet packet = new Packet(Command.WANT_JOIN_GAME, gameId, ContentType.STRING);
         outputPacketGateway.sendPacket(packet);
     }
 
