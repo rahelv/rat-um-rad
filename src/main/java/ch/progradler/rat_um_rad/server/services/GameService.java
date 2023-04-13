@@ -8,6 +8,7 @@ import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
@@ -15,12 +16,11 @@ import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
@@ -90,16 +90,10 @@ public class GameService implements IGameService {
             //add player
             Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
             game.getPlayers().put(ipAddress, newPlayer);
-
-            //inform all players with the required information
-            for (String playerIpAddress: game.getPlayers().keySet()) {
-                if (! playerIpAddress.equals(ipAddress)) {
-                    ClientGame clientGame = GameServiceUtil.toClientGame(game, playerIpAddress);
-                    outputPacketGateway.sendPacket(playerIpAddress, new Packet(NEW_PLAYER, clientGame, GAME));
-                }
-            }
+            gameRepository.updateGame(game);
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
+            GameServiceUtil.notifyPlayersOfGameUpdate(game.getId(), gameRepository, outputPacketGateway, NEW_PLAYER);
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             return;
@@ -107,12 +101,48 @@ public class GameService implements IGameService {
 
         //check, whether there are enough players. If yes, start Game.
         if (game.getRequiredPlayerCount() == game.getPlayers().size()) {
-            startGame();
+            startGame(gameId);
         }
     }
 
-    private void startGame() {
-        //TODO: implement
+    private void startGame(String gameId) {
+        Game game = gameRepository.getGame(gameId);
+        game.setStatus(PREPARATION);
+        for (String ipAddress: game.getPlayers().keySet()) {
+            handOutLongDestinationCard(gameId, ipAddress);
+            handOutShortDestinationCards(gameId, ipAddress);
+        }
+        for (String ipAddress: game.getPlayers().keySet()) {
+            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, clientGame, GAME));
+        }
+    }
+
+    private void handOutLongDestinationCard(String gameId, String ipAddress) {
+        Game game = gameRepository.getGame(gameId);
+        Player player = game.getPlayers().get(ipAddress);
+        DestinationCardDeck longDestinationCardDeck = game.getDecksOfGame().getLongDestinationCardDeck();
+        DestinationCard longDestinationCard = RandomGenerator.randomFromArray(longDestinationCardDeck.getCardDeck().toArray( new DestinationCard[0]));
+        longDestinationCardDeck.getCardDeck().remove(longDestinationCard);
+        // TODO: clarify: am I right, that now the longDestinationCard is removed from the game even if I didn't use a setter?
+        player.setLongDestinationCard(longDestinationCard);
+        gameRepository.updateGame(game);
+    }
+
+    private void handOutShortDestinationCards(String gameId, String ipAddress) {
+        Game game = gameRepository.getGame(gameId);
+        Player player = game.getPlayers().get(ipAddress);
+        DestinationCardDeck shortDestinationCardDeck = game.getDecksOfGame().getShortDestinationCardDeck();
+
+        List<DestinationCard> newShortDestinationCards = new LinkedList<>();
+        for (int i = 0; i < 3; i++ ) {
+            DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(shortDestinationCardDeck.getCardDeck().toArray( new DestinationCard[0]));
+            shortDestinationCardDeck.getCardDeck().remove(shortDestinationCard);
+            // TODO: clarify: am I right, that now the longDestinationCard is removed from the game even if I didn't use a setter?
+            newShortDestinationCards.add(shortDestinationCard);
+        }
+        player.setShortDestinationCards(newShortDestinationCards);
+        gameRepository.updateGame(game);
     }
 
     @Override

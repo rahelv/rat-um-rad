@@ -38,5 +38,6 @@ public enum Command {
     SEND_GAMES,
     GAME_JOINED,
     NEW_PLAYER,
+    GAME_STARTED_SELECT_DESTINATION_CARDS,
 
 }

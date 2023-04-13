@@ -2,11 +2,15 @@ package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.client.models.ClientGame;
 import ch.progradler.rat_um_rad.client.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
@@ -68,5 +72,14 @@ public class GameServiceUtil {
             if (game.getPlayers().containsKey(playerIpAddress)) return game;
         }
         return null;
+    }
+
+    public static void notifyPlayersOfGameUpdate(String gameId, IGameRepository gameRepository,  OutputPacketGateway outputPacketGateway, Command command) {
+        Game game = gameRepository.getGame(gameId);
+        Set<String> playerIps = game.getPlayers().keySet();
+        for (String ipAddress: playerIps) {
+            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            outputPacketGateway.sendPacket(ipAddress, new Packet(command, clientGame, ContentType.GAME));
+        }
     }
 }

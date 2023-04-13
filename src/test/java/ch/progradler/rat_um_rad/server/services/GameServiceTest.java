@@ -149,11 +149,13 @@ class GameServiceTest {
         String ipAddress = "ipAddressA";
         Game game;
         when(mockGameRepository.getGame(gameId)).thenReturn(game = new Game(gameId, PREPARATION, null, null, 5, new HashMap<>()));
-        gameService.joinGame(ipAddress, gameId);
         ClientGame clientGame = GameServiceUtil.toClientGame(game, game.getCreatorPlayerIpAddress());
-        verify(mockOutputPacketGateway).sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
-        verify(mockOutputPacketGateway, never()).sendPacket(ipAddress, new Packet(NEW_PLAYER, clientGame, GAME));
-        verify(mockOutputPacketGateway, never()).sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            gameService.joinGame(ipAddress, gameId);
+            verify(mockOutputPacketGateway).sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
+            verify(mockOutputPacketGateway, never()).sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
+            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(gameId, mockGameRepository, mockOutputPacketGateway, NEW_PLAYER), never());
+        }
     }
 
     @Test
@@ -162,14 +164,14 @@ class GameServiceTest {
         String ipAddressJoiner = "ipAddressJoiner";
         ClientGame clientGameForJoiner = mock(ClientGame.class);
 
-        String ipAddressB = "ipAddressB";
-        ClientGame clientGameB = mock(ClientGame.class);
-        Player playerB = mock(Player.class);
-        when(playerB.getColor()).thenReturn(WheelColor.BLACK);
+        //String ipAddressB = "ipAddressB";
+        //ClientGame clientGameB = mock(ClientGame.class);
+        //Player playerB = mock(Player.class);
+        //when(playerB.getColor()).thenReturn(WheelColor.BLACK);
         List<Player> players = new LinkedList<>();
-        players.add(playerB);
-        Set<String> ipAddresses = new HashSet<>();
-        ipAddresses.add(ipAddressB);
+        //players.add(playerB);
+        //Set<String> ipAddresses = new HashSet<>();
+        //ipAddresses.add(ipAddressB);
 
         String gameId = "idA";
         Game game = mock(Game.class);
@@ -178,19 +180,18 @@ class GameServiceTest {
         when(game.getPlayers()).thenReturn(playerMap);
         when(game.getStatus()).thenReturn(WAITING_FOR_PLAYERS);
         when(playerMap.values()).thenReturn(players);
-        when(playerMap.keySet()).thenReturn(ipAddresses);
+        //when(playerMap.keySet()).thenReturn(ipAddresses);
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressJoiner))
                     .thenReturn(clientGameForJoiner);
-            utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressB))
-                        .thenReturn(clientGameB);
+            //utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressB))
+            //            .thenReturn(clientGameB);
 
             gameService.joinGame(ipAddressJoiner, gameId);
             verify(mockOutputPacketGateway, never()).sendPacket(ipAddressJoiner, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
-            verify(mockOutputPacketGateway).sendPacket(ipAddressB, new Packet(NEW_PLAYER, clientGameB, GAME));
             verify(mockOutputPacketGateway).sendPacket(ipAddressJoiner, new Packet(GAME_JOINED, clientGameForJoiner, GAME));
-
+            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(gameId, mockGameRepository, mockOutputPacketGateway, NEW_PLAYER), never());
         }
     }
 
