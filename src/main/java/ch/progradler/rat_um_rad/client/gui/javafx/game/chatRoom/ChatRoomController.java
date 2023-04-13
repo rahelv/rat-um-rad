@@ -3,8 +3,9 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom;
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
-import ch.progradler.rat_um_rad.client.utils.listeners.IListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,7 +17,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 
-public class ChatRoomController implements Initializable, IListener<ChatMessage> {
+public class ChatRoomController implements Initializable, ServerResponseListener<ChatMessage> {
     public ChoiceBox<String> chatChoiceBox;
     private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
@@ -51,7 +52,8 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
         chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty());
         this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
 
-        chatChoiceBox.getItems().addAll(chatRoomModel.chatTargetsList);
+        //chatChoiceBox.getItems().addAll(chatRoomModel.chatTargetsList);
+        chatChoiceBox.setItems(chatRoomModel.chatTargetsList);
         chatChoiceBox.getSelectionModel().select(0);//select the first item in choiceBox:"all"
         chatChoiceBox.setOnAction(this::getTarget);
         try {
@@ -62,10 +64,9 @@ public class ChatRoomController implements Initializable, IListener<ChatMessage>
     }
 
     @Override
-    public void serverResponseReceived(ChatMessage chatMessage) {
+    public void serverResponseReceived(ChatMessage chatMessage, ContentType contentType) {
         Platform.runLater(() -> {
             chatRoomModel.addChatMessageToList(chatMessage);
-            chatRoomModel.addPlayersToTargetList(chatMessage.getUsername());
         });
     }
     public String getTarget(ActionEvent event){

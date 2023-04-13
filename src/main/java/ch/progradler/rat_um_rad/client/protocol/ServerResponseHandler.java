@@ -3,9 +3,8 @@ package ch.progradler.rat_um_rad.client.protocol;
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
@@ -62,12 +61,18 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
                 //TODO: implement
+                List<String> allOnlinePlayers = (List<String>)packet.getContent();
+                notifyListenersOfType(allOnlinePlayers, ChatRoomModel.class, packet.getContentType());
             }
             case SEND_BROADCAST_CHAT -> {
                 //TODO: update chatRoomModel
                 ChatMessage message = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType(message, ChatRoomController.class, packet.getContentType());
+            }
+            case SEND_WHISPER_CHAT -> {
+                ChatMessage message = (ChatMessage)packet.getContent();
+                notifyListenersOfType(message, ChatRoomController.class,packet.getContentType());
             }
             case SEND_GAMES -> {
                 System.out.println("sendgames " + packet);
@@ -87,7 +92,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case GAME_CREATED -> {
                 ClientGame content = (ClientGame) packet.getContent();
-                notifyListenersOfType(content, CreateGameController.class, packet.getContentType());
+                //notifyListenersOfType(content, CreateGameController.class, packet.getContentType());
             }
             default -> presenter.display(packet);
             //TODO: send Activity to ActivityController when ein Spielzug passiert
