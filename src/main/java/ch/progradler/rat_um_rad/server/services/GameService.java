@@ -71,6 +71,10 @@ public class GameService implements IGameService {
         ClientGame clientGame = GameServiceUtil.toClientGame(gameCreated, creatorIpAddress);
         Packet response = new Packet(Command.GAME_CREATED, clientGame, ContentType.GAME);
         outputPacketGateway.sendPacket(creatorIpAddress, response);
+
+        //Send updated game list to all players
+        Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST_WAITING);
+        outputPacketGateway.broadcast(packet);
     }
 
     @Override
