@@ -138,7 +138,6 @@ public class PacketCoder implements Coder<Packet> {
             case STRING_LIST -> {
                 return CoderHelper.decodeStringList(level, contentUnwrapped);
             }
-
             case GAME -> {
                 return clientGameCoder.decode(contentUnwrapped, level);
             }

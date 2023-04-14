@@ -9,17 +9,19 @@ import ch.progradler.rat_um_rad.client.gui.javafx.GUI;
 import ch.progradler.rat_um_rad.client.protocol.ServerInputListener;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.protocol.ServerResponseHandler;
-import ch.progradler.rat_um_rad.client.services.IUserService;
-import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
+import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
+import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.*;
 import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.DestinationCardCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.WheelCardCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.game.CityCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.GameMapCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
 import javafx.application.Application;
@@ -113,21 +115,15 @@ public class Client {
     }
 
     private static Coder<Packet> getPacketCoder() {
-        Coder<GameMap> gameMapCoder = new Coder<>() {
-            @Override
-            public String encode(GameMap object, int level) {
-                return null;
-            }
+        Coder<ChatMessage> chatMessageCoder = new ChatMessageCoder();
+        Coder<UsernameChange> usernameChangeCoder = new UsernameChangeCoder();
+        Coder<GameMap> gameMapCoder = new GameMapCoder(new CityCoder(new PointCoder()), new RoadCoder());
+        Coder<Player> playerCoder = new PlayerCoder(new WheelCardCoder(), new DestinationCardCoder(new CityCoder(new PointCoder())));
 
-            @Override
-            public GameMap decode(String encoded, int level) {
-                return null;
-            }
-        }; // TODO: implement correctly
-        return new PacketCoder(new ChatMessageCoder(),
-                new UsernameChangeCoder(),
+        return new PacketCoder(chatMessageCoder,
+                usernameChangeCoder,
                 new GameBaseCoder(gameMapCoder),
-                new ClientGameCoder(gameMapCoder, new VisiblePlayerCoder(), new PlayerCoder(new WheelCardCoder(), new DestinationCardCoder(new CityCoder(new PointCoder())))));
+                new ClientGameCoder(gameMapCoder, new VisiblePlayerCoder(), playerCoder));
     }
 }
 

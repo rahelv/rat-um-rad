@@ -52,17 +52,7 @@ public class Server {
     }
 
     private static Coder<Packet> getPacketCoder() {
-        Coder<GameMap> gameMapCoder = new GameMapCoder(new CityCoder(new PointCoder()), new RoadCoder()) {
-            @Override
-            public String encode(GameMap object, int level) {
-                return null;
-            }
-
-            @Override
-            public GameMap decode(String encoded, int level) {
-                return null;
-            }
-        }; // TODO: implement correctly
+        Coder<GameMap> gameMapCoder = new GameMapCoder(new CityCoder(new PointCoder()), new RoadCoder());
         return new PacketCoder(new ChatMessageCoder(),
                 new UsernameChangeCoder(),
                 new GameBaseCoder(gameMapCoder),
