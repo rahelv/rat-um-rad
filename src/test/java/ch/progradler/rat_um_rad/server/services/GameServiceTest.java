@@ -120,7 +120,7 @@ class GameServiceTest {
         Game game = gameCaptor.getValue();
         assertEquals(1, game.getPlayers().size());
         Player creator = game.getPlayers().get(creatorIp);
-        Player expected = GameServiceUtil.createNewPlayer(creatorIp, mockUserRepository, new HashSet<>());
+        Player expected = GameServiceUtil.createNewPlayer(creatorIp, mockUserRepository, new LinkedList<>());
         expected.setColor(creator.getColor()); // color is randomly generated so has to be the same
 
         assertEquals(expected, creator);
@@ -154,7 +154,7 @@ class GameServiceTest {
             gameService.joinGame(ipAddress, gameId);
             verify(mockOutputPacketGateway).sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             verify(mockOutputPacketGateway, never()).sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
-            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(gameId, mockGameRepository, mockOutputPacketGateway, NEW_PLAYER), never());
+            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, NEW_PLAYER), never());
         }
     }
 
@@ -191,7 +191,7 @@ class GameServiceTest {
             gameService.joinGame(ipAddressJoiner, gameId);
             verify(mockOutputPacketGateway, never()).sendPacket(ipAddressJoiner, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             verify(mockOutputPacketGateway).sendPacket(ipAddressJoiner, new Packet(GAME_JOINED, clientGameForJoiner, GAME));
-            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(gameId, mockGameRepository, mockOutputPacketGateway, NEW_PLAYER), never());
+            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, NEW_PLAYER), never());
         }
     }
 

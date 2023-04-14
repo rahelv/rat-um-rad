@@ -46,7 +46,7 @@ public class GameServiceUtil {
         );
     }
 
-    static Player createNewPlayer(String ipAddress, IUserRepository userRepository, Set<WheelColor> takenColors) {
+    static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<WheelColor> takenColors) {
         String name = userRepository.getUsername(ipAddress);
         Set<WheelColor> allColors = new HashSet<>(Arrays.asList(WheelColor.values()));
         for (WheelColor color: takenColors) {
@@ -80,8 +80,7 @@ public class GameServiceUtil {
         return null;
     }
 
-    public static void notifyPlayersOfGameUpdate(String gameId, IGameRepository gameRepository,  OutputPacketGateway outputPacketGateway, Command command) {
-        Game game = gameRepository.getGame(gameId);
+    public static void notifyPlayersOfGameUpdate(Game game, OutputPacketGateway outputPacketGateway, Command command) {
         Set<String> playerIps = game.getPlayers().keySet();
         for (String ipAddress: playerIps) {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);

@@ -8,6 +8,7 @@ import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
@@ -47,7 +48,7 @@ public class GameService implements IGameService {
 
         GameMap map = GameMap.defaultMap();
         Map<String, Player> players = new HashMap<>();
-        Player creator = GameServiceUtil.createNewPlayer(creatorIpAddress, userRepository, new HashSet<WheelColor>());
+        Player creator = GameServiceUtil.createNewPlayer(creatorIpAddress, userRepository, new ArrayList<>());
         players.put(creatorIpAddress, creator);
 
         Game gameCreated = null;
@@ -82,10 +83,8 @@ public class GameService implements IGameService {
          */
         if (game.getStatus().equals(WAITING_FOR_PLAYERS)) {
             //collect all already taken colors
-            Set<WheelColor> takenColors = new HashSet<>();
-            for (Player player: game.getPlayers().values()) {
-                takenColors.add(player.getColor());
-            }
+            List<WheelColor> takenColors = game.getPlayers().values()
+                    .stream().map((PlayerBase::getColor)).toList();
 
             //add player
             Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
@@ -93,7 +92,7 @@ public class GameService implements IGameService {
             gameRepository.updateGame(game);
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
-            GameServiceUtil.notifyPlayersOfGameUpdate(game.getId(), gameRepository, outputPacketGateway, NEW_PLAYER);
+            GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             return;

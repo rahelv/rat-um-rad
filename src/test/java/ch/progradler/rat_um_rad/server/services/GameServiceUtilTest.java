@@ -69,18 +69,15 @@ class GameServiceUtilTest {
     void createNewPlayer() {
         String ipAddress = "clientA";
         String name = "John";
-        Set<WheelColor> takenColors = new HashSet<WheelColor>();
-        List<WheelColor> someColors = Arrays.asList(RED, BLUE, ORANGE, GREEN, PINK);
-        takenColors.addAll(someColors);
+        List<WheelColor> takenColors = Arrays.asList(RED, BLUE, ORANGE, GREEN, PINK);
 
         when(mockUserRepository.getUsername(ipAddress)).thenReturn(name);
 
         Player player = GameServiceUtil.createNewPlayer(ipAddress, mockUserRepository, takenColors);
         assertEquals(name, player.getName());
         assertNotNull(player.getColor());
-        for (WheelColor color: takenColors) {
-            assertNotEquals(player.getColor(), color);
-        }
+        assertFalse(takenColors.contains(player.getColor()));
+
         assertEquals(0, player.getScore());
         assertEquals(0, player.getPlayingOrder());
         assertEquals(GameConfig.STARTING_WHEELS_PER_PLAYER, player.getWheelsRemaining());
@@ -129,4 +126,15 @@ class GameServiceUtilTest {
         Game result = GameServiceUtil.getCurrentGameOfPlayer(playerIpAddress, mockGameRepository);
         assertEquals(game1, result);
     }
+
+    @Test
+    void startGameTest() {
+
+    }
+
+    @Test
+    void handOutLongDestinationCards() {
+
+    }
+
 }
