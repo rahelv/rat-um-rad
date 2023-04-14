@@ -34,7 +34,6 @@ public class ChatRoomModel {
         this.chatMessageList.add(chatMessage);
     }
     public void addPlayersToTargetList(List<String> allPlayers){
-
         this.chatTargetsList = FXCollections.observableArrayList(allPlayers);
     }
 }

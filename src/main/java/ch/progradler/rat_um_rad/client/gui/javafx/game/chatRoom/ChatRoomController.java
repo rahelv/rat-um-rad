@@ -32,7 +32,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
 
     private ChatRoomModel chatRoomModel;
     private IUserService userService;
-    private AllPlayersListener allPlayerListener;
+    private ServerResponseListener<List<String>> allPlayerListener;
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {

@@ -37,7 +37,7 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
 
     private IGameService gameService;
     private LobbyModel lobbyModel;
-    private AllOnlinePlayersListener allPlayerListener;
+    private ServerResponseListener<List<String>> allPlayerListener;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
@@ -52,8 +52,8 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
         openGamesListView.setCellFactory(param -> new Cell());
         //each item of listView should have 2 buttons:list players and join game
 
+        currentPlayersTextArea.textProperty().bindBidirectional(lobbyModel.allOnlinePlayersProperty());
         allPlayerListener = this::handleAllPlayersUpdate;
-        currentPlayersTextArea.setText("Current online players : "+lobbyModel.getCurrentlyOnlinePlayers());
     }
 
 
@@ -146,9 +146,10 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
     public interface AllOnlinePlayersListener extends ServerResponseListener<List<String>>{
 
     }
-    private void handleAllPlayersUpdate(List<String> allPlayersList, ContentType contentType) {
+    private void handleAllPlayersUpdate(List<String> content, ContentType contentType) {
+        currentPlayersTextArea.setText("all online players : "+content.size());
         Platform.runLater(() -> {
-            lobbyModel.updateAllOnlinePlayersList(allPlayersList);
+            lobbyModel.updateAllOnlinePlayersList(content);
         });
     }
 }
