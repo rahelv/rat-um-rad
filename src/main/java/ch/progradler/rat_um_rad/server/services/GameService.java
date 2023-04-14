@@ -76,7 +76,7 @@ public class GameService implements IGameService {
         Game game = gameRepository.getGame(gameId);
 
         /*
-        Checks whether game has status {@ling GameStatus#WAITING_FOR_PLAYERS}.
+        Checks whether game has status {@link GameStatus#WAITING_FOR_PLAYERS}.
         If yes, player is added.
         If not, error message is sent back.
          */
