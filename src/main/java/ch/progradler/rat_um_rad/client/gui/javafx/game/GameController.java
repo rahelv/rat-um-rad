@@ -1,14 +1,24 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game;
 
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.models.game.Road;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
+    @FXML
+    private ListView<Road> roadsListView;
     Stage stage;
     GameModel gameModel;
     @FXML
@@ -42,5 +52,22 @@ public class GameController implements Initializable {
         status.setText(gameModel.getClientGame().getStatus().toString());
         createdAt.setText(gameModel.getClientGame().getCreatedAt().toString());
         requiredPlayers.setText(String.valueOf(gameModel.getClientGame().getRequiredPlayerCount()));
+
+        this.gameModel.setRoadObservableList(this.gameModel.getClientGame().getMap().getRoads());
+        roadsListView.setItems(this.gameModel.getRoadObservableList());
+        roadsListView.setCellFactory(
+                listview -> new ListCell<Road>() {
+                    @Override
+                    public void updateItem(Road road, boolean empty) {
+                        super.updateItem(road, empty);
+                        textProperty().unbind();
+                        if(road != null)
+                            //TODO: textProperty().bind();
+                            textProperty().setValue(road.getId());
+                        else
+                            setText(null);
+                    }
+                }
+        );
     }
 }

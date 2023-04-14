@@ -8,7 +8,7 @@ public class Road {
     private final String fromCityId;
     private final String toCityId;
     private final int requiredWheels;
-    private final int color;
+    private final int color; //TODO
 
     // TODO: String builtBy (null oder playerId)?
 

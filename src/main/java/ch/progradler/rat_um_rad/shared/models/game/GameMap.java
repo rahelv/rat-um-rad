@@ -16,7 +16,12 @@ public class GameMap {
     }
 
     public static GameMap defaultMap() {
-        return new GameMap(new ArrayList<>(), new ArrayList<>()); // TODO: implement correctly
+        return new GameMap(new ArrayList<>(), new ArrayList<Road>() {{
+            add(new Road("fromLuzernToBasel", "Luzern", "Basel", 3, 3));
+            add(new Road("fromBiozentrumToKollegienhaus", "Biozentrum", "Kollegienhaus", 2, 2));
+            add(new Road("fromZurichtoLuzern", "Zurich", "Luzern", 5, 2));
+            add(new Road("fromBaselToBern", "Basel", "Bern", 4, 1));
+        }}); //TODO: implement correctly
     }
 
     public List<City> getCities() {

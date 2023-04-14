@@ -8,6 +8,8 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.game.GameController">
     <fx:include source="../mainMenu.fxml" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
     <Label prefHeight="75.0" prefWidth="315.0" text="Rat um Rad" textAlignment="CENTER" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30">
@@ -20,6 +22,10 @@
         <Label  GridPane.rowIndex="1" GridPane.columnIndex="0" fx:id="status"></Label>
         <Label  GridPane.rowIndex="2" GridPane.columnIndex="0" fx:id="createdAt"></Label>
         <Label  GridPane.rowIndex="3" GridPane.columnIndex="0" fx:id="requiredPlayers"></Label>
+        <HBox>
+            <ListView fx:id="roadsListView"></ListView>
+            <Button fx:id="buildRoad" text="Build Road"></Button>
+        </HBox>
     </GridPane>
     <VBox AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="105">
         <fx:include source="chatRoomView.fxml" />
