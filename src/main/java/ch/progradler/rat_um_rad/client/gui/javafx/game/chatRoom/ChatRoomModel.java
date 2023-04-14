@@ -1,9 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom;
 
-import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -11,18 +8,18 @@ import javafx.collections.ObservableList;
 
 import java.util.List;
 
-public class ChatRoomModel implements ServerResponseListener<List<String>> {
+public class ChatRoomModel {
     ObservableList<ChatMessage> chatMessageList;
     private StringProperty textInputContent;
 
     ObservableList<String> chatTargetsList;
-    List<String> allOnlinePlayers;
-    public ChatRoomModel() {
 
+    public ChatRoomModel() {
         this.textInputContent = new SimpleStringProperty("");
         this.chatMessageList = FXCollections.observableArrayList();
-        chatTargetsList.add("all");
-        this.chatTargetsList = FXCollections.observableArrayList(getListOfAllOnlinePlayersFromServer());
+
+        this.chatTargetsList = FXCollections.observableArrayList();
+        this.chatTargetsList.add("all");
     }
 
     public StringProperty TextInputContentProperty() {
@@ -36,15 +33,8 @@ public class ChatRoomModel implements ServerResponseListener<List<String>> {
     public void addChatMessageToList(ChatMessage chatMessage) {
         this.chatMessageList.add(chatMessage);
     }
-    public void addPlayersToTargetList(String userName){
-        chatTargetsList.add(userName);
-    }
+    public void addPlayersToTargetList(List<String> allPlayers){
 
-    @Override
-    public void serverResponseReceived(List<String> content, ContentType contentType) {
-        Platform.runLater(() -> allOnlinePlayers = content);
-    }
-    public List<String> getListOfAllOnlinePlayersFromServer(){
-        return allOnlinePlayers;
+        this.chatTargetsList = FXCollections.observableArrayList(allPlayers);
     }
 }

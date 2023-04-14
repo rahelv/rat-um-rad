@@ -17,17 +17,22 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
-
+/**
+ * chat messages and private chat targets are received from ServerResponseListener
+ *
+ * */
 public class ChatRoomController implements Initializable, ServerResponseListener<ChatMessage> {
     public ChoiceBox<String> chatChoiceBox;
-    private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
     public Button sendButton;
     public ListView chatPaneListView;
-    private IUserService userService;
 
+    private ChatRoomModel chatRoomModel;
+    private IUserService userService;
+    private AllPlayersListener allPlayerListener;
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {
@@ -56,7 +61,8 @@ public class ChatRoomController implements Initializable, ServerResponseListener
         chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty());
         this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
 
-        //chatChoiceBox.getItems().addAll(chatRoomModel.chatTargetsList);
+        allPlayerListener = this::handleAllPlayersUpdate;
+
         chatChoiceBox.setItems(chatRoomModel.chatTargetsList);
         chatChoiceBox.getSelectionModel().select(0);//select the first item in choiceBox:"all"
         chatChoiceBox.setOnAction((e) -> getTarget());
@@ -66,7 +72,11 @@ public class ChatRoomController implements Initializable, ServerResponseListener
             e.printStackTrace();
         }
     }
-
+    private void handleAllPlayersUpdate(List<String> allPlayersList, ContentType contentType) {
+        Platform.runLater(() -> {
+            chatRoomModel.addPlayersToTargetList(allPlayersList);
+        });
+    }
     @Override
     public void serverResponseReceived(ChatMessage chatMessage, ContentType contentType) {
         Platform.runLater(() -> {
@@ -76,5 +86,8 @@ public class ChatRoomController implements Initializable, ServerResponseListener
 
     private String getTarget() {
         return chatChoiceBox.getValue();
+    }
+    public interface AllPlayersListener extends  ServerResponseListener<List<String>>{
+
     }
 }

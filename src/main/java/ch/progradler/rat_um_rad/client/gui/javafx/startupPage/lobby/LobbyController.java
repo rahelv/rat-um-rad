@@ -5,9 +5,9 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateG
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,7 +37,7 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
 
     private IGameService gameService;
     private LobbyModel lobbyModel;
-
+    private AllOnlinePlayersListener allPlayerListener;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
@@ -48,11 +48,14 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-
         this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
         openGamesListView.setCellFactory(param -> new Cell());
         //each item of listView should have 2 buttons:list players and join game
+
+        allPlayerListener = this::handleAllPlayersUpdate;
+        currentPlayersTextArea.setText("Current online players : "+lobbyModel.getCurrentlyOnlinePlayers());
     }
+
 
     public void getOpenGamesFromServer() throws IOException{
         this.gameService.requestWaitingGames();
@@ -93,7 +96,7 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
             stage.show();
 
             CreateGameController controller = loader.getController();
-            controller.initData(stage);
+            //controller.initData(stage);
         } catch (Exception e) {
             System.out.println("load failed");
             e.printStackTrace();
@@ -139,6 +142,13 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
                 setGraphic(hbox);
             }
         }
+    }
+    public interface AllOnlinePlayersListener extends ServerResponseListener<List<String>>{
 
+    }
+    private void handleAllPlayersUpdate(List<String> allPlayersList, ContentType contentType) {
+        Platform.runLater(() -> {
+            lobbyModel.updateAllOnlinePlayersList(allPlayersList);
+        });
     }
 }
