@@ -104,6 +104,7 @@ public class GameService implements IGameService {
     @Override
     public void selectShortDestinationCards(String ipAddress, List<String> selectedCards) {
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
+        // TODO: check if not null! write unit test
         GameStatus gameStatus = game.getStatus();
         Player player = game.getPlayers().get(ipAddress);
         switch(gameStatus) {
@@ -125,6 +126,7 @@ public class GameService implements IGameService {
     }
 
     private void putBackDestinationCard(String ipAddress, int indexOfCard) {
+        // TODO: game als parameter geben
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
         Player player = game.getPlayers().get(ipAddress);
         DestinationCard destinationCard = player.getShortDestinationCards().get(indexOfCard);

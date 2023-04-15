@@ -91,7 +91,7 @@ public class GameServiceUtil {
         List<String> playerIpAddresses = game.getPlayerIpAddresses().stream().toList();
         int playerCount = playerIpAddresses.size();
 
-        List<Integer> playingOrders = generateSuffledPlayingOrders(playerCount);
+        List<Integer> playingOrders = generateShuffledPlayingOrders(playerCount);
 
         for (int i = 0; i < playerCount; i++) {
             String ipAddress = playerIpAddresses.get(i);
@@ -109,13 +109,13 @@ public class GameServiceUtil {
         }
     }
 
-    private static List<Integer> generateSuffledPlayingOrders(int playerCount) {
+    private static List<Integer> generateShuffledPlayingOrders(int playerCount) {
         List<Integer> playingOrders = new ArrayList<>(IntStream.range(0, playerCount).boxed().toList());
         Collections.shuffle(playingOrders);
         return playingOrders;
     }
 
-    public static void handOutLongDestinationCard(Game game, String ipAddress) {
+    static void handOutLongDestinationCard(Game game, String ipAddress) {
         Player player = game.getPlayers().get(ipAddress);
         DestinationCardDeck longDestinationCardDeck = game.getDecksOfGame().getLongDestinationCardDeck();
         DestinationCard longDestinationCard = RandomGenerator.randomFromList(longDestinationCardDeck.getCardDeck());
@@ -123,7 +123,7 @@ public class GameServiceUtil {
         player.setLongDestinationCard(longDestinationCard);
     }
 
-    public static void handOutShortDestinationCards(Game game, String ipAddress) {
+    static void handOutShortDestinationCards(Game game, String ipAddress) {
         Player player = game.getPlayers().get(ipAddress);
         DestinationCardDeck shortDestinationCardDeck = game.getDecksOfGame().getShortDestinationCardDeck();
 
