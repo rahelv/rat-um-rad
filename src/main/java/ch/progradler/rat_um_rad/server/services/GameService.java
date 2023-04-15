@@ -10,22 +10,22 @@ import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
-import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME_INFO_LIST;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
 
 /**
@@ -75,32 +75,25 @@ public class GameService implements IGameService {
     @Override
     public void joinGame(String ipAddress, String gameId) {
         Game game = gameRepository.getGame(gameId);
-
-        /*
-        Checks whether game has status {@ling GameStatus#WAITING_FOR_PLAYERS}.
-        If yes, player is added.
-        If not, error message is sent back.
-         */
-        if (game.getStatus().equals(WAITING_FOR_PLAYERS)) {
-            //collect all already taken colors
-            List<WheelColor> takenColors = game.getPlayers().values()
-                    .stream().map((PlayerBase::getColor)).toList();
-
-            //add player
-            Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
-            game.getPlayers().put(ipAddress, newPlayer);
-            gameRepository.updateGame(game);
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+        if (game.getStatus() == WAITING_FOR_PLAYERS) {
+            addPlayerAndSaveGame(ipAddress, game);
             GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             return;
         }
 
-        //check, whether there are enough players. If yes, start Game.
-        if (game.getRequiredPlayerCount() == game.getPlayers().size()) {
-            GameServiceUtil.startGame(gameId, gameRepository, outputPacketGateway);
+        if (game.hasReachedRequiredPlayers()) {
+            GameServiceUtil.startGame(game, gameRepository, outputPacketGateway);
         }
+    }
+
+    private void addPlayerAndSaveGame(String ipAddress, Game game) {
+        List<WheelColor> takenColors = game.getPlayers().values()
+                .stream().map((PlayerBase::getColor)).toList();
+        Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
+        game.getPlayers().put(ipAddress, newPlayer);
+        gameRepository.updateGame(game);
     }
 
     @Override

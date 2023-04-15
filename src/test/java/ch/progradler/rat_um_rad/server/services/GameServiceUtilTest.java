@@ -4,36 +4,29 @@ import ch.progradler.rat_um_rad.client.models.ClientGame;
 import ch.progradler.rat_um_rad.client.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
-import ch.progradler.rat_um_rad.server.protocol.socket.ConnectionPool;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
-import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.CardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
-import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
 import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor.*;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
+import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
+import static ch.progradler.rat_um_rad.shared.protocol.Command.NEW_PLAYER;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -191,7 +184,7 @@ class GameServiceUtilTest {
         when(mockGameRepository.getGame(game.getId())).thenReturn(game);
 
         assertEquals(playerMap, game.getPlayers());
-        GameServiceUtil.startGame(game.getId(), mockGameRepository, mockOutputPacketGateway);
+        GameServiceUtil.startGame(game, mockGameRepository, mockOutputPacketGateway);
         assertEquals(PREPARATION, game.getStatus());
         verify(mockGameRepository, times(5)).updateGame(game);
         verify(mockOutputPacketGateway).sendPacket(ip1, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip1), GAME));

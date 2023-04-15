@@ -51,4 +51,8 @@ public class Game extends GameBase {
     public Map<String, Boolean> getPlayersHaveChosenShortDestinationCards() {
         return playersHaveChosenShortDestinationCards;
     }
+
+    public boolean hasReachedRequiredPlayers() {
+        return getRequiredPlayerCount() == players.size();
+    }
 }

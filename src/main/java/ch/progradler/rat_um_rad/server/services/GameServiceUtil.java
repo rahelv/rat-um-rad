@@ -85,8 +85,8 @@ public class GameServiceUtil {
         }
     }
 
-    public static void startGame(String gameId, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
-        Game game = gameRepository.getGame(gameId);
+    public static void startGame(Game game, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
+        String gameId = game.getId();
         game.setStatus(PREPARATION);
         for (String ipAddress: game.getPlayers().keySet()) {
             GameServiceUtil.handOutLongDestinationCard(gameId, ipAddress, gameRepository);
