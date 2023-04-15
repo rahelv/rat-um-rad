@@ -16,10 +16,8 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.IntStream;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
@@ -88,16 +86,33 @@ public class GameServiceUtil {
 
     public static void startGame(Game game, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
         game.setStatus(PREPARATION);
-        for (String ipAddress : game.getPlayerIpAddresses()) {
+
+        Map<String, Player> players = game.getPlayers();
+        List<String> playerIpAddresses = game.getPlayerIpAddresses().stream().toList();
+        int playerCount = playerIpAddresses.size();
+
+        List<Integer> playingOrders = generateSuffledPlayingOrders(playerCount);
+
+        for (int i = 0; i < playerCount; i++) {
+            String ipAddress = playerIpAddresses.get(i);
             GameServiceUtil.handOutLongDestinationCard(game, ipAddress);
             GameServiceUtil.handOutShortDestinationCards(game, ipAddress);
             game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, false);
+
+            Player player = players.get(ipAddress);
+            player.setPlayingOrder(playingOrders.get(i));
         }
         gameRepository.updateGame(game);
         for (String ipAddress : game.getPlayerIpAddresses()) {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, clientGame, GAME));
         }
+    }
+
+    private static List<Integer> generateSuffledPlayingOrders(int playerCount) {
+        List<Integer> playingOrders = new ArrayList<>(IntStream.range(0, playerCount).boxed().toList());
+        Collections.shuffle(playingOrders);
+        return playingOrders;
     }
 
     public static void handOutLongDestinationCard(Game game, String ipAddress) {

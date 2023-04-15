@@ -203,6 +203,13 @@ class GameServiceUtilTest {
         assertFalse(shorts1.contains(shorts2.get(1)));
         assertFalse(shorts1.contains(shorts2.get(2)));
 
+        // check order was assigned:
+        int order1 = player1.getPlayingOrder();
+        int order2 = player2.getPlayingOrder();
+        assertTrue(order1 <= 1 && order1 >= 0);
+        assertTrue(order2 <= 1 && order2 >= 0);
+        assertNotEquals(order1, order2);
+
         verify(mockGameRepository, times(1)).updateGame(game);
 
         verify(mockOutputPacketGateway).sendPacket(ip1, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip1), GAME));
