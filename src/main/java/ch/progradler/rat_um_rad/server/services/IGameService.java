@@ -2,7 +2,6 @@ package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
@@ -31,7 +30,7 @@ public interface IGameService {
     /**
      * This method is used in the game {@link GameStatus#PREPARATION} as well as in {@link GameStatus#STARTED}.
      */
-    void selectShortDestinationCards(String ipAddress, List<String> listOfCardIds);
+    void selectShortDestinationCards(String ipAddress, List<String> selectedCards);
 
     void buildRoad(String ipAddress, String roadId);
 

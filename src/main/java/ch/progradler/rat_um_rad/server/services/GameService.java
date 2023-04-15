@@ -109,14 +109,14 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void selectShortDestinationCards(String ipAddress, List<String> listOfCardIds) {
+    public void selectShortDestinationCards(String ipAddress, List<String> selectedCards) {
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
         GameStatus gameStatus = game.getStatus();
         Player player = game.getPlayers().get(ipAddress);
         switch(gameStatus) {
             case PREPARATION -> {
                 for (DestinationCard shortDestinationCard: player.getShortDestinationCards()) {
-                    if (! listOfCardIds.contains(shortDestinationCard.getCardID())) {
+                    if (! selectedCards.contains(shortDestinationCard.getCardID())) {
                         putBackDestinationCard(ipAddress, player.getShortDestinationCards().indexOf(shortDestinationCard));
                     }
                 }

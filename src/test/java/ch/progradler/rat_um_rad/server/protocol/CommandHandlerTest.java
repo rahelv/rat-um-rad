@@ -14,6 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -133,4 +136,14 @@ class CommandHandlerTest {
         verify(mockGameService).joinGame(ipAddress, gameId);
     }
 
+    @Test
+    void requestOnSelectingDestinationCardsInPrepIsHandledCorrectly() {
+        String ipAddress = "clientA";
+        List<String> selectedCards = Arrays.asList("card1", "card2");
+        Packet packet = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedCards, ContentType.STRING_LIST);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockGameService).selectShortDestinationCards(ipAddress, selectedCards);
+    }
 }

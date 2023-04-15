@@ -85,7 +85,7 @@ public class CommandHandler implements InputPacketGateway {
             case WANT_JOIN_GAME -> {
                 gameService.joinGame(ipAddress, (String) packet.getContent());
             }
-            case SHORT_DESTINATOIN_CARDS_SELECTED_IN_PREPARATION -> {
+            case SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION -> {
                 gameService.selectShortDestinationCards(ipAddress, (List<String>) packet.getContent());
             }
         }

@@ -17,9 +17,9 @@ public class Game extends GameBase {
     /**
      * Keys are ip-addresses
      */
-    private Map<String, Player> players;
-    private DecksOfGame decksOfGame;
-    private Map<String, Boolean> playersHaveChosenShortDestinationCards = new HashMap<String, Boolean>();
+    private final Map<String, Player> players;
+    private final DecksOfGame decksOfGame;
+    private final Map<String, Boolean> playersHaveChosenShortDestinationCards = new HashMap<String, Boolean>();
 
     public Game(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount, Map<String, Player> players) {
         super(id, status, map, creatorPlayerIpAddress, requiredPlayerCount);
