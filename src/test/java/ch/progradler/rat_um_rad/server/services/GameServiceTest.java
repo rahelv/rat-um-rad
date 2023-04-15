@@ -195,8 +195,6 @@ class GameServiceTest {
         when(game.getPlayers()).thenReturn(playerMap);
         when(game.getStatus()).thenReturn(WAITING_FOR_PLAYERS);
 
-        when(game.getRequiredPlayerCount()).thenReturn(3);
-
         // act
         gameService.joinGame(ipAddressJoiner, gameId);
 

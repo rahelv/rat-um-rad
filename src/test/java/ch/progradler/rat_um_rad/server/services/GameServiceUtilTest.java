@@ -228,7 +228,6 @@ class GameServiceUtilTest {
 
         GameMap mockGameMap = mock(GameMap.class);
         Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
-        when(mockGameRepository.getGame(game.getId())).thenReturn(game);
 
         //testing
         int sizeInGameBeforeCalling = game.getDecksOfGame().getLongDestinationCardDeck().getCardDeck().size();
@@ -266,7 +265,6 @@ class GameServiceUtilTest {
 
         GameMap mockGameMap = mock(GameMap.class);
         Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
-        when(mockGameRepository.getGame(game.getId())).thenReturn(game);
 
         //testing
         int sizeInGameBeforeCalling = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck().size();
