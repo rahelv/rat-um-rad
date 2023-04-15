@@ -51,8 +51,4 @@ public class Game extends GameBase {
     public Map<String, Boolean> getPlayersHaveChosenShortDestinationCards() {
         return playersHaveChosenShortDestinationCards;
     }
-
-    public void setPlayersHaveChosenShortDestinationCards(Map<String, Boolean> playersHaveChosenShortDestinationCards) {
-        this.playersHaveChosenShortDestinationCards = playersHaveChosenShortDestinationCards;
-    }
 }
