@@ -16,7 +16,10 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
@@ -48,12 +51,10 @@ public class GameServiceUtil {
 
     static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<WheelColor> takenColors) {
         String name = userRepository.getUsername(ipAddress);
-        Set<WheelColor> allColors = new HashSet<>(Arrays.asList(WheelColor.values()));
-        for (WheelColor color: takenColors) {
-            allColors.remove(color);
-        }
-        WheelColor[] availableColors = allColors.toArray(new WheelColor[0]);
-        WheelColor color = RandomGenerator.randomFromArray(availableColors);
+        List<WheelColor> availableColors = new ArrayList<>(Arrays.stream(WheelColor.values()).toList());
+        availableColors.removeAll(takenColors);
+
+        WheelColor color = RandomGenerator.randomFromList(availableColors);
         return new Player(name, color, 0, GameConfig.STARTING_WHEELS_PER_PLAYER, 0);
     }
 
@@ -78,7 +79,7 @@ public class GameServiceUtil {
     }
 
     public static void notifyPlayersOfGameUpdate(Game game, OutputPacketGateway outputPacketGateway, Command command) {
-        Set<String> playerIps = game.getPlayers().keySet();
+        Set<String> playerIps = game.getPlayerIpAddresses();
         for (String ipAddress: playerIps) {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet(command, clientGame, ContentType.GAME));
@@ -86,42 +87,37 @@ public class GameServiceUtil {
     }
 
     public static void startGame(Game game, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
-        String gameId = game.getId();
         game.setStatus(PREPARATION);
-        for (String ipAddress: game.getPlayers().keySet()) {
-            GameServiceUtil.handOutLongDestinationCard(gameId, ipAddress, gameRepository);
-            GameServiceUtil.handOutShortDestinationCards(gameId, ipAddress, gameRepository);
+        for (String ipAddress : game.getPlayerIpAddresses()) {
+            GameServiceUtil.handOutLongDestinationCard(game, ipAddress);
+            GameServiceUtil.handOutShortDestinationCards(game, ipAddress);
             game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, false);
         }
         gameRepository.updateGame(game);
-        for (String ipAddress: game.getPlayers().keySet()) {
+        for (String ipAddress : game.getPlayerIpAddresses()) {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, clientGame, GAME));
         }
     }
 
-    public static void handOutLongDestinationCard(String gameId, String ipAddress, IGameRepository gameRepository) {
-        Game game = gameRepository.getGame(gameId);
+    public static void handOutLongDestinationCard(Game game, String ipAddress) {
         Player player = game.getPlayers().get(ipAddress);
         DestinationCardDeck longDestinationCardDeck = game.getDecksOfGame().getLongDestinationCardDeck();
-        DestinationCard longDestinationCard = RandomGenerator.randomFromArray(longDestinationCardDeck.getCardDeck().toArray( new DestinationCard[0]));
+        DestinationCard longDestinationCard = RandomGenerator.randomFromList(longDestinationCardDeck.getCardDeck());
         longDestinationCardDeck.getCardDeck().remove(longDestinationCard);
         player.setLongDestinationCard(longDestinationCard);
-        gameRepository.updateGame(game);
     }
 
-    public static void handOutShortDestinationCards(String gameId, String ipAddress, IGameRepository gameRepository) {
-        Game game = gameRepository.getGame(gameId);
+    public static void handOutShortDestinationCards(Game game, String ipAddress) {
         Player player = game.getPlayers().get(ipAddress);
         DestinationCardDeck shortDestinationCardDeck = game.getDecksOfGame().getShortDestinationCardDeck();
 
         List<DestinationCard> playerShortDestinationCards = player.getShortDestinationCards();
-        for (int i = 0; i < 3; i++ ) {
-            DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(shortDestinationCardDeck.getCardDeck().toArray( new DestinationCard[0]));
+        for (int i = 0; i < 3; i++) {
+            DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(shortDestinationCardDeck.getCardDeck().toArray(new DestinationCard[0]));
             shortDestinationCardDeck.getCardDeck().remove(shortDestinationCard);
             playerShortDestinationCards.add(shortDestinationCard);
         }
         player.setShortDestinationCards(playerShortDestinationCards);
-        gameRepository.updateGame(game);
     }
 }

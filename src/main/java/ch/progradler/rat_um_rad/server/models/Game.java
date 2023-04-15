@@ -9,6 +9,7 @@ import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Instance of the game kept in server. All data belonging to a game is collected here.
@@ -54,5 +55,9 @@ public class Game extends GameBase {
 
     public boolean hasReachedRequiredPlayers() {
         return getRequiredPlayerCount() == players.size();
+    }
+
+    public Set<String> getPlayerIpAddresses() {
+        return players.keySet();
     }
 }

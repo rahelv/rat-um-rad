@@ -44,9 +44,9 @@ public class DestinationCardDeck implements CardDeck {
         List<DestinationCard> destinationCards = new ArrayList<>();
         //needed for Testing
         City city1 = new City("CityId1", "CityName1", new Point(1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 1, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 2, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 3, city1, city1, 1));
+        destinationCards.add(new DestinationCard("longDestCard1", 1, city1, city1, 5));
+        destinationCards.add(new DestinationCard("longDestCard2", 2, city1, city1, 4));
+        destinationCards.add(new DestinationCard("longDestCard3", 3, city1, city1, 6));
         return new DestinationCardDeck(destinationCards);
 
         // TODO: implement correct cards

@@ -138,7 +138,6 @@ class GameServiceUtilTest {
         assertEquals(game1, result);
     }
 
-
     @Test
     void notifyPlayersOfGameUpdateTest() {
         String ip1 = "ip1";
@@ -148,8 +147,7 @@ class GameServiceUtilTest {
         when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List takenColors = new LinkedList();
-        takenColors.add(player1.getColor());
+        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
         Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(ip1, player1);
@@ -171,22 +169,42 @@ class GameServiceUtilTest {
         String name2 = "name2";
         when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
+
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List takenColors = new LinkedList();
-        takenColors.add(player1.getColor());
+        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
+
         Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(ip1, player1);
         playerMap.put(ip2, player2);
 
         GameMap mockGameMap = mock(GameMap.class);
         Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
-        when(mockGameRepository.getGame(game.getId())).thenReturn(game);
 
-        assertEquals(playerMap, game.getPlayers());
+        // act
         GameServiceUtil.startGame(game, mockGameRepository, mockOutputPacketGateway);
+
+        // assert
         assertEquals(PREPARATION, game.getStatus());
-        verify(mockGameRepository, times(5)).updateGame(game);
+
+        // check long dest cards handed out:
+        DestinationCard long1 = player1.getLongDestinationCard();
+        DestinationCard long2 = player2.getLongDestinationCard();
+        assertNotNull(long1);
+        assertNotNull(long2);
+        assertNotEquals(long1, long2);
+
+        // check short dest cards handed out:
+        List<DestinationCard> shorts1 = player1.getShortDestinationCards();
+        List<DestinationCard> shorts2 = player2.getShortDestinationCards();
+        assertEquals(3, shorts1.size());
+        assertEquals(3, shorts2.size());
+        assertFalse(shorts1.contains(shorts2.get(0)));
+        assertFalse(shorts1.contains(shorts2.get(1)));
+        assertFalse(shorts1.contains(shorts2.get(2)));
+
+        verify(mockGameRepository, times(1)).updateGame(game);
+
         verify(mockOutputPacketGateway).sendPacket(ip1, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip1), GAME));
         verify(mockOutputPacketGateway).sendPacket(ip2, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip2), GAME));
     }
@@ -202,8 +220,7 @@ class GameServiceUtilTest {
         when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List takenColors = new LinkedList();
-        takenColors.add(player1.getColor());
+        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
         Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(ip1, player1);
@@ -215,16 +232,16 @@ class GameServiceUtilTest {
 
         //testing
         int sizeInGameBeforeCalling = game.getDecksOfGame().getLongDestinationCardDeck().getCardDeck().size();
-        GameServiceUtil.handOutLongDestinationCard(game.getId(), ip1, mockGameRepository);
-        GameServiceUtil.handOutLongDestinationCard(game.getId(), ip2, mockGameRepository);
+        GameServiceUtil.handOutLongDestinationCard(game, ip1);
+        GameServiceUtil.handOutLongDestinationCard(game, ip2);
 
         DestinationCard destinationCard1 = game.getPlayers().get(ip1).getLongDestinationCard();
         DestinationCard destinationCard2 = game.getPlayers().get(ip2).getLongDestinationCard();
         List<DestinationCard> longDestinationCards = game.getDecksOfGame().getLongDestinationCardDeck().getCardDeck();
 
         assertEquals(sizeInGameBeforeCalling - 2, longDestinationCards.size());
-        assertFalse(destinationCard1.equals(null));
-        assertFalse(destinationCard2.equals(null));
+        assertNotNull(destinationCard1);
+        assertNotNull(destinationCard2);
         assertFalse(longDestinationCards.contains(destinationCard1));
         assertFalse(longDestinationCards.contains(destinationCard2));
         assertNotEquals(destinationCard1, destinationCard2);
@@ -240,8 +257,8 @@ class GameServiceUtilTest {
         when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List takenColors = new LinkedList();
-        takenColors.add(player1.getColor());
+        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
+
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
         Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(ip1, player1);
@@ -253,8 +270,8 @@ class GameServiceUtilTest {
 
         //testing
         int sizeInGameBeforeCalling = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck().size();
-        GameServiceUtil.handOutShortDestinationCards(game.getId(), ip1, mockGameRepository);
-        GameServiceUtil.handOutShortDestinationCards(game.getId(), ip2, mockGameRepository);
+        GameServiceUtil.handOutShortDestinationCards(game, ip1);
+        GameServiceUtil.handOutShortDestinationCards(game, ip2);
 
         List<DestinationCard> destinationCards1 = game.getPlayers().get(ip1).getShortDestinationCards();
         List<DestinationCard> destinationCards2 = game.getPlayers().get(ip2).getShortDestinationCards();
@@ -263,10 +280,10 @@ class GameServiceUtilTest {
         assertEquals(sizeInGameBeforeCalling - 6, longDestinationCards.size());
         assertEquals(3, destinationCards1.size());
         assertEquals(3, destinationCards2.size());
-        for (DestinationCard card: destinationCards1) {
+        for (DestinationCard card : destinationCards1) {
             assertFalse(longDestinationCards.contains(card));
         }
-        for (DestinationCard card: destinationCards2) {
+        for (DestinationCard card : destinationCards2) {
             assertFalse(longDestinationCards.contains(card));
         }
         assertNotEquals(destinationCards1, destinationCards2);

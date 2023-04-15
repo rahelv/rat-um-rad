@@ -104,7 +104,7 @@ public class UserService implements IUserService {
         Game currentPlayerGame = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
         if (currentPlayerGame == null) return; // TODO: send error message to sender?
 
-        List<String> otherPlayers = new ArrayList<>(currentPlayerGame.getPlayers().keySet());
+        List<String> otherPlayers = new ArrayList<>(currentPlayerGame.getPlayerIpAddresses());
         otherPlayers.remove(ipAddress);
 
         String username = userRepository.getUsername(ipAddress);
