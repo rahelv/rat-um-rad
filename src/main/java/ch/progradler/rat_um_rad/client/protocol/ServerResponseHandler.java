@@ -63,9 +63,6 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case SEND_GAMES -> {
                 //TODO: implement
             }
-            case GAME_JOINED -> {
-                //TODO: implement
-            }
             case NEW_PLAYER -> {
                 //TODO: implement
             }

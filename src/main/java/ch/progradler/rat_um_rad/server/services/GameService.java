@@ -91,7 +91,6 @@ public class GameService implements IGameService {
             game.getPlayers().put(ipAddress, newPlayer);
             gameRepository.updateGame(game);
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
             GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));

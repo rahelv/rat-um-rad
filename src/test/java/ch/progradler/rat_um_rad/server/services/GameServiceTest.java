@@ -153,7 +153,6 @@ class GameServiceTest {
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             gameService.joinGame(ipAddress, gameId);
             verify(mockOutputPacketGateway).sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
-            verify(mockOutputPacketGateway, never()).sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
             utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, NEW_PLAYER), never());
         }
     }
@@ -190,7 +189,6 @@ class GameServiceTest {
 
             gameService.joinGame(ipAddressJoiner, gameId);
             verify(mockOutputPacketGateway, never()).sendPacket(ipAddressJoiner, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
-            verify(mockOutputPacketGateway).sendPacket(ipAddressJoiner, new Packet(GAME_JOINED, clientGameForJoiner, GAME));
             utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, NEW_PLAYER), never());
         }
     }
