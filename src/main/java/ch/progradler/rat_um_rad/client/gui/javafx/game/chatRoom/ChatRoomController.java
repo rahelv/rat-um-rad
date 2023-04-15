@@ -33,6 +33,27 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     private ChatRoomModel chatRoomModel;
     private IUserService userService;
     private ServerResponseListener<List<String>> allPlayerListener;
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+
+        this.chatRoomModel = new ChatRoomModel();
+
+        allPlayerListener = this::handleAllPlayersUpdate;
+        chatChoiceBox.setItems(chatRoomModel.chatTargetsList);
+        chatChoiceBox.getSelectionModel().select(0);//select the first item in choiceBox:"all"
+        chatChoiceBox.setOnAction((e) -> getTarget());
+
+        chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty());
+        this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
+
+
+        try {
+            this.userService = ServiceLoader.load(UserService.class).iterator().next();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {
@@ -53,28 +74,11 @@ public class ChatRoomController implements Initializable, ServerResponseListener
         chatRoomModel.addChatMessageToList(new ChatMessage("You", content));
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
-
-        this.chatRoomModel = new ChatRoomModel();
-        chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty());
-        this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
-
-        allPlayerListener = this::handleAllPlayersUpdate;
-
-        chatChoiceBox.setItems(chatRoomModel.chatTargetsList);
-        chatChoiceBox.getSelectionModel().select(0);//select the first item in choiceBox:"all"
-        chatChoiceBox.setOnAction((e) -> getTarget());
-        try {
-            this.userService = ServiceLoader.load(UserService.class).iterator().next();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     private void handleAllPlayersUpdate(List<String> allPlayersList, ContentType contentType) {
         Platform.runLater(() -> {
+            //chatRoomModel.chatTargetsList = FXCollections.observableArrayList(allPlayersList);
             chatRoomModel.addPlayersToTargetList(allPlayersList);
+            System.out.println("here is called");//actually here is not be operated
         });
     }
     @Override

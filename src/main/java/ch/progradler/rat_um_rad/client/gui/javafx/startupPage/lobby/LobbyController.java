@@ -8,6 +8,7 @@ import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -52,8 +53,8 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
         openGamesListView.setCellFactory(param -> new Cell());
         //each item of listView should have 2 buttons:list players and join game
 
-        currentPlayersTextArea.textProperty().bindBidirectional(lobbyModel.allOnlinePlayersProperty());
         allPlayerListener = this::handleAllPlayersUpdate;
+        currentPlayersTextArea.textProperty().bindBidirectional(lobbyModel.allOnlinePlayersProperty());
     }
 
 
@@ -147,9 +148,11 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
 
     }
     private void handleAllPlayersUpdate(List<String> content, ContentType contentType) {
-        currentPlayersTextArea.setText("all online players : "+content.size());
+        //currentPlayersTextArea.setText("all online players : "+content.size());
         Platform.runLater(() -> {
-            lobbyModel.updateAllOnlinePlayersList(content);
+            //lobbyModel.updateAllOnlinePlayersList(content);
+            lobbyModel.allOnlinePlayersProperty = new SimpleStringProperty("All online players : "+content.size());
+            System.out.println(content.size());
         });
     }
 }
