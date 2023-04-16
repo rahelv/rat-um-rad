@@ -7,6 +7,7 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
@@ -16,17 +17,17 @@ import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static ch.progradler.rat_um_rad.shared.protocol.Command.SEND_GAMES;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME_INFO_LIST;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
 
 /**
@@ -49,7 +50,7 @@ public class GameService implements IGameService {
 
         GameMap map = GameMap.defaultMap();
         Map<String, Player> players = new HashMap<>();
-        Player creator = GameServiceUtil.createNewPlayer(creatorIpAddress, userRepository, new HashSet<WheelColor>());
+        Player creator = GameServiceUtil.createNewPlayer(creatorIpAddress, userRepository, new ArrayList<>());
         players.put(creatorIpAddress, creator);
 
         Game gameCreated = null;
@@ -80,55 +81,26 @@ public class GameService implements IGameService {
     @Override
     public void joinGame(String ipAddress, String gameId) {
         Game game = gameRepository.getGame(gameId);
-
-        /*
-        Checks whether game has status {@ling GameStatus#WAITING_FOR_PLAYERS}.
-        If yes, player is added.
-        If not, error message is sent back.
-         */
-        if (game.getStatus().equals(WAITING_FOR_PLAYERS)) {
-            //collect all already taken colors
-            Set<WheelColor> takenColors = new HashSet<>();
-            for (Player player: game.getPlayers().values()) {
-                takenColors.add(player.getColor());
-            }
-
-            //add player
-            Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
-            game.getPlayers().put(ipAddress, newPlayer);
-
-            //inform all players with the required information
-            for (String playerIpAddress: game.getPlayers().keySet()) {
-                if (! playerIpAddress.equals(ipAddress)) {
-                    ClientGame clientGame = GameServiceUtil.toClientGame(game, playerIpAddress);
-                    outputPacketGateway.sendPacket(playerIpAddress, new Packet(NEW_PLAYER, clientGame, GAME));
-                }
-            }
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
+        if (game.getStatus() == WAITING_FOR_PLAYERS) {
+            addPlayerAndSaveGame(ipAddress, game);
+            GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             return;
         }
 
-        //check, whether there are enough players. If yes, start Game.
-        if (game.getRequiredPlayerCount() == game.getPlayers().size()) {
-            startGame();
+        if (game.hasReachedRequiredPlayers()) {
+            //TODO: inform all clients (update lobby list)
+            GameServiceUtil.startGame(game, gameRepository, outputPacketGateway);
         }
     }
 
-    private void startGame() {
-        //TODO: implement
-    }
-
-    @Override
-    public void sendMessageTo(String ipAddressFrom, String ipAddressTo) {
-        //TODO: implement
-    }
-
-    @Override
-    public void sendMessageToAll(String ipAddressFrom) {
-        //TODO: implement
+    private void addPlayerAndSaveGame(String ipAddress, Game game) {
+        List<WheelColor> takenColors = game.getPlayers().values()
+                .stream().map((PlayerBase::getColor)).toList();
+        Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
+        game.getPlayers().put(ipAddress, newPlayer);
+        gameRepository.updateGame(game);
     }
 
     @Override
@@ -137,8 +109,73 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void selectShortDestinationCards(String ipAddress, DestinationCardDeck destinationCardDeck) {
-        //TODO: implement
+    public void selectShortDestinationCards(String ipAddress, List<String> selectedCardIds) {
+        if (selectedCardIds.isEmpty()) {
+            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
+            return;
+        }
+
+        Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
+        if (game == null) {
+            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME);
+            return;
+        }
+
+        Player player = game.getPlayers().get(ipAddress);
+
+        if (!checkValidSelectedCardIds(player, selectedCardIds)) {
+            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
+            return;
+        }
+
+        switch (game.getStatus()) {
+            case PREPARATION -> {
+                List<DestinationCard> shortDestCardDeck = game.getDecksOfGame()
+                        .getShortDestinationCardDeck().getCardDeck();
+                List<DestinationCard> selectedCards = shortDestCardDeck.stream()
+                        .filter(c -> selectedCardIds.contains(c.getCardID())).toList();
+
+                player.setShortDestinationCards(selectedCards);
+                shortDestCardDeck.removeAll(selectedCards);
+                game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, true);
+
+                gameRepository.updateGame(game);
+
+                if (allPlayersSelectedShortDestCards(game)) {
+                    GameServiceUtil.startGameRounds(game, gameRepository, outputPacketGateway);
+                }
+            }
+            case STARTED -> {
+                //TODO: implement
+            }
+        }
+    }
+
+    private boolean allPlayersSelectedShortDestCards(Game game) {
+        List<String> playerIps = new ArrayList<>(game.getPlayerIpAddresses());
+        for (String playerIp : playerIps) {
+            boolean playerSelected = game.getPlayersHaveChosenShortDestinationCards().getOrDefault(playerIp, false);
+            if (!playerSelected) return false;
+        }
+        return true;
+    }
+
+    private void sendInvalidSelectedShortDestCardsResponse(String ipAddress, String errorMessage) {
+        Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+                errorMessage,
+                STRING);
+        outputPacketGateway.sendPacket(ipAddress, errorResponse);
+    }
+
+    private boolean checkValidSelectedCardIds(Player player, List<String> selectedCardIds) {
+        if (selectedCardIds.size() > 3) return false;
+        List<String> optionCardIds = player.getShortDestinationCards().stream().map(DestinationCard::getCardID).toList();
+        for (String selectedCardId : selectedCardIds) {
+            if (!optionCardIds.contains(selectedCardId)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
