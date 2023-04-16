@@ -135,4 +135,12 @@ public class GameServiceUtil {
         }
         player.setShortDestinationCards(playerShortDestinationCards);
     }
+
+    public static void startGameRounds(Game game, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
+        // TODO: implement
+        // set status to Started
+        // shuffle card deck
+        // save game
+        // send update to all
+    }
 }

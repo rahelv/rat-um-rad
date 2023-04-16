@@ -6,7 +6,6 @@ import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
@@ -102,21 +101,40 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void selectShortDestinationCards(String ipAddress, List<String> selectedCards) {
+    public void selectShortDestinationCards(String ipAddress, List<String> selectedCardIds) {
+        if (selectedCardIds.isEmpty()) {
+            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
+            return;
+        }
+
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
-        // TODO: check if not null! write unit test
-        GameStatus gameStatus = game.getStatus();
+        if (game == null) {
+            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME);
+            return;
+        }
+
         Player player = game.getPlayers().get(ipAddress);
-        switch(gameStatus) {
+
+        if (!checkValidSelectedCardIds(player, selectedCardIds)) {
+            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
+            return;
+        }
+
+        switch (game.getStatus()) {
             case PREPARATION -> {
-                for (DestinationCard shortDestinationCard: player.getShortDestinationCards()) {
-                    if (! selectedCards.contains(shortDestinationCard.getCardID())) {
-                        putBackDestinationCard(ipAddress, player.getShortDestinationCards().indexOf(shortDestinationCard));
-                    }
-                }
+                List<DestinationCard> shortDestCardDeck = game.getDecksOfGame()
+                        .getShortDestinationCardDeck().getCardDeck();
+                List<DestinationCard> selectedCards = shortDestCardDeck.stream()
+                        .filter(c -> selectedCardIds.contains(c.getCardID())).toList();
+
+                player.setShortDestinationCards(selectedCards);
+                shortDestCardDeck.removeAll(selectedCards);
                 game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, true);
-                if (! game.getPlayersHaveChosenShortDestinationCards().containsValue(false)) {
-                    startGameRounds(game.getId());
+
+                gameRepository.updateGame(game);
+
+                if (allPlayersSelectedShortDestCards(game)) {
+                    GameServiceUtil.startGameRounds(game, gameRepository, outputPacketGateway);
                 }
             }
             case STARTED -> {
@@ -125,17 +143,31 @@ public class GameService implements IGameService {
         }
     }
 
-    private void putBackDestinationCard(String ipAddress, int indexOfCard) {
-        // TODO: game als parameter geben
-        Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
-        Player player = game.getPlayers().get(ipAddress);
-        DestinationCard destinationCard = player.getShortDestinationCards().get(indexOfCard);
-        player.getShortDestinationCards().remove(destinationCard);
-        game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck().add(destinationCard);
+    private boolean allPlayersSelectedShortDestCards(Game game) {
+        List<String> playerIps = new ArrayList<>(game.getPlayerIpAddresses());
+        for (String playerIp : playerIps) {
+            boolean playerSelected = game.getPlayersHaveChosenShortDestinationCards().getOrDefault(playerIp, false);
+            if (!playerSelected) return false;
+        }
+        return true;
     }
 
-    private void startGameRounds(String gameId) {
-        //TODO: implement
+    private void sendInvalidSelectedShortDestCardsResponse(String ipAddress, String errorMessage) {
+        Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+                errorMessage,
+                STRING);
+        outputPacketGateway.sendPacket(ipAddress, errorResponse);
+    }
+
+    private boolean checkValidSelectedCardIds(Player player, List<String> selectedCardIds) {
+        if (selectedCardIds.size() > 3) return false;
+        List<String> optionCardIds = player.getShortDestinationCards().stream().map(DestinationCard::getCardID).toList();
+        for (String selectedCardId : selectedCardIds) {
+            if (!optionCardIds.contains(selectedCardId)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

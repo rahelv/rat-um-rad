@@ -24,14 +24,14 @@ public class DestinationCardDeck implements CardDeck {
         //needed for Testing
         City city1 = new City("CityId1", "CityName1", new Point(1, 1));
         destinationCards.add(new DestinationCard("CardId1", 1, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 2, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 3, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 4, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 5, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 6, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 7, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 8, city1, city1, 1));
-        destinationCards.add(new DestinationCard("CardId1", 9, city1, city1, 1));
+        destinationCards.add(new DestinationCard("CardId2", 2, city1, city1, 1));
+        destinationCards.add(new DestinationCard("CardId3", 3, city1, city1, 1));
+        destinationCards.add(new DestinationCard("CardId4", 4, city1, city1, 1));
+        destinationCards.add(new DestinationCard("CardId5", 5, city1, city1, 1));
+        destinationCards.add(new DestinationCard("CardId6", 6, city1, city1, 1));
+        destinationCards.add(new DestinationCard("CardId7", 7, city1, city1, 1));
+        destinationCards.add(new DestinationCard("CardId8", 8, city1, city1, 1));
+        destinationCards.add(new DestinationCard("CardId9", 9, city1, city1, 1));
         return new DestinationCardDeck(destinationCards);
 
         // TODO: implement correct cards

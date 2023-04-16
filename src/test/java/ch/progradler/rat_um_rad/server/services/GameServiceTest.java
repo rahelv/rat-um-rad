@@ -5,12 +5,10 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCardDeck;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
@@ -234,6 +232,179 @@ class GameServiceTest {
             gameService.joinGame(ipAddressJoiner, gameId);
 
             utilities.verify(() -> GameServiceUtil.startGame(game, mockGameRepository, mockOutputPacketGateway));
+        }
+    }
+
+    @Test
+    void selectShortDestinationCardSendsErrorPacketIfPlayerInNoGame() {
+        String ipAddress = "clientA";
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(null);
+
+            gameService.selectShortDestinationCards(ipAddress, Collections.singletonList("card1"));
+
+            verify(mockGameRepository, never()).updateGame(any());
+            Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+                    ErrorResponse.PLAYER_IN_NO_GAME,
+                    STRING);
+            verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
+        }
+    }
+
+    @Test
+    void selectShortDestinationCardSendsErrorPacketIfSelectedCardIdsAreNotAllInOptionalCards() {
+        String ipAddress = "clientA";
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
+
+        List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
+                allShortDestCards.get(5),
+                allShortDestCards.get(2),
+                allShortDestCards.get(6)));
+
+        List<String> selectedCardIds = Arrays.asList(
+                "otherCardId",
+                allShortDestCards.get(6).getCardID());
+
+        Map<String, Player> players = new HashMap<>();
+        Player player = new Player("Player A", null, 0, 35, 2,
+                new ArrayList<>(), null, optionalCards);
+        players.put(ipAddress, player);
+
+        Game game = mock(Game.class);
+        when(game.getPlayers()).thenReturn(players);
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(game);
+
+            gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
+
+            verify(mockGameRepository, never()).updateGame(any());
+            Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+                    ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID,
+                    STRING);
+            verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
+        }
+    }
+
+    @Test
+    void selectShortDestinationCardSendsErrorPacketIfSelectedCardIdsAreEmpty() {
+        String ipAddress = "clientA";
+        gameService.selectShortDestinationCards(ipAddress, new ArrayList<>());
+
+        verify(mockGameRepository, never()).updateGame(any());
+        Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+                ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID,
+                STRING);
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
+    }
+
+    @Test
+    void selectShortDestinationCardSetsThemForThatPlayerAndRemovesFromDeckAndSetsSelectedAsTrueAndUpdatesGameIfStatusPrep() {
+        String ipAddress = "clientA";
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
+
+        List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
+                allShortDestCards.get(5),
+                allShortDestCards.get(2),
+                allShortDestCards.get(6)));
+
+        List<String> selectedCardIds = Arrays.asList(
+                allShortDestCards.get(2).getCardID(),
+                allShortDestCards.get(6).getCardID());
+
+        Map<String, Player> players = new HashMap<>();
+        Player player = new Player("Player A", null, 0, 35, 2,
+                new ArrayList<>(), null, optionalCards);
+        players.put(ipAddress, player);
+
+        Game game = new Game("game1", PREPARATION, GameMap.defaultMap(), "creator", 4, players);
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(game);
+
+            gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
+
+
+            List<DestinationCard> selectedCards = Arrays.asList(
+                    allShortDestCards.get(2),
+                    allShortDestCards.get(6));
+
+            assertEquals(selectedCards, player.getShortDestinationCards());
+
+            List<DestinationCard> gameShortDestDeck = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck();
+            for (DestinationCard selectedCard : selectedCards) {
+                assertFalse(gameShortDestDeck.contains(selectedCard));
+            }
+
+            assertTrue(game.getPlayersHaveChosenShortDestinationCards().get(ipAddress));
+
+            verify(mockGameRepository).updateGame(game);
+        }
+    }
+
+    @Test
+    void selectShortDestinationCardStartsGameRoundsIfAllPlayersHaveSelected() {
+        String ipAddress = "clientA";
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
+
+        List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
+                allShortDestCards.get(5),
+                allShortDestCards.get(2),
+                allShortDestCards.get(6)));
+
+        List<String> selectedCardIds = Collections.singletonList(allShortDestCards.get(2).getCardID());
+
+        Map<String, Player> players = new HashMap<>();
+        Player player = new Player("Player A", null, 0, 35, 2,
+                new ArrayList<>(), null, optionalCards);
+        players.put(ipAddress, player);
+
+        Game game = new Game("game1", PREPARATION, GameMap.defaultMap(), "creator", 4, players);
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(game);
+
+            gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
+
+            utilities.verify(() -> GameServiceUtil.startGameRounds(game, mockGameRepository, mockOutputPacketGateway));
+        }
+    }
+
+    @Test
+    void selectShortDestinationCardSetsDoesNotStartGameRoundsIfNotAllPlayersHaveSelected() {
+        String ipAddress = "clientA";
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
+
+        List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
+                allShortDestCards.get(5),
+                allShortDestCards.get(2),
+                allShortDestCards.get(6)));
+
+        List<String> selectedCardIds = Collections.singletonList(allShortDestCards.get(2).getCardID());
+
+        Map<String, Player> players = new HashMap<>();
+        Player player = new Player("Player A", null, 0, 35, 2,
+                new ArrayList<>(), null, optionalCards);
+        players.put(ipAddress, player);
+        String playerBIp = "clientB";
+        players.put(ipAddress, player);
+        players.put(playerBIp, mock(Player.class));
+
+        Game game = new Game("game1", PREPARATION, GameMap.defaultMap(), "creator", 4, players);
+        game.getPlayersHaveChosenShortDestinationCards().put(playerBIp, false);
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(game);
+
+            gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
+
+            utilities.verify(() -> GameServiceUtil.startGameRounds(game, mockGameRepository, mockOutputPacketGateway), never());
         }
     }
 
