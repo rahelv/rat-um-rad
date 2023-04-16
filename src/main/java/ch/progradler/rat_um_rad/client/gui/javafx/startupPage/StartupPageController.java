@@ -4,28 +4,37 @@ import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
+import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
-public class StartupPageController implements Initializable, ServerResponseListener<ClientGame> {
+public class StartupPageController implements Initializable {
+    private UserService userService;
+    public ServerResponseListener<List<String>> allPlayersListener;
+
     @FXML
     private LobbyController lobbyController;
 
     private StartupPageModel startupPageModel;
     Stage stage;
     UsernameChangeModel usernameChangeModel;
+
+    @FXML
+    private Button currentPlayersLabelButton;
 
     @FXML
     private Label welcomeLabel;
@@ -37,8 +46,32 @@ public class StartupPageController implements Initializable, ServerResponseListe
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
+            @Override
+            public void serverResponseReceived(ClientGame content) {
+                gameJoined(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.GAME_JOINED;
+            }
+        });
+
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<List<String>>() {
+            @Override
+            public void serverResponseReceived(List<String> content) {
+                handleAllPlayersUpdate(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.SEND_ALL_CONNECTED_PLAYERS;
+            }
+        });
+        this.userService = new UserService();
     }
+
 
     public void initData(UsernameChangeModel usernameChangeModel, StartupPageModel startupPageModel, Stage stage, LobbyModel lobbyModel) {
         this.usernameChangeModel = usernameChangeModel;
@@ -47,6 +80,12 @@ public class StartupPageController implements Initializable, ServerResponseListe
         welcomeLabel.setText("Herzlich Willkommen " + usernameChangeModel.getCurrentUsername() + " !");
 
         this.lobbyController.initData(lobbyModel);
+        try {
+            this.userService.requestOnlinePlayers();
+            System.out.println("request online players");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showUsernameChangeDialog() {
@@ -69,10 +108,19 @@ public class StartupPageController implements Initializable, ServerResponseListe
         });
     }
 
-    @Override
-    public void serverResponseReceived(ClientGame content, Command command) {
+    public void gameJoined(ClientGame content) {
         Platform.runLater(() -> {
             startupPageModel.getListener().gameCreated(content);
         });
     }
+
+    private void handleAllPlayersUpdate(List<String> players) {
+        Platform.runLater(() -> {
+            startupPageModel.addPlayersToList(players);
+            this.currentPlayersLabelButton.setText("Currently Online Players: " + String.valueOf(startupPageModel.getOnlinePlayersCount()));
+            this.currentPlayersLabelButton.setTooltip(new Tooltip(startupPageModel.getOnlinePlayersListAsString()));
+            System.out.println("added players to list");
+        });
+    }
+
 }

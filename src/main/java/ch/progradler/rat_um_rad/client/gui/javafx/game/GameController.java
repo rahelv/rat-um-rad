@@ -8,23 +8,18 @@ import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.Road;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class GameController implements Initializable, ServerResponseListener<ClientGame> {
+public class GameController implements Initializable {
     private GameService gameService;
     Stage stage;
     GameModel gameModel;
@@ -42,7 +37,28 @@ public class GameController implements Initializable, ServerResponseListener<Cli
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.gameService = new GameService();
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
+            @Override
+            public void serverResponseReceived(ClientGame content) {
+                gameUpdated(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.NEW_PLAYER;
+            }
+        });
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
+            @Override
+            public void serverResponseReceived(ClientGame content) {
+                gameUpdated(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
+            }
+        });
     }
 
     /** initializes the game model and binds data to view.
@@ -60,8 +76,7 @@ public class GameController implements Initializable, ServerResponseListener<Cli
         //TODO: activities should be implemented on server - this.activityController.updateActitivies(this.gameModel.getClientGame().getActivities());
     }
 
-    @Override
-    public void serverResponseReceived(ClientGame content, Command command) {
+    public void gameUpdated(ClientGame content) {
         this.gameModel.setClientGame(content);
         this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
         //TODO: this.activityController.updateActitivites();

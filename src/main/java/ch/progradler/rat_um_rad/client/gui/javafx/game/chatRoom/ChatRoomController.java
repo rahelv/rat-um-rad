@@ -21,7 +21,7 @@ import java.util.ServiceLoader;
 /**
  * Controller for the lobby internal chat (for view ChatRoomView.fxml)
  */
-public class ChatRoomController implements Initializable, ServerResponseListener<ChatMessage> {
+public class ChatRoomController implements Initializable {
     private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
     public Button sendButton;
@@ -57,7 +57,17 @@ public class ChatRoomController implements Initializable, ServerResponseListener
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this); //add listener for ServerResponses
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ChatMessage>() {
+            @Override
+            public void serverResponseReceived(ChatMessage content) {
+                chatMessageReceived(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.SEND_GAME_INTERNAL_CHAT;
+            }
+        });
 
         this.chatRoomModel = new ChatRoomModel();
         chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty()); //bind TextField for Chat Input to model
@@ -73,8 +83,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     /** when a chatMessage is received on the ServerResponseHandler, adds the received message to the list.
      * @param chatMessage
      */
-    @Override
-    public void serverResponseReceived(ChatMessage chatMessage, Command command) {
+    public void chatMessageReceived(ChatMessage chatMessage) {
         Platform.runLater(() -> {
             chatRoomModel.addChatMessageToList(chatMessage);
         });

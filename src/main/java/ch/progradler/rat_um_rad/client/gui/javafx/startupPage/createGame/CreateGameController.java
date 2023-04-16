@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CreateGameController implements Initializable, ServerResponseListener<ClientGame> {
+public class CreateGameController implements Initializable {
    //public TextField groupNameTextField;
     private Stage stage;
     public Spinner<Integer> playerNumSpinner;
@@ -36,7 +36,17 @@ public class CreateGameController implements Initializable, ServerResponseListen
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
+            @Override
+            public void serverResponseReceived(ClientGame content) {
+                gameCreated(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.GAME_JOINED;
+            }
+        });
 
         this.gameService = new GameService();
 
@@ -71,10 +81,8 @@ public class CreateGameController implements Initializable, ServerResponseListen
 
     /** listener for @ServerResponseHandler. When game is created, sends notification to listener (here GUI class) so it can set the according scene.
      * @param clientGame
-     * @param Command so it can differentiate between commands
      */
-    @Override
-    public void serverResponseReceived(ClientGame clientGame, Command command) {
+    public void gameCreated(ClientGame clientGame) {
         //TODO: open game view as soon as game is received.
         Platform.runLater(() -> {
             createGameModel.getListener().gameCreated(clientGame);

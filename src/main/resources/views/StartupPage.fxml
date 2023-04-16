@@ -24,7 +24,7 @@
         <HBox spacing="5">
             <Button fx:id="showAllGamesButton" onAction="#showAllGamesAction" text="show all games"/>
             <Button fx:id="createGameButton" onAction="#createGameAction" text="create game"/>
-            <Label fx:id="currentPlayersTextArea" text="current online players : 15" />
+            <Button fx:id="currentPlayersLabelButton"></Button>
         </HBox>
     </VBox>
 </AnchorPane>

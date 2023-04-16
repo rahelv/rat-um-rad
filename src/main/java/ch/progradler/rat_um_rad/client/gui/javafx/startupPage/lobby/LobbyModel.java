@@ -14,12 +14,21 @@ import javafx.collections.ObservableList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LobbyModel implements ServerResponseListener<List<GameBase>> {
+public class LobbyModel {
     private ObservableList<GameBase> gameInfoList; //TODO: model has too much information, new model?
     private Integer currentlyOnlinePlayers; //TODO: evt. Liste dieser Spieler
     public LobbyModel() {
-        System.out.println("lobbymodel created");
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<List<GameBase>>() {
+            @Override
+            public void serverResponseReceived(List<GameBase> content) {
+                waitingGamesReceived(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.SEND_FINISHED_GAMES;
+            }
+        });
         this.gameInfoList = FXCollections.observableArrayList();
         this.currentlyOnlinePlayers = 12;
     }
@@ -39,8 +48,7 @@ public class LobbyModel implements ServerResponseListener<List<GameBase>> {
         return gameInfoList;
     }
 
-    @Override
-    public void serverResponseReceived(List<GameBase> content, Command command) {
+    public void waitingGamesReceived(List<GameBase> content) {
         this.updateGameList(content);
     }
 }

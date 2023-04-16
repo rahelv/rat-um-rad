@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -26,7 +27,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class GameOverviewController implements Initializable, ServerResponseListener<List<GameBase>> {
+public class GameOverviewController implements Initializable {
     @FXML
     private LobbyController lobbyController;
     @FXML
@@ -40,7 +41,29 @@ public class GameOverviewController implements Initializable, ServerResponseList
     private GameOverviewModel gameOverviewModel;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<List<GameBase>>() {
+            @Override
+            public void serverResponseReceived(List<GameBase> content) {
+                startedGameListReceived(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.SEND_STARTED_GAMES;
+            }
+        });
+
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<List<GameBase>>() {
+            @Override
+            public void serverResponseReceived(List<GameBase> content) {
+                finishedGameListReceived(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.SEND_FINISHED_GAMES;
+            }
+        });
 
         this.gameService = new GameService();
     }
@@ -69,21 +92,18 @@ public class GameOverviewController implements Initializable, ServerResponseList
         });
     }
 
-    @Override
-    public void serverResponseReceived(List<GameBase> content, Command command) {
-        switch(command) {
-            case SEND_STARTED_GAMES ->  {
-                this.gameOverviewModel.setOngoingGameList(content);
-                this.onGoingListView.setItems(this.gameOverviewModel.getOngoingGameList());
-                onGoingListView.setCellFactory(param -> new GameOverviewController.Cell());
-            }
-            case SEND_FINISHED_GAMES -> {
-                this.gameOverviewModel.setFinishedGameList(content);
-                this.finishedGamesListView.setItems(this.gameOverviewModel.getFinishedGameList());
-                finishedGamesListView.setCellFactory(param -> new GameOverviewController.Cell());
-            }
-        }
+    public void startedGameListReceived(List<GameBase> content) {
+        this.gameOverviewModel.setOngoingGameList(content);
+        this.onGoingListView.setItems(this.gameOverviewModel.getOngoingGameList());
+        onGoingListView.setCellFactory(param -> new GameOverviewController.Cell());
     }
+
+    public void finishedGameListReceived(List<GameBase> content) {
+        this.gameOverviewModel.setFinishedGameList(content);
+        this.finishedGamesListView.setItems(this.gameOverviewModel.getFinishedGameList());
+        finishedGamesListView.setCellFactory(param -> new GameOverviewController.Cell());
+    }
+
 
     static class OpenGameCell extends ListCell<GameBase> {
         Pane pane = new Pane();
