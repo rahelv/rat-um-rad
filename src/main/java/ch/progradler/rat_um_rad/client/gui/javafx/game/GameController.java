@@ -3,6 +3,8 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game;
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapController;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
@@ -25,15 +27,7 @@ public class GameController implements Initializable, ServerResponseListener<Cli
     @FXML
     private ActivityController activityController;
     @FXML
-    private ComboBox<Road> roadsToBuildList;
-    @FXML
-    private Label gameID;
-    @FXML
-    private Label status;
-    @FXML
-    private Label createdAt;
-    @FXML
-    private Label requiredPlayers;
+    private GameMapController gameMapController;
     /**
      * 1. Warten auf Spieler in Lobby
      * 2. Game Startet
@@ -55,49 +49,18 @@ public class GameController implements Initializable, ServerResponseListener<Cli
         this.stage = stage;
         this.gameModel = gameModel;
         this.activityController.initData(new ActivityModel());
+        this.gameModel.setClientGame(gameModel.getClientGame());
+        this.gameMapController.initData(new GameMapModel(gameModel.getClientGame())); //TODO: maybe only call after game is started (in serverresponsehandler)
+        //TODO: this.activityController.updateActitivites();
+        this.gameMapController.udpateGameMapModel(gameModel.getClientGame());
         //TODO: activities should be implemented on server - this.activityController.updateActitivies(this.gameModel.getClientGame().getActivities());
-
-        gameID.setText(gameModel.getClientGame().getId());
-        status.setText(gameModel.getClientGame().getStatus().toString());
-        createdAt.setText(gameModel.getClientGame().getCreatedAt().toString());
-        requiredPlayers.setText(String.valueOf(gameModel.getClientGame().getRequiredPlayerCount()));
-
-        this.gameModel.setRoadObservableList(this.gameModel.getClientGame().getMap().getRoads());
-        roadsToBuildList.setItems(this.gameModel.getRoadObservableList());
-        roadsToBuildList.setConverter(new StringConverter<Road>() {
-            @Override
-            public String toString(Road object) {
-                return object.getId();
-            }
-
-            @Override
-            public Road fromString(String string) {
-                return null;
-            }
-        });
-        roadsToBuildList.setCellFactory(
-                listview -> new ListCell<Road>() {
-                    @Override
-                    public void updateItem(Road road, boolean empty) {
-                        super.updateItem(road, empty);
-                        textProperty().unbind();
-                        if(road != null)
-                            //TODO: textProperty().bind();
-                            textProperty().setValue(road.getId());
-                        else
-                            setText(null);
-                    }
-                }
-        );
-    }
-
-    @FXML
-    private void buildRoadAction(ActionEvent event) {
-       //TODO:  this.gameService.buildRoad(this.roadsToBuildList.getValue());
     }
 
     @Override
     public void serverResponseReceived(ClientGame content, ContentType contentType) {
-        //TODO: this.gameModel.updateClientGame();
+        this.gameModel.setClientGame(content);
+        this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
+        //TODO: this.activityController.updateActitivites();
+        this.gameMapController.udpateGameMapModel(content);
     }
 }
