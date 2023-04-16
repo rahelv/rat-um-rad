@@ -36,10 +36,21 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        try {
+            this.userService = ServiceLoader.load(UserService.class).iterator().next();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        try {
+            userService.requestOnlinePlayers();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.chatRoomModel = new ChatRoomModel();
 
         allPlayerListener = this::handleAllPlayersUpdate;
+        System.out.println("check if handle all players update is called");
         chatChoiceBox.setItems(chatRoomModel.chatTargetsList);
         chatChoiceBox.getSelectionModel().select(0);//select the first item in choiceBox:"all"
         chatChoiceBox.setOnAction((e) -> getTarget());
@@ -48,11 +59,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
         this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
 
 
-        try {
-            this.userService = ServiceLoader.load(UserService.class).iterator().next();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
@@ -77,8 +84,8 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     private void handleAllPlayersUpdate(List<String> allPlayersList, ContentType contentType) {
         Platform.runLater(() -> {
             chatRoomModel.addPlayersToTargetList(allPlayersList);
-            System.out.println("here should be invoked");//actually here is not be operated
         });
+        System.out.println("handle all players update should be invoked");//actually here is not be operated
     }
     @Override
     public void serverResponseReceived(ChatMessage chatMessage, ContentType contentType) {

@@ -4,6 +4,8 @@ import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
+import ch.progradler.rat_um_rad.client.services.IUserService;
+import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.ServiceLoader;
 
 public class LobbyController implements Initializable, ServerResponseListener<List<GameBase>> {
     public Button showAllGamesButton;
@@ -36,6 +39,7 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
     public TextArea currentPlayersTextArea;
     public TextField gameIdTextField;
 
+    private IUserService userService;
     private IGameService gameService;
     private LobbyModel lobbyModel;
     private ServerResponseListener<List<String>> allPlayerListener;
@@ -44,7 +48,19 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
         this.gameService = new GameService();
         this.lobbyModel = new LobbyModel();
-       /**try {
+
+        try {
+            this.userService = ServiceLoader.load(UserService.class).iterator().next();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            userService.requestOnlinePlayers();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /**try {
             this.gameService.requestWaitingGames();
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,8 +69,10 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
         openGamesListView.setCellFactory(param -> new Cell());
         //each item of listView should have 2 buttons:list players and join game
 
-        allPlayerListener = this::handleAllPlayersUpdate;
         currentPlayersTextArea.textProperty().bindBidirectional(lobbyModel.allOnlinePlayersProperty());
+        allPlayerListener = this::handleAllPlayersUpdate;
+        System.out.println("check check");
+
     }
 
 
@@ -149,6 +167,7 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
     }
     private void handleAllPlayersUpdate(List<String> content, ContentType contentType) {
         Platform.runLater(() -> {
+            System.out.println(content.size());//here is not invoked
             lobbyModel.allOnlinePlayersProperty = new SimpleStringProperty("All online players : "+content.size());
             System.out.println("here should be invoked");
         });
