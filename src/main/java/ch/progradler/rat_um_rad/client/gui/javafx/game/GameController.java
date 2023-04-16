@@ -14,7 +14,7 @@ import javafx.util.StringConverter;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GameController implements Initializable, ServerResponseListener<ClientGameChange> {
+public class GameController implements Initializable { //TODO: implement ServerResponseListener
     private GameService gameService;
     @FXML
     private ComboBox<Road> roadsToBuildList;

@@ -43,16 +43,31 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         launch(args);
     }
 
+    /** starts the GUI Application, see {@link ch.progradler.rat_um_rad.client.Client}
+     * @param primaryStage the primary stage for this application, onto which
+     *                     the application scene can be set.
+     *                     Applications may create other stages, if needed, but they will not be
+     *                     primary stages.
+     */
     @Override
     public void start(Stage primaryStage) {
         Parameters parameters = getParameters();
         List<String> paramlist = parameters.getRaw();
 
-        if(!paramlist.get(0).equals("")) {
-           this.usernameChangeModel = new UsernameChangeModel(new User(), this, paramlist.get(0));
-        } else {
+        /**
+         * check if username was chosen through command line args.
+         * if no param exists, throws an indexoutofbounds exception.
+         */
+        try {
+            if(!paramlist.get(0).equals("")) {
+                this.usernameChangeModel = new UsernameChangeModel(new User(), this, paramlist.get(0));
+            } else {
+                this.usernameChangeModel = new UsernameChangeModel(new User(), this);
+            }
+        } catch (IndexOutOfBoundsException e) {
             this.usernameChangeModel = new UsernameChangeModel(new User(), this);
         }
+
         this.createGameModel = new CreateGameModel(this);
         this.showAllGamesModel = new ShowAllGamesModel(this);
 
@@ -65,6 +80,10 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         this.window.show();
     }
 
+    /** Takes a path to the corresponding FXML file and loads it.
+     * @param path
+     * @return
+     */
     private FXMLLoader loadFXMLView(String path) {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(path));
