@@ -26,7 +26,6 @@ import static ch.progradler.rat_um_rad.shared.protocol.Command.SEND_GAMES;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME_INFO_LIST;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
 
@@ -83,15 +82,23 @@ public class GameService implements IGameService {
         Game game = gameRepository.getGame(gameId);
         if (game.getStatus() == WAITING_FOR_PLAYERS) {
             addPlayerAndSaveGame(ipAddress, game);
-            GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
+            //send game to joined player
+            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            //TODO: send clientgame with empty map (because game has not started yet)
+            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
+
+            GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER); //TODO: problem starts here
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             return;
         }
 
         if (game.hasReachedRequiredPlayers()) {
-            //TODO: inform all clients (update lobby list)
             GameServiceUtil.startGame(game, gameRepository, outputPacketGateway);
+
+            //send updated lobby list to all players
+            Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST_WAITING);
+            outputPacketGateway.broadcast(packet);
         }
     }
 
