@@ -1,24 +1,23 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game;
 
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController;
+import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Road;
-import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GameController implements Initializable {
+public class GameController implements Initializable, ServerResponseListener<ClientGameChange> {
+    private GameService gameService;
     @FXML
-    private ListView<Road> roadsListView;
+    private ComboBox<Road> roadsToBuildList;
     Stage stage;
     GameModel gameModel;
     @FXML
@@ -38,6 +37,7 @@ public class GameController implements Initializable {
      * */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.gameService = new GameService();
     }
 
     /** initializes the game model and binds data to view.
@@ -54,8 +54,19 @@ public class GameController implements Initializable {
         requiredPlayers.setText(String.valueOf(gameModel.getClientGame().getRequiredPlayerCount()));
 
         this.gameModel.setRoadObservableList(this.gameModel.getClientGame().getMap().getRoads());
-        roadsListView.setItems(this.gameModel.getRoadObservableList());
-        roadsListView.setCellFactory(
+        roadsToBuildList.setItems(this.gameModel.getRoadObservableList());
+        roadsToBuildList.setConverter(new StringConverter<Road>() {
+            @Override
+            public String toString(Road object) {
+                return object.getId();
+            }
+
+            @Override
+            public Road fromString(String string) {
+                return null;
+            }
+        });
+        roadsToBuildList.setCellFactory(
                 listview -> new ListCell<Road>() {
                     @Override
                     public void updateItem(Road road, boolean empty) {
@@ -69,5 +80,10 @@ public class GameController implements Initializable {
                     }
                 }
         );
+    }
+
+    @FXML
+    private void buildRoadAction(ActionEvent event) {
+       //TODO:  this.gameService.buildRoad(this.roadsToBuildList.getValue());
     }
 }
