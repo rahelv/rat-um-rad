@@ -47,7 +47,6 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this.allPlayerListener);
         this.gameService = new GameService();
         this.lobbyModel = new LobbyModel();
 
@@ -73,6 +72,7 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
 
         //currentPlayersTextArea.textProperty().bindBidirectional(lobbyModel.allOnlinePlayersProperty());
         allPlayerListener = this::handleAllPlayersUpdate;
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this.allPlayerListener);
         allOnlinePlayersListView.setItems(lobbyModel.allOnlinePlayersList);
     }
 

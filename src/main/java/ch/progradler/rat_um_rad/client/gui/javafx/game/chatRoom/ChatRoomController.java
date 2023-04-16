@@ -36,7 +36,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this.allPlayerListener);
+
         try {
             this.userService = ServiceLoader.load(UserService.class).iterator().next();
         } catch (Exception e) {
@@ -51,6 +51,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
         this.chatRoomModel = new ChatRoomModel();
 
         allPlayerListener = this::handleAllPlayersUpdate;
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this.allPlayerListener);
 
         chatChoiceBox.setItems(chatRoomModel.chatTargetsList);
         chatChoiceBox.getSelectionModel().select(0);//select the first item in choiceBox:"all"
