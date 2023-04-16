@@ -3,9 +3,11 @@ package ch.progradler.rat_um_rad.shared.protocol.coder;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -31,12 +33,14 @@ public class PacketCoderTest {
     Coder<GameBase> gameBaseCoder;
     @Mock
     Coder<ClientGame> clientGameCoder;
+    @Mock
+    Coder<BuildRoadInfo> buildRoadInfoCoder;
 
     private PacketCoder packetCoder;
 
     @BeforeEach
     public void initPacketCoder() {
-        packetCoder = new PacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder, clientGameCoder);
+        packetCoder = new PacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder, clientGameCoder, buildRoadInfoCoder);
     }
 
     @Test
@@ -271,8 +275,8 @@ public class PacketCoderTest {
         Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
 
         List<GameBase> content = Arrays.asList(
-                new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3),
-                new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0)
+                new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>()),
+                new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>())
         );
 
         Command command = Command.SEND_GAMES;
@@ -303,8 +307,8 @@ public class PacketCoderTest {
         Date createdAt1 = new Date(2022, Calendar.JUNE, 4, 9, 44, 50);
         Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
 
-        GameBase game1 = new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3);
-        GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0);
+        GameBase game1 = new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>());
+        GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>());
 
 
         Command command = Command.SEND_GAMES;
@@ -330,12 +334,12 @@ public class PacketCoderTest {
     }
 
     @Test
-    void encodeWorksForListOfAllConnectedPlayers() {
+    void encodeWorksForListStringList() {
 
         // prepare
-        List<String> content = new LinkedList<String>();
-        content.add("name1");
-        content.add("name2");
+        List<String> content = new LinkedList<>();
+        content.add("string1");
+        content.add("string2");
         Command command = Command.SEND_ALL_CONNECTED_PLAYERS;
         ContentType contentType = ContentType.STRING_LIST;
 
@@ -356,14 +360,12 @@ public class PacketCoderTest {
     }
 
     @Test
-    void decodeWorksForListOfAllConnectedPlayers() {
+    void decodeWorksForStringList() {
 
         // prepare
         List<String> content = new LinkedList<>();
-        String name1 = "name1";
-        String name2 = "name2";
-        content.add(name1);
-        content.add(name2);
+        content.add("string1");
+        content.add("string2");
         Command command = Command.SEND_ALL_CONNECTED_PLAYERS;
         ContentType contentType = ContentType.STRING_LIST;
 
@@ -378,7 +380,60 @@ public class PacketCoderTest {
 
         //assert
         Packet expected = new Packet(command, content, contentType);
-
         assertEquals(expected, result);
+    }
+
+    @Test
+    public void encodeWorksForBuildRoadInfo() {
+        // prepare
+        int level = 2;
+        String roadId = "road1";
+        WheelColor color = WheelColor.WHITE;
+        BuildRoadInfo content = new BuildRoadInfo(roadId, color);
+
+        String encoded = "encoded";
+        when(buildRoadInfoCoder.encode(content, level + 1))
+                .thenReturn(encoded);
+
+        Command command = Command.BUILD_ROAD;
+        ContentType contentType = ContentType.BUILD_ROAD_INFO;
+        Packet packet = new Packet(command, content, contentType);
+
+        // execute
+        String result = packetCoder.encode(packet, level);
+
+        // assert
+        String expected = CoderHelper.encodeFields(level, command.name(),
+                "{" + encoded + "}",
+                contentType.name());
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void decodeWorksForBuildRoadInfo() {
+        // prepare
+        int level = 2;
+        String roadId = "road1";
+        WheelColor color = WheelColor.WHITE;
+        BuildRoadInfo buildRoadInfo = new BuildRoadInfo(roadId, color);
+
+        String encodedContent = "encoded";
+        when(buildRoadInfoCoder.decode(encodedContent, level + 1))
+                .thenReturn(buildRoadInfo);
+
+        Command command = Command.BUILD_ROAD;
+        ContentType contentType = ContentType.BUILD_ROAD_INFO;
+        Packet packet = new Packet(command, buildRoadInfo, contentType);
+
+
+        String encoded = CoderHelper.encodeFields(level, command.name(),
+                "{" + encodedContent + "}",
+                contentType.name());
+
+        // execute
+        Packet result = packetCoder.decode(encoded, level);
+
+        // assert
+        assertEquals(packet, result);
     }
 }

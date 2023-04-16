@@ -8,6 +8,7 @@ import ch.progradler.rat_um_rad.shared.models.game.Player;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Can en- and decode a {@link ClientGame}
@@ -40,7 +41,8 @@ public class ClientGameCoder implements Coder<ClientGame> {
                 String.valueOf(clientGame.getRequiredPlayerCount()),
                 otherPlayersEncoded,
                 ownPlayerEncoded,
-                String.valueOf(clientGame.getTurn())
+                String.valueOf(clientGame.getTurn()),
+                CoderHelper.encodeStringMap(level + 1, clientGame.getRoadsBuilt())
         );
     }
 
@@ -61,8 +63,9 @@ public class ClientGameCoder implements Coder<ClientGame> {
                 .map((s) -> visiblePlayerCoder.decode(s, level + 2)).toList();
         Player ownPlayer = playerCoder.decode(fields.get(7), level + 1);
         int turn = Integer.parseInt(fields.get(8));
+        Map<String, String> roadsBuilt = CoderHelper.decodeStringMap(level + 1, fields.get(9));
 
         return new ClientGame(gameId, status, map, createdAt, creatorIpAddress,
-                requiredPlayerCount, otherPlayers, ownPlayer, turn);
+                requiredPlayerCount, otherPlayers, ownPlayer, turn, roadsBuilt);
     }
 }

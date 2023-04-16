@@ -1,5 +1,7 @@
 package ch.progradler.rat_um_rad.shared.models.game;
 
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
+
 /**
  * Implementation of the "Radstrecken".
  */
@@ -8,11 +10,11 @@ public class Road {
     private final String fromCityId;
     private final String toCityId;
     private final int requiredWheels;
-    private final int color;
+    private final WheelColor color;
 
     // TODO: String builtBy (null oder playerId)?
 
-    public Road(String id, String fromCityId, String toCityId, int requiredWheels, int color) {
+    public Road(String id, String fromCityId, String toCityId, int requiredWheels, WheelColor color) {
         this.id = id;
         this.fromCityId = fromCityId;
         this.toCityId = toCityId;
@@ -36,7 +38,7 @@ public class Road {
         return requiredWheels;
     }
 
-    public int getColor() {
+    public WheelColor getColor() {
         return color;
     }
 }

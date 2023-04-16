@@ -20,7 +20,7 @@ public class Game extends GameBase {
      */
     private final Map<String, Player> players;
     private final DecksOfGame decksOfGame;
-    private final Map<String, Boolean> playersHaveChosenShortDestinationCards = new HashMap<String, Boolean>();
+    private final Map<String, Boolean> playersHaveChosenShortDestinationCards = new HashMap<>();
 
     public Game(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount, Map<String, Player> players) {
         super(id, status, map, creatorPlayerIpAddress, requiredPlayerCount);
@@ -35,8 +35,9 @@ public class Game extends GameBase {
                 String creatorPlayerIpAddress,
                 int requiredPlayerCount,
                 Map<String, Player> players,
-                int turn) {
-        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn);
+                int turn,
+                Map<String, String> roadsBuilt) {
+        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt);
         this.decksOfGame = DecksOfGame.startingDecks();
         this.players = players;
     }

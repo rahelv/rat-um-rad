@@ -9,5 +9,5 @@ public enum WheelColor {
     PINK,
     BLACK,
     WHITE,
-    JOKER,
+    // JOKER, //TODO: re-add and implement change when building roads
 }
