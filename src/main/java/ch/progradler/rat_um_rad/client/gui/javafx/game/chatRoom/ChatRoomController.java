@@ -36,6 +36,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this.allPlayerListener);
         try {
             this.userService = ServiceLoader.load(UserService.class).iterator().next();
         } catch (Exception e) {
@@ -50,16 +51,13 @@ public class ChatRoomController implements Initializable, ServerResponseListener
         this.chatRoomModel = new ChatRoomModel();
 
         allPlayerListener = this::handleAllPlayersUpdate;
-        System.out.println("check if handle all players update is called");
+
         chatChoiceBox.setItems(chatRoomModel.chatTargetsList);
         chatChoiceBox.getSelectionModel().select(0);//select the first item in choiceBox:"all"
         chatChoiceBox.setOnAction((e) -> getTarget());
 
         chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty());
         this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
-
-
-
     }
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
@@ -85,7 +83,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
         Platform.runLater(() -> {
             chatRoomModel.addPlayersToTargetList(allPlayersList);
         });
-        System.out.println("handle all players update should be invoked");//actually here is not be operated
+        System.out.println("handle all players update should be invoked");
     }
     @Override
     public void serverResponseReceived(ChatMessage chatMessage, ContentType contentType) {

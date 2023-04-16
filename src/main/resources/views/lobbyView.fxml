@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
@@ -18,17 +17,26 @@
    </Label>
    <Button fx:id="leaveLobbyButton" layoutX="505.0" layoutY="1.0" onAction="#leaveLobbyAction" prefHeight="26.0" prefWidth="95.0" text="leave lobby" />
    <Button fx:id="createGameButton" layoutX="247.0" layoutY="160.0" onAction="#createGameAction" prefHeight="26.0" prefWidth="87.0" style="-fx-background-color: Blue;" text="create game" textFill="WHITE" />
-   <TextArea fx:id="currentPlayersTextArea" editable="false" layoutX="381.0" layoutY="161.0" prefHeight="63.0" prefWidth="188.0" />
-   <Label layoutX="236.0" layoutY="266.0" prefHeight="26.0" prefWidth="140.0" text="join with game ID : ">
+   <Label layoutX="236.0" layoutY="308.0" prefHeight="26.0" prefWidth="140.0" text="join with game ID : ">
       <font>
          <Font name="Arial Bold" size="13.0" />
       </font>
    </Label>
-   <TextField fx:id="gameIdTextField" layoutX="236.0" layoutY="291.0" promptText="game ID" />
-   <Button fx:id="joinButton" layoutX="414.0" layoutY="292.0" mnemonicParsing="false" onAction="#joinGameAction" style="-fx-background-color: blue;" text="join" textFill="WHITE" />
+   <TextField fx:id="gameIdTextField" layoutX="236.0" layoutY="334.0" promptText="game ID" />
+   <Button fx:id="joinButton" layoutX="411.0" layoutY="334.0" mnemonicParsing="false" onAction="#joinGameAction" style="-fx-background-color: blue;" text="join" textFill="WHITE" />
    <ScrollPane layoutX="19.0" layoutY="160.0" pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
       <content>
          <ListView fx:id="openGamesListView" prefHeight="201.0" prefWidth="188.0" />
       </content>
    </ScrollPane>
+   <ScrollPane layoutX="353.0" layoutY="186.0" prefHeight="125.0" prefWidth="200.0">
+      <content>
+         <ListView fx:id="allOnlinePlayersListView" prefHeight="128.0" prefWidth="201.0" />
+      </content>
+   </ScrollPane>
+   <Label layoutX="403.0" layoutY="165.0" text="all online players">
+      <font>
+         <Font name="Arial Bold" size="13.0" />
+      </font>
+   </Label>
 </AnchorPane>

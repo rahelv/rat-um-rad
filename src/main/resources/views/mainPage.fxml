@@ -19,6 +19,7 @@
             <Button onAction="#changeUsernameButtonTriggered" text="Change username" />
         </HBox>
         <fx:include source="lobbyView.fxml" />
+        <fx:include source="game/chatRoomView.fxml" />
     </VBox>
      <fx:include source="mainMenu.fxml" />
 </AnchorPane>

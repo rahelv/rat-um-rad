@@ -38,6 +38,7 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
     public ListView<GameBase> openGamesListView;
     public TextArea currentPlayersTextArea;
     public TextField gameIdTextField;
+    public ListView allOnlinePlayersListView;
 
     private IUserService userService;
     private IGameService gameService;
@@ -46,6 +47,7 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this.allPlayerListener);
         this.gameService = new GameService();
         this.lobbyModel = new LobbyModel();
 
@@ -69,12 +71,10 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
         openGamesListView.setCellFactory(param -> new Cell());
         //each item of listView should have 2 buttons:list players and join game
 
-        currentPlayersTextArea.textProperty().bindBidirectional(lobbyModel.allOnlinePlayersProperty());
+        //currentPlayersTextArea.textProperty().bindBidirectional(lobbyModel.allOnlinePlayersProperty());
         allPlayerListener = this::handleAllPlayersUpdate;
-        System.out.println("check check");
-
+        allOnlinePlayersListView.setItems(lobbyModel.allOnlinePlayersList);
     }
-
 
     public void getOpenGamesFromServer() throws IOException{
         this.gameService.requestWaitingGames();
@@ -167,8 +167,7 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
     }
     private void handleAllPlayersUpdate(List<String> content, ContentType contentType) {
         Platform.runLater(() -> {
-            System.out.println(content.size());//here is not invoked
-            lobbyModel.allOnlinePlayersProperty = new SimpleStringProperty("All online players : "+content.size());
+            lobbyModel.addPlayersToList(content);
             System.out.println("here should be invoked");
         });
     }
