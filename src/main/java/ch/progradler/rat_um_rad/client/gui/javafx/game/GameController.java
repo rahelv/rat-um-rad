@@ -10,6 +10,7 @@ import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Road;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -60,7 +61,7 @@ public class GameController implements Initializable, ServerResponseListener<Cli
     }
 
     @Override
-    public void serverResponseReceived(ClientGame content, ContentType contentType) {
+    public void serverResponseReceived(ClientGame content, Command command) {
         this.gameModel.setClientGame(content);
         this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
         //TODO: this.activityController.updateActitivites();

@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import javafx.application.Platform;
@@ -144,7 +145,7 @@ public class UsernameChangeController implements Initializable, ServerResponseLi
      * @param content
      */
     @Override
-    public void serverResponseReceived(UsernameChange content, ContentType contentType) {
+    public void serverResponseReceived(UsernameChange content, Command command) {
         this.usernameChangeModel.setConfirmedUsername(content.getNewName());
         //TODO: Confirm UsernameChange for User And Next View...
         Platform.runLater(() -> {

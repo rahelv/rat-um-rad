@@ -73,7 +73,7 @@ public class GameService implements IGameService {
         outputPacketGateway.sendPacket(creatorIpAddress, response);
 
         //Send updated game list to all players
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST_WAITING);
+        Packet packet = new Packet(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
         outputPacketGateway.broadcast(packet);
     }
 
@@ -96,7 +96,7 @@ public class GameService implements IGameService {
             GameServiceUtil.startGame(game, gameRepository, outputPacketGateway);
 
             //send updated game list to all players
-            Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST_WAITING);
+            Packet packet = new Packet(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
             outputPacketGateway.broadcast(packet);
         }
     }
@@ -226,19 +226,19 @@ public class GameService implements IGameService {
 
     @Override
     public void getWaitingGames(String ipAddress) {
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST_WAITING);
+        Packet packet = new Packet(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     @Override
     public void getStartedGames(String ipAddress) {
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getStartedGames(), GAME_INFO_LIST_STARTED);
+        Packet packet = new Packet(SEND_STARTED_GAMES, gameRepository.getStartedGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     @Override
     public void getFinishedGames(String ipAddress) {
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST_FINISHED);
+        Packet packet = new Packet(SEND_FINISHED_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 }

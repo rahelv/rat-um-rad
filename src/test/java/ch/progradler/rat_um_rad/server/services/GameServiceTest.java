@@ -416,7 +416,7 @@ class GameServiceTest {
         gameService.getWaitingGames(ipAddress);
 
         List<Game> waitingGames = verify(mockGameRepository).getWaitingGames();
-        Packet packet = new Packet(Command.SEND_GAMES, waitingGames, ContentType.GAME_INFO_LIST_WAITING);
+        Packet packet = new Packet(Command.SEND_WAITING_GAMES, waitingGames, ContentType.GAME_INFO_LIST);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 
@@ -428,7 +428,7 @@ class GameServiceTest {
         gameService.getStartedGames(ipAddress);
 
         List<Game> startedGames = verify(mockGameRepository).getStartedGames();
-        Packet packet = new Packet(Command.SEND_GAMES, startedGames, ContentType.GAME_INFO_LIST_STARTED);
+        Packet packet = new Packet(Command.SEND_STARTED_GAMES, startedGames, ContentType.GAME_INFO_LIST);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 
@@ -440,7 +440,7 @@ class GameServiceTest {
         gameService.getFinishedGames(ipAddress);
 
         List<Game> finishedGames = verify(mockGameRepository).getFinishedGames();
-        Packet packet = new Packet(Command.SEND_GAMES, finishedGames, ContentType.GAME_INFO_LIST_FINISHED);
+        Packet packet = new Packet(Command.SEND_FINISHED_GAMES, finishedGames, ContentType.GAME_INFO_LIST);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 }

@@ -7,6 +7,7 @@ import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -69,14 +70,14 @@ public class GameOverviewController implements Initializable, ServerResponseList
     }
 
     @Override
-    public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
-        switch(contentType) {
-            case GAME_INFO_LIST_STARTED -> {
+    public void serverResponseReceived(List<GameBase> content, Command command) {
+        switch(command) {
+            case SEND_STARTED_GAMES ->  {
                 this.gameOverviewModel.setOngoingGameList(content);
                 this.onGoingListView.setItems(this.gameOverviewModel.getOngoingGameList());
                 onGoingListView.setCellFactory(param -> new GameOverviewController.Cell());
             }
-            case GAME_INFO_LIST_FINISHED -> {
+            case SEND_FINISHED_GAMES -> {
                 this.gameOverviewModel.setFinishedGameList(content);
                 this.finishedGamesListView.setItems(this.gameOverviewModel.getFinishedGameList());
                 finishedGamesListView.setCellFactory(param -> new GameOverviewController.Cell());

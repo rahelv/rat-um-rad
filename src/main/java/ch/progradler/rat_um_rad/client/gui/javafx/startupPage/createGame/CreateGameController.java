@@ -5,6 +5,7 @@ import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -70,10 +71,10 @@ public class CreateGameController implements Initializable, ServerResponseListen
 
     /** listener for @ServerResponseHandler. When game is created, sends notification to listener (here GUI class) so it can set the according scene.
      * @param clientGame
-     * @param contentType
+     * @param Command so it can differentiate between commands
      */
     @Override
-    public void serverResponseReceived(ClientGame clientGame, ContentType contentType) {
+    public void serverResponseReceived(ClientGame clientGame, Command command) {
         //TODO: open game view as soon as game is received.
         Platform.runLater(() -> {
             createGameModel.getListener().gameCreated(clientGame);

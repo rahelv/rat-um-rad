@@ -5,6 +5,7 @@ import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.*;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -39,7 +40,7 @@ public class LobbyModel implements ServerResponseListener<List<GameBase>> {
     }
 
     @Override
-    public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
+    public void serverResponseReceived(List<GameBase> content, Command command) {
         this.updateGameList(content);
     }
 }

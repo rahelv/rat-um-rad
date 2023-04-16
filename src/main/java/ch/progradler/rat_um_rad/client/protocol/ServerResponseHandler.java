@@ -15,6 +15,7 @@ import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -58,7 +59,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case USERNAME_CONFIRMED -> {
                 UsernameChange change = (UsernameChange) packet.getContent();
-                notifyListenersOfType(change, UsernameChangeController.class, packet.getContentType());
+                notifyListenersOfType(change, UsernameChangeController.class, packet.getCommand());
             }
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
@@ -79,43 +80,45 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 //TODO: update chatRoomModel
                 ChatMessage message = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
-                notifyListenersOfType(message, ChatRoomController.class, packet.getContentType());
+                notifyListenersOfType(message, ChatRoomController.class, packet.getCommand());
             }
-            case SEND_GAMES -> {
+            case SEND_WAITING_GAMES -> {
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
-                if(contentType == ContentType.GAME_INFO_LIST_WAITING) {
-                    notifyListenersOfType((List<GameBase>) content, LobbyModel.class, packet.getContentType());
-                } else {
-                    notifyListenersOfType((List<GameBase>) content, GameOverviewController.class, packet.getContentType());
-                }
+                notifyListenersOfType((List<GameBase>) content, LobbyModel.class, packet.getCommand());
+            }
+            case SEND_STARTED_GAMES, SEND_FINISHED_GAMES -> {
+                Object content = packet.getContent();
+                ContentType contentType = packet.getContentType();
+                notifyListenersOfType((List<GameBase>) content, GameOverviewController.class, packet.getCommand());
             }
             case NEW_USER -> {
                 String content = (String) packet.getContent();
             }
             case GAME_CREATED -> {
                 ClientGame content = (ClientGame) packet.getContent();
-                notifyListenersOfType(content, CreateGameController.class, packet.getContentType());
+                notifyListenersOfType(content, CreateGameController.class, packet.getCommand());
             }
             case GAME_JOINED -> {
                 ClientGame clientGame = (ClientGame) packet.getContent();
-                notifyListenersOfType(clientGame, StartupPageController.class, packet.getContentType());
+                notifyListenersOfType(clientGame, StartupPageController.class, packet.getCommand());
             }
-            case NEW_PLAYER -> {
+            case NEW_PLAYER-> {
                 ClientGame clientGame = (ClientGame) packet.getContent();
-                notifyListenersOfType(clientGame, GameController.class, packet.getContentType()); //updated ClientGame is sent to Controller, so it can display the new state
+                notifyListenersOfType(clientGame, GameController.class, packet.getCommand()); //updated ClientGame is sent to Controller, so it can display the new state
             }
             case GAME_STARTED_SELECT_DESTINATION_CARDS -> {
-                //TODO: implement
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, GameController.class, packet.getCommand()); //TODO: differentiate between actions (instead of contentTypes)
             }
             default -> presenter.display(packet);
         }
     }
 
-    private <T> void notifyListenersOfType(T event, Class<? extends ServerResponseListener<T>> cls, ContentType contentType) {
+    private <T> void notifyListenersOfType(T event, Class<? extends ServerResponseListener<T>> cls, Command command) {
         for (ServerResponseListener<?> listener : listeners) {
             if (listener.getClass().equals(cls)) {
-                ((ServerResponseListener<T>) listener).serverResponseReceived(event, contentType);
+                ((ServerResponseListener<T>) listener).serverResponseReceived(event, command);
             }
         }
     }

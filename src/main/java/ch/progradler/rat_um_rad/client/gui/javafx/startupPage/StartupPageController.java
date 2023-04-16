@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyControl
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -69,7 +70,7 @@ public class StartupPageController implements Initializable, ServerResponseListe
     }
 
     @Override
-    public void serverResponseReceived(ClientGame content, ContentType contentType) {
+    public void serverResponseReceived(ClientGame content, Command command) {
         Platform.runLater(() -> {
             startupPageModel.getListener().gameCreated(content);
         });
