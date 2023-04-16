@@ -5,7 +5,9 @@ import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.util.List;
@@ -88,6 +90,18 @@ public class CommandHandler implements InputPacketGateway {
             case SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION -> {
                 gameService.selectShortDestinationCards(ipAddress, (List<String>) packet.getContent());
             }
+            case BUILD_ROAD -> {
+                handleBuildRoadPacket(packet, ipAddress);
+            }
+        }
+    }
+
+    private void handleBuildRoadPacket(Packet packet, String ipAddress) {
+        if (packet.getContentType() == ContentType.BUILD_ROAD_INFO) {
+            BuildRoadInfo buildRoadInfo = (BuildRoadInfo) packet.getContent();
+            gameService.buildGreyRoad(ipAddress, buildRoadInfo.getRoadId(), buildRoadInfo.getColor());
+        } else {
+            gameService.buildRoad(ipAddress, (String) packet.getContent());
         }
     }
 }

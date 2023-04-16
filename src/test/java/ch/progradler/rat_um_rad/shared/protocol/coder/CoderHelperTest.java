@@ -2,10 +2,7 @@ package ch.progradler.rat_um_rad.shared.protocol.coder;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,7 +26,6 @@ class CoderHelperTest {
         String arg1 = "arg1";
         String arg2 = "arg2";
         String arg3 = "arg3";
-
 
         int level = 2;
         String separator = CoderHelper.getSeparator(level);
@@ -70,5 +66,22 @@ class CoderHelperTest {
         String encoded = CoderHelper.encodeFields(level, "a", "b", "c");
         List<String> decoded = CoderHelper.decodeStringList(level, encoded);
         assertEquals(Arrays.asList("a", "b", "c"), decoded);
+    }
+
+    @Test
+    void encodeStringMap() {
+        int level = 4;
+        Map<String, String> map = Map.of("a", "b", "c", "d");
+        String encoded = CoderHelper.encodeStringMap(level, map);
+        assertEquals(CoderHelper.encodeFields(level, "a", "b", "c", "d"), encoded);
+    }
+
+    @Test
+    void decodeStringMap() {
+        int level = 4;
+        String encoded = CoderHelper.encodeFields(level, "a", "b", "c", "d");
+        Map<String, String> decoded = CoderHelper.decodeStringMap(level, encoded);
+
+        assertEquals(Map.of("a", "b", "c", "d"), decoded);
     }
 }

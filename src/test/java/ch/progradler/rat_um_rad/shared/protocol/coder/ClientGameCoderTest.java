@@ -12,10 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -53,6 +50,7 @@ class ClientGameCoderTest {
         VisiblePlayer otherPlayer = new VisiblePlayer("player B", WheelColor.BLUE,
                 50, 15, 1, "clientB", 15, 3);
         List<VisiblePlayer> otherPlayers = Collections.singletonList(otherPlayer);
+        Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
 
         ClientGame game = new ClientGame(gameId,
                 status,
@@ -62,7 +60,8 @@ class ClientGameCoderTest {
                 requiredPlayerCount,
                 otherPlayers,
                 ownPlayer,
-                turn);
+                turn,
+                roadsBuilt);
 
         when(gameMapCoderMock.encode(map, level + 1)).thenReturn("encoded/map");
         String encodedVisiblePlayer = "encoded/visible/player";
@@ -81,7 +80,8 @@ class ClientGameCoderTest {
                 String.valueOf(requiredPlayerCount),
                 CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedVisiblePlayer)),
                 encodedPlayer,
-                String.valueOf(turn));
+                String.valueOf(turn),
+                CoderHelper.encodeStringMap(level + 1, roadsBuilt));
         assertEquals(expected, encoded);
     }
 
@@ -101,6 +101,7 @@ class ClientGameCoderTest {
         VisiblePlayer otherPlayer = new VisiblePlayer("player B", WheelColor.BLUE,
                 50, 15, 1, "clientB", 15, 3);
         List<VisiblePlayer> otherPlayers = Collections.singletonList(otherPlayer);
+        Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
 
         String encodedMap = "encoded/map";
 
@@ -119,7 +120,8 @@ class ClientGameCoderTest {
                 String.valueOf(requiredPlayerCount),
                 CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedVisiblePlayer)),
                 encodedPlayer,
-                String.valueOf(turn));
+                String.valueOf(turn),
+                CoderHelper.encodeStringMap(level + 1, roadsBuilt));
 
 
         ClientGame decoded = clientGameCoder.decode(encoded, level);
@@ -132,7 +134,8 @@ class ClientGameCoderTest {
                 requiredPlayerCount,
                 otherPlayers,
                 ownPlayer,
-                turn);
+                turn,
+                roadsBuilt);
         assertEquals(expected, decoded);
     }
 }

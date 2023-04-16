@@ -72,6 +72,24 @@ public class CoderHelper {
         return decodeFields(separatorLevel, encoded);
     }
 
+    public static String encodeStringMap(int separatorLevel, Map<String, String> map) {
+        List<String> asList = new ArrayList<>();
+        for (String key : map.keySet()) {
+            asList.add(key);
+            asList.add(map.get(key));
+        }
+        return CoderHelper.encodeStringList(separatorLevel, asList);
+    }
+
+    public static Map<String, String> decodeStringMap(int separatorLevel, String encoded) {
+        List<String> list = CoderHelper.decodeStringList(separatorLevel, encoded);
+        Map<String, String> map = new HashMap<>();
+        for (int i = 0; i < list.size(); i += 2) {
+            map.put(list.get(i), list.get(i + 1));
+        }
+        return map;
+    }
+
     public static String encodeNullableField(Object object) {
         if(object == null) {
             return "null";

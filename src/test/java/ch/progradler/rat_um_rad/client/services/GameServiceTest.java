@@ -1,6 +1,8 @@
 package ch.progradler.rat_um_rad.client.services;
 
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -34,6 +36,27 @@ class GameServiceTest {
         gameService.createGame(requiredPlayerCount);
 
         Packet expected = new Packet(Command.CREATE_GAME, requiredPlayerCount, ContentType.INTEGER);
+        verify(mockOutputPacketGateway).sendPacket(expected);
+    }
+
+    @Test
+    void buildRoad() throws IOException {
+        String roadId = "road1";
+
+        gameService.buildRoad(roadId);
+
+        Packet expected = new Packet(Command.BUILD_ROAD, roadId, ContentType.STRING);
+        verify(mockOutputPacketGateway).sendPacket(expected);
+    }
+
+    @Test
+    void buildRoadGrey() throws IOException {
+        String roadId = "road1";
+        WheelColor color = WheelColor.WHITE;
+
+        gameService.buildGreyRoad(roadId, color);
+
+        Packet expected = new Packet(Command.BUILD_ROAD, new BuildRoadInfo(roadId, color), ContentType.BUILD_ROAD_INFO);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
 }

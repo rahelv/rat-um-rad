@@ -43,8 +43,8 @@ public class GameServiceUtil {
                 game.getRequiredPlayerCount(),
                 otherPlayers,
                 game.getPlayers().get(forPlayerIpAddress),
-                game.getTurn()
-        );
+                game.getTurn(),
+                game.getRoadsBuilt());
     }
 
     static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<WheelColor> takenColors) {
@@ -142,5 +142,17 @@ public class GameServiceUtil {
         // shuffle card deck
         // save game
         // send update to all
+    }
+
+    /**
+     * @return Whether or not it is the player's turn in the game.
+     */
+    public static boolean isPlayersTurn(Game game, String playerIp) {
+        int turn = game.getTurn();
+        Map<String, Player> players = game.getPlayers();
+        int playerCount = players.size();
+        int playerOrder = players.get(playerIp).getPlayingOrder();
+
+        return turn % playerCount == playerOrder;
     }
 }

@@ -1,8 +1,10 @@
 package ch.progradler.rat_um_rad.client.services;
 
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -24,10 +26,21 @@ public class GameService implements IGameService {
         this.outputPacketGateway = outputPacketGateway;
     }
 
-
     @Override
     public void createGame(int requiredPlayerCount) throws IOException {
         Packet packet = new Packet(Command.CREATE_GAME, requiredPlayerCount, ContentType.INTEGER);
+        outputPacketGateway.sendPacket(packet);
+    }
+
+    @Override
+    public void buildRoad(String roadId) throws IOException {
+        Packet packet = new Packet(Command.BUILD_ROAD, roadId, ContentType.STRING);
+        outputPacketGateway.sendPacket(packet);
+    }
+
+    @Override
+    public void buildGreyRoad(String roadId, WheelColor color) throws IOException {
+        Packet packet = new Packet(Command.BUILD_ROAD, new BuildRoadInfo(roadId, color), ContentType.BUILD_ROAD_INFO);
         outputPacketGateway.sendPacket(packet);
     }
 

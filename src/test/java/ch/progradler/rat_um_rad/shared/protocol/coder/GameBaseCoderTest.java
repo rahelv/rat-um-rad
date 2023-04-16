@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -38,7 +39,9 @@ class GameBaseCoderTest {
         String creatorPlayerIp = "player1";
         int requiredPlayerCount = 5;
         int turn = 13;
-        GameBase game = new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn);
+        Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
+
+        GameBase game = new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn, roadsBuilt);
 
         String encoded = gameBaseCoder.encode(game, level);
 
@@ -49,7 +52,8 @@ class GameBaseCoderTest {
                 CoderHelper.encodeDate(createdAt),
                 creatorPlayerIp,
                 String.valueOf(requiredPlayerCount),
-                String.valueOf(turn));
+                String.valueOf(turn),
+                CoderHelper.encodeStringMap(level + 1, roadsBuilt));
         assertEquals(expected, encoded);
     }
 
@@ -64,6 +68,7 @@ class GameBaseCoderTest {
         String creatorPlayerIp = "player1";
         int requiredPlayerCount = 5;
         int turn = 13;
+        Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
 
         String encodedMap = "encodedMap";
 
@@ -76,10 +81,11 @@ class GameBaseCoderTest {
                 CoderHelper.encodeDate(createdAt),
                 creatorPlayerIp,
                 String.valueOf(requiredPlayerCount),
-                String.valueOf(turn));
+                String.valueOf(turn),
+                CoderHelper.encodeStringMap(level + 1, roadsBuilt));
 
         GameBase decoded = gameBaseCoder.decode(encoded, level);
-        GameBase expected = new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn);
+        GameBase expected = new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn, roadsBuilt);
         assertEquals(expected, decoded);
     }
 }
