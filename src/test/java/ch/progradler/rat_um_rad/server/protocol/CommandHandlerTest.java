@@ -4,7 +4,9 @@ import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -123,6 +125,29 @@ class CommandHandlerTest {
         commandHandler.handleClientCommand(packet, ipAddress);
 
         verify(mockGameService).getFinishedGames(ipAddress);
+    }
+
+    @Test
+    void handlesBuildRoadPacketCorrectly() {
+        String roadId = "road1";
+        String ipAddress = "clientA";
+        Packet packet = new Packet(Command.BUILD_ROAD, roadId, ContentType.STRING);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockGameService).buildRoad(ipAddress, roadId);
+    }
+
+    @Test
+    void handlesBuildGreyRoadPacketCorrectly() {
+        String roadId = "road1";
+        WheelColor color = WheelColor.WHITE;
+        String ipAddress = "clientA";
+        Packet packet = new Packet(Command.BUILD_ROAD, new BuildRoadInfo(roadId, color), ContentType.BUILD_ROAD_INFO);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockGameService).buildGreyRoad(ipAddress, roadId, color);
     }
 
     @Test

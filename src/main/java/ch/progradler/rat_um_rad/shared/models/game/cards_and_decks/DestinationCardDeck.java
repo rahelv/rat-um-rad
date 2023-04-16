@@ -1,8 +1,5 @@
 package ch.progradler.rat_um_rad.shared.models.game.cards_and_decks;
 
-import ch.progradler.rat_um_rad.shared.models.Point;
-import ch.progradler.rat_um_rad.shared.models.game.City;
-
 import java.util.ArrayList;
 import java.util.List;
 

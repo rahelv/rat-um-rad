@@ -23,6 +23,7 @@ public enum Command {
     REQUEST_ALL_CONNECTED_PLAYERS,
     WANT_JOIN_GAME,
     SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+    BUILD_ROAD,
 
     // server commands (sent from server to client):
     CHANGED_USERNAME,

@@ -12,8 +12,8 @@ import java.util.Objects;
 public class PlayerBase {
     private final String name;
     protected WheelColor color;
-    private final int score;
-    private final int wheelsRemaining;
+    private int score;
+    private int wheelsRemaining;
     /**
      * Determines when it is the players turn.
      * Is set to zero before the game begins and is reassigned when game begins.
@@ -42,6 +42,10 @@ public class PlayerBase {
         return score;
     }
 
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     public int getWheelsRemaining() {
         return wheelsRemaining;
     }
@@ -52,6 +56,10 @@ public class PlayerBase {
 
     public void setPlayingOrder(int playingOrder) {
         this.playingOrder = playingOrder;
+    }
+
+    public void setWheelsRemaining(int wheelsRemaining) {
+        this.wheelsRemaining = wheelsRemaining;
     }
 
     @Override

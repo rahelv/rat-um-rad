@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.shared.protocol;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 
@@ -44,6 +45,10 @@ public enum ContentType {
      * Type of {@link GameStatus}
      */
     GAME_STATUS,
+    /**
+     * Type of {@link BuildRoadInfo}
+     */
+    BUILD_ROAD_INFO,
     /**
      * Type of {@code null}
      */

@@ -1,13 +1,19 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder;
 
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
-import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.DestinationCardCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.WheelCardCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.CityCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.GameMapCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
 
 import java.util.List;
 
@@ -20,12 +26,31 @@ public class PacketCoder implements Coder<Packet> {
     private final Coder<UsernameChange> usernameChangeCoder;
     private final Coder<GameBase> gameBaseCoder;
     private final Coder<ClientGame> clientGameCoder;
+    private final Coder<BuildRoadInfo> buildRoadInfoCoder;
 
-    public PacketCoder(Coder<ChatMessage> messageCoder, Coder<UsernameChange> usernameChangeCoder, Coder<GameBase> gameBaseCoder, Coder<ClientGame> clientGameCoder) {
+    public PacketCoder(Coder<ChatMessage> messageCoder,
+                       Coder<UsernameChange> usernameChangeCoder,
+                       Coder<GameBase> gameBaseCoder,
+                       Coder<ClientGame> clientGameCoder,
+                       Coder<BuildRoadInfo> buildRoadInfoCoder) {
         this.messageCoder = messageCoder;
         this.usernameChangeCoder = usernameChangeCoder;
         this.gameBaseCoder = gameBaseCoder;
         this.clientGameCoder = clientGameCoder;
+        this.buildRoadInfoCoder = buildRoadInfoCoder;
+    }
+
+    public static PacketCoder defaultPacketCoder() {
+        Coder<GameMap> gameMapCoder = new GameMapCoder(new CityCoder(new PointCoder()), new RoadCoder());
+        ClientGameCoder clientGameCoder = new ClientGameCoder(gameMapCoder,
+                new VisiblePlayerCoder(),
+                new PlayerCoder(new WheelCardCoder(),
+                        new DestinationCardCoder(new CityCoder(new PointCoder()))));
+        return new PacketCoder(new ChatMessageCoder(),
+                new UsernameChangeCoder(),
+                new GameBaseCoder(gameMapCoder),
+                clientGameCoder,
+                new BuildRoadInfoCoder());
     }
 
     /**
@@ -84,7 +109,6 @@ public class PacketCoder implements Coder<Packet> {
             }
             case GAME -> {
                 return clientGameCoder.encode((ClientGame) content, level);
-                // TODO: implement. User {@link ClientGameCoder}
             }
             case GAME_INFO_LIST -> {
                 return encodeGameInfoList((List<GameBase>) content, level);
@@ -97,6 +121,9 @@ public class PacketCoder implements Coder<Packet> {
             }
             case STRING_LIST -> {
                 return CoderHelper.encodeStringList(level, (List<String>) content);
+            }
+            case BUILD_ROAD_INFO -> {
+                return buildRoadInfoCoder.encode((BuildRoadInfo) content, level);
             }
         }
         // should never happen
@@ -147,6 +174,9 @@ public class PacketCoder implements Coder<Packet> {
             case GAME_STATUS -> {
                 return GameStatus.valueOf(contentUnwrapped);
             }
+            case BUILD_ROAD_INFO -> {
+                return buildRoadInfoCoder.decode(contentUnwrapped, level);
+            }
         }
         // should never happen
         throw new IllegalArgumentException("Unrecognized contentType while decoding: " + contentType);
@@ -154,6 +184,6 @@ public class PacketCoder implements Coder<Packet> {
 
     private List<GameBase> decodeGameInfoList(String content, int level) {
         List<String> asStrings = CoderHelper.decodeStringList(level, content);
-        return asStrings.stream().map((encoded) -> gameBaseCoder.decode(encoded, level+1)).toList();
+        return asStrings.stream().map((encoded) -> gameBaseCoder.decode(encoded, level + 1)).toList();
     }
 }

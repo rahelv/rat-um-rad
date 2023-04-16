@@ -24,9 +24,11 @@ import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
 import javafx.application.Application;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -37,14 +39,15 @@ public class Client {
 
     /**
      * starts the client and creates a socket which tries connecting to the server on the specified host and port.
-     *  @param host : ip of the server
-     * @param port : port of the server socket
+     *
+     * @param host     : ip of the server
+     * @param port     : port of the server socket
      * @param username
      */
     public void start(String host, int port, String username) { //TODO: handle initial username
         System.out.format("Starting Client on %s %d\n", host, port);
 
-        Coder<Packet> packetCoder = getPacketCoder();
+        Coder<Packet> packetCoder = PacketCoder.defaultPacketCoder();
         try {
             Socket socket = new Socket(host, port);
             ServerOutput serverOutput = new ServerOutput(socket, packetCoder);
@@ -81,29 +84,15 @@ public class Client {
     }
 
     /**
-     * starts the command handler in a new thread.
-     *
-     * @param userService
-     * @param host
-     * @param usernameHandler
-
-    private void startCommandHandler(IUserService userService, String host, UsernameHandler usernameHandler, String initialUsername) {
-        InputReader inputReader = new InputReader();
-        CommandLineHandler commandLineHandler = new CommandLineHandler(inputReader, userService, host, usernameHandler, initialUsername);
-        usernameHandler.addUsernameObserver(commandLineHandler);
-        Thread t = new Thread(commandLineHandler);
-        t.start();
-    }*/
-
-    /**
      * starts the ServerListener in a new thread, which listens to input from server.
      *
      * @param socket
      * @param packetCoder
+     * @param clientPingPongRunner
      */
     private void startServerListener(Socket socket,
                                      Coder<Packet> packetCoder,
-                                     ClientPingPongRunner clientPingPongRunner ){
+                                     ClientPingPongRunner clientPingPongRunner) {
         PackagePresenter presenter = new CommandLinePresenter();
         ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
@@ -114,6 +103,7 @@ public class Client {
         t.start();
     }
 
+    //TODO: needed after merge?
     private static Coder<Packet> getPacketCoder() {
         Coder<ChatMessage> chatMessageCoder = new ChatMessageCoder();
         Coder<UsernameChange> usernameChangeCoder = new UsernameChangeCoder();

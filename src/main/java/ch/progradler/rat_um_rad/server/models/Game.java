@@ -35,8 +35,9 @@ public class Game extends GameBase {
                 String creatorPlayerIpAddress,
                 int requiredPlayerCount,
                 Map<String, Player> players,
-                int turn) {
-        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn);
+                int turn,
+                Map<String, String> roadsBuilt) {
+        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt);
         this.decksOfGame = DecksOfGame.startingDecks();
         this.players = players;
     }

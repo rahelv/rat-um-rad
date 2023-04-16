@@ -21,11 +21,11 @@ import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handles incoming responses from server.
@@ -43,7 +43,6 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
     @Override
     public void addListener(ServerResponseListener<?> listenerToAdd) {
         this.listeners.add(listenerToAdd);
-        System.out.println(listenerToAdd.getClass());
     }
 
     /**
@@ -112,8 +111,17 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(clientGame, packet.getCommand()); //updated ClientGame is sent to Controller, so it can display the new state
             }
             case GAME_STARTED_SELECT_DESTINATION_CARDS -> {
-                ClientGame clientGame = (ClientGame) packet.getContent();
-                notifyListenersOfType(clientGame,packet.getCommand()); //TODO: differentiate between actions (instead of contentTypes)
+                //TODO: implement
+                System.out.println("sendgames " + packet); // TODO: replace with logger
+                Object content = packet.getContent();
+                ContentType contentType = packet.getContentType();
+                if(contentType == ContentType.GAME_INFO_LIST) {
+                    // TODO: Lobby should only get list when it's calling for it
+                    notifyListenersOfType((List<GameBase>) content, LobbyController.class, packet.getContentType());
+                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                } else {
+                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                }
             }
             default -> presenter.display(packet);
         }

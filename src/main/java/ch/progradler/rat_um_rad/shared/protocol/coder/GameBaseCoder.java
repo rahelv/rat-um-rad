@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class GameBaseCoder implements Coder<GameBase> {
     private final Coder<GameMap> gameMapCoder;
@@ -23,7 +24,9 @@ public class GameBaseCoder implements Coder<GameBase> {
                 CoderHelper.encodeDate(game.getCreatedAt()),
                 game.getCreatorPlayerIpAddress(),
                 String.valueOf(game.getRequiredPlayerCount()),
-                String.valueOf(game.getTurn()));
+                String.valueOf(game.getTurn()),
+                CoderHelper.encodeStringMap(level + 1, game.getRoadsBuilt())
+        );
     }
 
     @Override
@@ -36,6 +39,8 @@ public class GameBaseCoder implements Coder<GameBase> {
         String creatorPlayerIp = fields.get(4);
         int requiredPlayerCount = Integer.parseInt(fields.get(5));
         int turn = Integer.parseInt(fields.get(6));
-        return new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn);
+        Map<String, String> roadsBuilt = CoderHelper.decodeStringMap(level + 1, fields.get(7));
+
+        return new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn, roadsBuilt);
     }
 }

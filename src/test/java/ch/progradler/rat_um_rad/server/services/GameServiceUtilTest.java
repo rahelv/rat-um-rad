@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.server.services;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
@@ -59,8 +60,10 @@ class GameServiceUtilTest {
                 creatorIp, creator,
                 otherPlayerIp, otherPlayer
         );
+        Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
 
-        Game game = new Game(gameId, status, map, createdAt, creatorIp, requiredPlayerCount, players, turn);
+
+        Game game = new Game(gameId, status, map, createdAt, creatorIp, requiredPlayerCount, players, turn, roadsBuilt);
         String forPlayerIp = otherPlayerIp;
 
         ClientGame expected = new ClientGame(gameId,
@@ -71,7 +74,8 @@ class GameServiceUtilTest {
                 requiredPlayerCount,
                 Collections.singletonList(GameServiceUtil.toVisiblePlayer(creator, creatorIp)),
                 otherPlayer,
-                turn);
+                turn,
+                roadsBuilt);
 
         assertEquals(expected, GameServiceUtil.toClientGame(game, forPlayerIp));
     }
@@ -129,8 +133,10 @@ class GameServiceUtilTest {
                 "clientD", new Player("player D", WheelColor.RED, 100, 10, 2)
         );
 
-        Game game1 = new Game(gameId, null, null, null, "playerB", 4, players1, 0);
-        Game game2 = new Game(gameId, null, null, null, "playerD", 4, players2, 3);
+        Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
+
+        Game game1 = new Game(gameId, null, null, null, "playerB", 4, players1, 0, roadsBuilt);
+        Game game2 = new Game(gameId, null, null, null, "playerD", 4, players2, 3, roadsBuilt);
 
         when(mockGameRepository.getAllGames()).thenReturn(Arrays.asList(game1, game2));
 
@@ -292,5 +298,46 @@ class GameServiceUtilTest {
             assertFalse(longDestinationCards.contains(card));
         }
         assertNotEquals(destinationCards1, destinationCards2);
+    }
+
+    @Test
+    void isPlayersTurnChecksByModuloOperation() {
+        Game game = mock(Game.class);
+        String player1 = "player1";
+        String player2 = "player2";
+        String player3 = "player3";
+        String player4 = "player4";
+
+        when(game.getPlayers()).thenReturn(Map.of(
+                player1, new Player("Player1", null, 1, 1, 0),
+                player2, new Player("Player2", null, 1, 1, 1),
+                player3, new Player("Player3", null, 1, 1, 2),
+                player4, new Player("Player4", null, 1, 1, 3)
+        ));
+
+        when(game.getTurn()).thenReturn(0);
+        assertTrue(GameServiceUtil.isPlayersTurn(game, player1));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player2));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player3));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player4));
+
+        when(game.getTurn()).thenReturn(1);
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player1));
+        assertTrue(GameServiceUtil.isPlayersTurn(game, player2));
+        assertFalse(GameServiceUtil.isPlayersTurn(game,  player3));
+        assertFalse(GameServiceUtil.isPlayersTurn(game,  player4));
+
+        when(game.getTurn()).thenReturn(3);
+        assertFalse(GameServiceUtil.isPlayersTurn(game,player1));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player2));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player3));
+        assertTrue(GameServiceUtil.isPlayersTurn(game,  player4));
+
+
+        when(game.getTurn()).thenReturn(5);
+        assertFalse(GameServiceUtil.isPlayersTurn(game,player1));
+        assertTrue(GameServiceUtil.isPlayersTurn(game,  player2));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player3));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player4));
     }
 }
