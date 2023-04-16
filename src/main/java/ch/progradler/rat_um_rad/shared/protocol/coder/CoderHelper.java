@@ -25,6 +25,7 @@ public class CoderHelper {
             case 3 -> ",/,";
             case 4 -> "-/-";
             case 5 -> "|/|";
+            case 6 -> "*/*";
             default -> throw new IllegalArgumentException("To high separatorLevel: " + separatorLevel +
                     ". Add a new separator to allow this level."
             );
