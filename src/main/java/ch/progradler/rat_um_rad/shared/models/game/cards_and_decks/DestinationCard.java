@@ -41,11 +41,11 @@ public class DestinationCard {
         if (this == o) return true;
         if (!(o instanceof DestinationCard)) return false;
         DestinationCard that = (DestinationCard) o;
-        return color == that.color && points == that.points && cardID.equals(that.cardID) && destination1.equals(that.destination1) && destination2.equals(that.destination2);
+        return points == that.points && cardID.equals(that.cardID) && destination1.equals(that.destination1) && destination2.equals(that.destination2);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cardID, color, destination1, destination2, points);
+        return Objects.hash(cardID, destination1, destination2, points);
     }
 }
