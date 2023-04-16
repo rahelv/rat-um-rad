@@ -8,10 +8,10 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageControl
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameModel;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.models.User;
-import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import javafx.application.Application;
@@ -29,8 +29,9 @@ import java.util.List;
 public class GUI extends Application implements ControllerChangeListener<UsernameChangeController> {
     private UsernameChangeModel usernameChangeModel;
     private StartupPageModel startupPageModel;
-    private ShowAllGamesModel showAllGamesModel;
+    private GameOverviewModel gameOverviewModel;
     private CreateGameModel createGameModel;
+    private LobbyModel lobbyModel;
     private GameModel gameModel;
     Stage window;
     Scene mainScene;
@@ -69,13 +70,14 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         }
 
         this.createGameModel = new CreateGameModel(this);
-        this.showAllGamesModel = new ShowAllGamesModel(this);
+        this.gameOverviewModel = new GameOverviewModel(this);
+        this.lobbyModel = new LobbyModel();
 
         this.window = primaryStage;
 
         this.startupPageModel = new StartupPageModel(this);
 
-        UsernameChangeController usernameChangeController = this.loadFXMLView("/views/changeUsernameDialog.fxml").getController();
+        UsernameChangeController usernameChangeController = this.loadFXMLView("/views/ChangeUsernameView.fxml").getController();
         usernameChangeController.initData(this.usernameChangeModel, this.window);
         this.window.show();
     }
@@ -104,23 +106,24 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     public void controllerChanged(String command) {
         switch (command) {
             case "showStartupPage" -> {
-                StartupPageController startupPageController = this.loadFXMLView("/views/mainPage.fxml").getController();
+                StartupPageController startupPageController = this.loadFXMLView("/views/StartupPage.fxml").getController();
                 //TODO: handle initialization of included lobby controller https://stackoverflow.com/questions/47295128/javafx-include-fxml-with-an-event-in-it
-                startupPageController.initData(this.usernameChangeModel, this.startupPageModel, this.window);
+                startupPageController.initData(this.usernameChangeModel, this.startupPageModel, this.window, this.lobbyModel);
+
                 this.window.show();
             }
             case "showUsernameChange" -> {
-                UsernameChangeController usernameChangeController = this.loadFXMLView("/views/changeUsernameDialog.fxml").getController();
+                UsernameChangeController usernameChangeController = this.loadFXMLView("/views/ChangeUsernameView.fxml").getController();
                 usernameChangeController.initData(this.usernameChangeModel, this.window);
                 this.window.show();
             }
             case "showAllGamesView" -> {
-                ShowAllGamesController showAllGamesController = this.loadFXMLView("/views/showAllGamesView.fxml").getController();
-                showAllGamesController.initData(this.showAllGamesModel);
+                GameOverviewController gameOverviewController = this.loadFXMLView("/views/GameOverview.fxml").getController();
+                gameOverviewController.initData(this.gameOverviewModel, this.lobbyModel);
                 this.window.show();
             }
             case "createGame" -> {
-                CreateGameController controller = this.loadFXMLView("/views/createGameView.fxml").getController();
+                CreateGameController controller = this.loadFXMLView("/views/CreateGameView.fxml").getController();
                 controller.initData(this.createGameModel, this.window);
                 this.window.show();
             }
@@ -134,7 +137,7 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     public void gameCreated(ClientGame content) {
         this.gameModel = new GameModel(content);
 
-        GameController controller = this.loadFXMLView("/views/game/gameView.fxml").getController();
+        GameController controller = this.loadFXMLView("/views/game/GameView.fxml").getController();
         controller.initData(this.gameModel, this.window);
         this.window.show();
     }

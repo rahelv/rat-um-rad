@@ -1,36 +1,46 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
-import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
 
-public class LobbyController implements Initializable, ServerResponseListener<List<GameBase>> {
-    public ListView<GameBase> openGamesListView;
-    public TextField gameIdTextField;
+public class LobbyController extends GridPane {
+    @FXML
+    private ListView<GameBase> openGamesListView;
+    @FXML
+    private TextField gameIdTextField;
     private IGameService gameService;
     private LobbyModel lobbyModel;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+    public LobbyController() {
+        System.out.println("new lobbycontroller");
         this.gameService = new GameService();
-        this.lobbyModel = new LobbyModel();
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/LobbyControl.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public void initData(LobbyModel lobbyModel) {
+        System.out.println("init Data of lobbyController");
+        this.lobbyModel = lobbyModel;
+
         try {
             getOpenGamesFromServer();
         } catch (IOException e) {
@@ -42,20 +52,6 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
 
     public void getOpenGamesFromServer() throws IOException {
         this.gameService.requestWaitingGames();
-    }
-
-    /** Updates the GameList when a Server Response is received. (Listens to ServerResponseHandler)
-     * @param content
-     * @param contentType
-     */
-    @Override
-    public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
-        Platform.runLater(() -> {
-            this.lobbyModel.updateGameList(content);
-            this.openGamesListView.getItems().clear();
-            this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
-            openGamesListView.setCellFactory(param -> new Cell(this.gameService));
-        });
     }
 
     /**

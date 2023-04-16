@@ -7,8 +7,8 @@ import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityControll
 import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
@@ -85,11 +85,9 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 if(contentType == ContentType.GAME_INFO_LIST_WAITING) {
-                    // TODO: Lobby should only get list when it's calling for it
-                    notifyListenersOfType((List<GameBase>) content, LobbyController.class, packet.getContentType());
-                   //notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                    notifyListenersOfType((List<GameBase>) content, LobbyModel.class, packet.getContentType());
                 } else {
-                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                    notifyListenersOfType((List<GameBase>) content, GameOverviewController.class, packet.getContentType());
                 }
             }
             case NEW_USER -> {
