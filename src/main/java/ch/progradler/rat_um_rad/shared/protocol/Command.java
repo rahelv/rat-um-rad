@@ -21,6 +21,8 @@ public enum Command {
     CREATE_GAME,
     REQUEST_GAMES,
     REQUEST_ALL_CONNECTED_PLAYERS,
+    WANT_JOIN_GAME,
+    SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
 
     // server commands (sent from server to client):
     CHANGED_USERNAME,
@@ -35,5 +37,7 @@ public enum Command {
     INVALID_ACTION_WARNING,
     INVALID_ACTION_FATAL,
     SEND_GAMES,
+    NEW_PLAYER,
+    GAME_STARTED_SELECT_DESTINATION_CARDS,
 
 }

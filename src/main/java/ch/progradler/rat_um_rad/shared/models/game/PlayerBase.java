@@ -18,7 +18,7 @@ public class PlayerBase {
      * Determines when it is the players turn.
      * Is set to zero before the game begins and is reassigned when game begins.
      */
-    private final int playingOrder;
+    private int playingOrder;
 
     //TODO List of roads build by player?
 
@@ -48,6 +48,10 @@ public class PlayerBase {
 
     public int getPlayingOrder() {
         return playingOrder;
+    }
+
+    public void setPlayingOrder(int playingOrder) {
+        this.playingOrder = playingOrder;
     }
 
     @Override

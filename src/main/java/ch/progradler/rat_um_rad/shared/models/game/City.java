@@ -3,6 +3,8 @@ package ch.progradler.rat_um_rad.shared.models.game;
 import ch.progradler.rat_um_rad.shared.models.Point;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 
+import java.util.Objects;
+
 /**
  * Implementation of the cities occurring in the {@link GameMap}, {@link Road} and {@link DestinationCard}.
  */
@@ -27,5 +29,18 @@ public class City {
 
     public Point getPoint() {
         return point;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof City)) return false;
+        City city = (City) o;
+        return id.equals(city.id) && name.equals(city.name) && point.equals(city.point);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, point);
     }
 }

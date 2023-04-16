@@ -17,6 +17,9 @@ import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +60,14 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(change, UsernameChangeController.class, packet.getContentType());
             }
             case INVALID_ACTION_FATAL -> {
-                //TODO: differentiate further between fatal actions
-                //this.userService.chooseAndSendUsername(this.serverOutput);
+                switch((String) packet.getContent()) {
+                    case JOINING_NOT_POSSIBLE -> {
+                        //TODO: implement
+                    }
+                    case USERNAME_INVALID -> {
+                        //this.userService.chooseAndSendUsername(this.serverOutput);
+                    }
+                }
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
                 //TODO: implement
@@ -70,7 +79,14 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(message, ChatRoomController.class, packet.getContentType());
             }
             case SEND_GAMES -> {
-                System.out.println("sendgames " + packet);
+                //TODO: implement
+            }
+            case NEW_PLAYER -> {
+                //TODO: implement
+            }
+            case GAME_STARTED_SELECT_DESTINATION_CARDS -> {
+                //TODO: implement
+                System.out.println("sendgames " + packet); // TODO: replace with logger
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 if(contentType == ContentType.GAME_INFO_LIST) {
