@@ -1,9 +1,10 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -24,14 +25,18 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ShowAllGamesController implements Initializable, ServerResponseListener<List<GameBase>> {
-    public Button backToLobbyButton;
-    public ListView openGamesListView;
-    public ListView onGoingListView;
-    public ListView finishedGamesListView;
+public class GameOverviewController implements Initializable, ServerResponseListener<List<GameBase>> {
+    @FXML
+    private LobbyController lobbyController;
+    @FXML
+    private Button backToLobbyButton;
+    @FXML
+    private ListView onGoingListView;
+    @FXML
+    private ListView finishedGamesListView;
 
     private IGameService gameService;
-    private ShowAllGamesModel showAllGamesModel;
+    private GameOverviewModel gameOverviewModel;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
@@ -39,8 +44,9 @@ public class ShowAllGamesController implements Initializable, ServerResponseList
         this.gameService = new GameService();
     }
 
-    public void initData(ShowAllGamesModel model) {
-        this.showAllGamesModel = model;
+    public void initData(GameOverviewModel model, LobbyModel lobbyModel) {
+        this.lobbyController.initData(lobbyModel);
+        this.gameOverviewModel = model;
 
         try {
             requestListsFromServer();
@@ -58,27 +64,22 @@ public class ShowAllGamesController implements Initializable, ServerResponseList
     @FXML
     private void returnButtonAction(ActionEvent event) {
         Platform.runLater(() -> {
-            showAllGamesModel.getListener().controllerChanged("showStartupPage"); //returns to main Page...
+            gameOverviewModel.getListener().controllerChanged("showStartupPage"); //returns to main Page...
         });
     }
 
     @Override
     public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
         switch(contentType) {
-            case GAME_INFO_LIST_WAITING -> {
-                this.showAllGamesModel.setOpenGameList(content);
-                this.openGamesListView.setItems(this.showAllGamesModel.getOpenGameList());
-                openGamesListView.setCellFactory(param -> new ShowAllGamesController.OpenGameCell());
-            }
             case GAME_INFO_LIST_STARTED -> {
-                this.showAllGamesModel.setOngoingGameList(content);
-                this.onGoingListView.setItems(this.showAllGamesModel.getOngoingGameList());
-                onGoingListView.setCellFactory(param -> new ShowAllGamesController.Cell());
+                this.gameOverviewModel.setOngoingGameList(content);
+                this.onGoingListView.setItems(this.gameOverviewModel.getOngoingGameList());
+                onGoingListView.setCellFactory(param -> new GameOverviewController.Cell());
             }
             case GAME_INFO_LIST_FINISHED -> {
-                this.showAllGamesModel.setFinishedGameList(content);
-                this.finishedGamesListView.setItems(this.showAllGamesModel.getFinishedGameList());
-                finishedGamesListView.setCellFactory(param -> new ShowAllGamesController.Cell());
+                this.gameOverviewModel.setFinishedGameList(content);
+                this.finishedGamesListView.setItems(this.gameOverviewModel.getFinishedGameList());
+                finishedGamesListView.setCellFactory(param -> new GameOverviewController.Cell());
             }
         }
     }

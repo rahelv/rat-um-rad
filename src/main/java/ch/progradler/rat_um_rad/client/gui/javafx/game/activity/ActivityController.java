@@ -12,7 +12,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controller for activitiesList.fxml. Activities that happened in the game are displayed in a list.
+ * Controller for Activitieslist.fxml. Activities that happened in the game are displayed in a list.
  */
 public class ActivityController implements Initializable, ServerResponseListener<String> {
     private ActivityModel activityModel;

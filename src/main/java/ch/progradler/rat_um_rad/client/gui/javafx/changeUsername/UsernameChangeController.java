@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controller for changeUsernameDialog.fxml (in resources/views)
+ * Controller for ChangeUsernameView.fxml (in resources/views)
  */
 public class UsernameChangeController implements Initializable, ServerResponseListener<UsernameChange> {
     private Stage stage;

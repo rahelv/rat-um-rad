@@ -15,6 +15,6 @@ public class ActivityModel {
     }
 
     public void addActivity(String activity) {
-        this.latestActivities.add(activity);
+        //this.latestActivities.add(activity);
     }
 }

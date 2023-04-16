@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController">
+<?import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewController">
    <children>
       <Label alignment="CENTER" layoutX="31.0" layoutY="25.0" prefHeight="55.0" prefWidth="185.0" text="All games">
          <font>
@@ -26,9 +27,7 @@
          </font>
       </Label>
       <ScrollPane layoutX="33.0" layoutY="151.0" prefHeight="194.0" prefWidth="163.0">
-         <content>
-            <fx:include source="lobbyView.fxml"/>
-         </content>
+         <LobbyController fx:id="lobbyController"></LobbyController>
       </ScrollPane>
       <ScrollPane layoutX="219.0" layoutY="151.0" prefHeight="194.0" prefWidth="163.0">
          <content>

@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 
 /**
- * Controller for the lobby internal chat (for view chatRoomView.fxml)
+ * Controller for the lobby internal chat (for view ChatRoomView.fxml)
  */
 public class ChatRoomController implements Initializable, ServerResponseListener<ChatMessage> {
     private ChatRoomModel chatRoomModel;
