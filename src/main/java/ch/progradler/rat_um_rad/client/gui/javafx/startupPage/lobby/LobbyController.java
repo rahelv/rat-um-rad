@@ -1,88 +1,84 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
-import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
 
-public class LobbyController implements Initializable, ServerResponseListener<List<GameBase>> {
-    public Button joinButton;
-    public ListView<GameBase> openGamesListView;
-    public TextField gameIdTextField;
+public class LobbyController extends GridPane {
+    @FXML
+    private ListView<GameBase> openGamesListView;
+    @FXML
+    private TextField gameIdTextField;
     private IGameService gameService;
     private LobbyModel lobbyModel;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+    public LobbyController() {
         this.gameService = new GameService();
-        this.lobbyModel = new LobbyModel();
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/LobbyControl.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+
         try {
-            this.gameService.requestWaitingGames();
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void initData(LobbyModel lobbyModel) {
+        this.lobbyModel = lobbyModel;
+
+        try {
+            getOpenGamesFromServer();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
-        openGamesListView.setCellFactory(param -> new Cell());
-        //each item of listView should have 2 buttons:list players and join game
+        openGamesListView.setCellFactory(param -> new Cell(this.gameService)); //TODO: find a better way to handle buttonAction from Cell
     }
 
     public void getOpenGamesFromServer() throws IOException {
         this.gameService.requestWaitingGames();
     }
 
-    @FXML
-    public void joinGameAction(ActionEvent actionEvent) {
-        //TODO: get gameId (bind to textfield wo id eingegeben wurde)
-        System.out.println("joined game ");
-        //TODO: Anfrage an Server um Game zu joinen
-    }
-
-    /** Updates the GameList when a Server Response is received. (Listens to ServerResponseHandler)
-     * @param content
-     * @param contentType
-     */
-    @Override
-    public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
-        this.lobbyModel.updateGameList(content);
-    }
-
     /**
      * Cell Class to set the Cells in the List View. Add two Buttons to each cell (players and join) and sets the id as text.)
      */
     static class Cell extends ListCell<GameBase> {
+        private IGameService gameService;
         Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
         Button enterGameButton = new Button("join");
 
-        public Cell() {
+        public Cell(IGameService gameService) {
             super();
+            this.gameService = gameService;
             hbox.getChildren().addAll(nameLabel, pane, listPlayersButton, enterGameButton);
             hbox.setHgrow(pane, Priority.ALWAYS);
             enterGameButton.setOnAction(event -> {
                 System.out.println("wanting to join game " + getItem().getId());
-                //TODO: send anfrage to server: OutputPacketGatewaySingleton.;
+                try {
+                    this.gameService.joinGame(getItem().getId());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             });
-            listPlayersButton.setOnAction(event -> {
-                System.out.println("listing all players in this game");
-            });
+            listPlayersButton.setDisable(true);
+            //TODO: add List OF Players in Game to GameBase. listPlayersButton.setTooltip(getItem().get);
         }
 
         protected void updateItem(GameBase item, boolean empty) {
@@ -94,6 +90,5 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
                 setGraphic(hbox);
             }
         }
-
     }
 }

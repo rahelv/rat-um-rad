@@ -128,28 +128,6 @@ class CommandHandlerTest {
     }
 
     @Test
-    void requestOnJoiningGameIsHandledCorrectly() {
-        String ipAddress = "clientA";
-        String gameId = "gameIdA";
-        Packet packet = new Packet(Command.WANT_JOIN_GAME, gameId, ContentType.STRING);
-
-        commandHandler.handleClientCommand(packet, ipAddress);
-
-        verify(mockGameService).joinGame(ipAddress, gameId);
-    }
-
-    @Test
-    void requestOnSelectingDestinationCardsInPrepIsHandledCorrectly() {
-        String ipAddress = "clientA";
-        List<String> selectedCards = Arrays.asList("card1", "card2");
-        Packet packet = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedCards, ContentType.STRING_LIST);
-
-        commandHandler.handleClientCommand(packet, ipAddress);
-
-        verify(mockGameService).selectShortDestinationCards(ipAddress, selectedCards);
-    }
-
-    @Test
     void handlesBuildRoadPacketCorrectly() {
         String roadId = "road1";
         String ipAddress = "clientA";
@@ -170,5 +148,27 @@ class CommandHandlerTest {
         commandHandler.handleClientCommand(packet, ipAddress);
 
         verify(mockGameService).buildGreyRoad(ipAddress, roadId, color);
+    }
+
+    @Test
+    void requestOnJoiningGameIsHandledCorrectly() {
+        String ipAddress = "clientA";
+        String gameId = "gameIdA";
+        Packet packet = new Packet(Command.WANT_JOIN_GAME, gameId, ContentType.STRING);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockGameService).joinGame(ipAddress, gameId);
+    }
+
+    @Test
+    void requestOnSelectingDestinationCardsInPrepIsHandledCorrectly() {
+        String ipAddress = "clientA";
+        List<String> selectedCards = Arrays.asList("card1", "card2");
+        Packet packet = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedCards, ContentType.STRING_LIST);
+
+        commandHandler.handleClientCommand(packet, ipAddress);
+
+        verify(mockGameService).selectShortDestinationCards(ipAddress, selectedCards);
     }
 }

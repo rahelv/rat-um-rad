@@ -1,10 +1,13 @@
 package ch.progradler.rat_um_rad.server.services;
 
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
-import ch.progradler.rat_um_rad.shared.models.game.*;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
+import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -22,11 +25,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.INVALID_ACTION_FATAL;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.NEW_PLAYER;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -242,7 +245,11 @@ class GameServiceTest {
 
             gameService.selectShortDestinationCards(ipAddress, Collections.singletonList("card1"));
 
-            verifyGameNotUpdatedAndCorrectErrorSent(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME);
+            verify(mockGameRepository, never()).updateGame(any());
+            Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+                    ErrorResponse.PLAYER_IN_NO_GAME,
+                    STRING);
+            verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
         }
     }
 
@@ -274,7 +281,11 @@ class GameServiceTest {
 
             gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
 
-            verifyGameNotUpdatedAndCorrectErrorSent(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
+            verify(mockGameRepository, never()).updateGame(any());
+            Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+                    ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID,
+                    STRING);
+            verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
         }
     }
 
@@ -283,7 +294,11 @@ class GameServiceTest {
         String ipAddress = "clientA";
         gameService.selectShortDestinationCards(ipAddress, new ArrayList<>());
 
-        verifyGameNotUpdatedAndCorrectErrorSent(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
+        verify(mockGameRepository, never()).updateGame(any());
+        Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+                ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID,
+                STRING);
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
     }
 
     @Test
@@ -401,7 +416,7 @@ class GameServiceTest {
         gameService.getWaitingGames(ipAddress);
 
         List<Game> waitingGames = verify(mockGameRepository).getWaitingGames();
-        Packet packet = new Packet(Command.SEND_GAMES, waitingGames, ContentType.GAME_INFO_LIST_WAITING);
+        Packet packet = new Packet(Command.SEND_WAITING_GAMES, waitingGames, ContentType.GAME_INFO_LIST);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 
@@ -413,7 +428,7 @@ class GameServiceTest {
         gameService.getStartedGames(ipAddress);
 
         List<Game> startedGames = verify(mockGameRepository).getStartedGames();
-        Packet packet = new Packet(Command.SEND_GAMES, startedGames, ContentType.GAME_INFO_LIST_STARTED);
+        Packet packet = new Packet(Command.SEND_STARTED_GAMES, startedGames, ContentType.GAME_INFO_LIST);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 
@@ -425,7 +440,7 @@ class GameServiceTest {
         gameService.getFinishedGames(ipAddress);
 
         List<Game> finishedGames = verify(mockGameRepository).getFinishedGames();
-        Packet packet = new Packet(Command.SEND_GAMES, finishedGames, ContentType.GAME_INFO_LIST_FINISHED);
+        Packet packet = new Packet(Command.SEND_FINISHED_GAMES, finishedGames, ContentType.GAME_INFO_LIST);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 

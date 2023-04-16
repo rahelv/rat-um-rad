@@ -13,7 +13,7 @@ public class MainArgs {
         this.startServer = startServer;
         this.port = port;
         this.host = null;
-        this.username = null;
+        this.username = "";
     }
 
     public MainArgs(boolean startServer, int port, String host, String username) {
