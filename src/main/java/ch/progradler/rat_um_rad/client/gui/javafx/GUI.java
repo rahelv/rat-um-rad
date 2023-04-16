@@ -11,6 +11,7 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateG
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesModel;
 import ch.progradler.rat_um_rad.client.models.User;
+import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import javafx.application.Application;
@@ -20,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This is the Rat um Rad JavaFX-Application.
@@ -43,7 +45,14 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
 
     @Override
     public void start(Stage primaryStage) {
-        this.usernameChangeModel = new UsernameChangeModel(new User(), this);
+        Parameters parameters = getParameters();
+        List<String> paramlist = parameters.getRaw();
+
+        if(!paramlist.get(0).equals("")) {
+           this.usernameChangeModel = new UsernameChangeModel(new User(), this, paramlist.get(0));
+        } else {
+            this.usernameChangeModel = new UsernameChangeModel(new User(), this);
+        }
         this.createGameModel = new CreateGameModel(this);
         this.showAllGamesModel = new ShowAllGamesModel(this);
 

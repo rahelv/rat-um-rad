@@ -67,6 +67,15 @@ public class UsernameChangeController implements Initializable, ServerResponseLi
         if(usernameChangeModel.getCurrentUsername().equals("")) { //differentiate between new user (no username set) and username change
             this.cancelButton.setVisible(false);
         }
+
+        if(this.usernameChangeModel.getChosenUsernameCommandLine() != null) {
+            this.usernameChangeModel.setChosenUsername(this.usernameChangeModel.getChosenUsernameCommandLine());
+            try {
+                confirmButtonAction(new ActionEvent());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /** triggered when the ok button is clicked. checks the chosen username and sets an error if username is not valid.

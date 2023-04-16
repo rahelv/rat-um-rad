@@ -52,10 +52,10 @@ public class Client {
             OutputPacketGatewaySingleton.setOutputPacketGateway(serverOutput);
 
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
-            //            startCommandHandler(userService, host, usernameHandler, username);
+            //startCommandHandler(userService, host, usernameHandler, username);
             startServerListener(socket, packetCoder, clientPingPongRunner);
 
-            Application.launch(GUI.class); //TODO: how to pass userService to this class
+            Application.launch(GUI.class, username);
         } catch (Exception e) {
             e.printStackTrace();
             if (e instanceof ConnectException) {
