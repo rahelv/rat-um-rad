@@ -5,6 +5,7 @@ import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -18,9 +19,9 @@ import java.util.ResourceBundle;
 import java.util.ServiceLoader;
 
 /**
- * Controller for the lobby internal chat (for view chatRoomView.fxml)
+ * Controller for the lobby internal chat (for view ChatRoomView.fxml)
  */
-public class ChatRoomController implements Initializable, ServerResponseListener<ChatMessage> {
+public class ChatRoomController implements Initializable {
     private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
     public Button sendButton;
@@ -33,7 +34,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {
-            userService.sendBroadCastMessage(chatRoomModel.getTextInputContent());
+            userService.sendGameInternalMessage(chatRoomModel.getTextInputContent());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,7 +57,17 @@ public class ChatRoomController implements Initializable, ServerResponseListener
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this); //add listener for ServerResponses
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ChatMessage>() {
+            @Override
+            public void serverResponseReceived(ChatMessage content) {
+                chatMessageReceived(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.SEND_GAME_INTERNAL_CHAT;
+            }
+        });
 
         this.chatRoomModel = new ChatRoomModel();
         chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty()); //bind TextField for Chat Input to model
@@ -72,8 +83,7 @@ public class ChatRoomController implements Initializable, ServerResponseListener
     /** when a chatMessage is received on the ServerResponseHandler, adds the received message to the list.
      * @param chatMessage
      */
-    @Override
-    public void serverResponseReceived(ChatMessage chatMessage, ContentType contentType) {
+    public void chatMessageReceived(ChatMessage chatMessage) {
         Platform.runLater(() -> {
             chatRoomModel.addChatMessageToList(chatMessage);
         });

@@ -1,11 +1,13 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.changeUsername;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import javafx.application.Platform;
@@ -22,9 +24,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controller for changeUsernameDialog.fxml (in resources/views)
+ * Controller for ChangeUsernameView.fxml (in resources/views)
  */
-public class UsernameChangeController implements Initializable, ServerResponseListener<UsernameChange> {
+public class UsernameChangeController implements Initializable {
     private Stage stage;
     @FXML
     private Label usernameRulesLabel;
@@ -47,7 +49,17 @@ public class UsernameChangeController implements Initializable, ServerResponseLi
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<UsernameChange>() {
+            @Override
+            public void serverResponseReceived(UsernameChange content) {
+                usernameChangeReceived(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.USERNAME_CONFIRMED;
+            }
+        });
         this.userService = new UserService();
     }
 
@@ -66,6 +78,15 @@ public class UsernameChangeController implements Initializable, ServerResponseLi
 
         if(usernameChangeModel.getCurrentUsername().equals("")) { //differentiate between new user (no username set) and username change
             this.cancelButton.setVisible(false);
+        }
+
+        if(this.usernameChangeModel.getChosenUsernameCommandLine() != null) {
+            this.usernameChangeModel.setChosenUsername(this.usernameChangeModel.getChosenUsernameCommandLine());
+            try {
+                confirmButtonAction(new ActionEvent());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -134,8 +155,7 @@ public class UsernameChangeController implements Initializable, ServerResponseLi
     /** listens to changes from the ServerResponseHandler and reacts accordingly. (When username confirmation is received from the server, goes to next page)
      * @param content
      */
-    @Override
-    public void serverResponseReceived(UsernameChange content, ContentType contentType) {
+    private void usernameChangeReceived(UsernameChange content) {
         this.usernameChangeModel.setConfirmedUsername(content.getNewName());
         //TODO: Confirm UsernameChange for User And Next View...
         Platform.runLater(() -> {

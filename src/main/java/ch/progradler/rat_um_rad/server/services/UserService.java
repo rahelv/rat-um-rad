@@ -54,6 +54,10 @@ public class UserService implements IUserService {
         Packet broadCastPacket = new Packet(Command.NEW_USER, chosenUsername, ContentType.STRING);
         //TODO: send packet containing usernames of current logged in users?
         broadcastExcludingUser(broadCastPacket, ipAddress);
+
+        //update online players on client
+        List<String> listOfUsernames = userRepository.getAllUsernames();
+        broadcastExcludingUser(new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, listOfUsernames, ContentType.STRING_LIST), ipAddress);
     }
 
     @Override
@@ -90,6 +94,10 @@ public class UserService implements IUserService {
         if (username == null) username = ipAddress;
         Packet packet = new Packet(Command.USER_DISCONNECTED, username, ContentType.STRING);
         broadcastExcludingUser(packet, ipAddress);
+
+        //update online players on client
+        List<String> listOfUsernames = userRepository.getAllUsernames();
+        broadcastExcludingUser(new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, listOfUsernames, ContentType.STRING_LIST), ipAddress);
     }
 
     @Override

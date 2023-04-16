@@ -110,7 +110,7 @@ public class PacketCoder implements Coder<Packet> {
             case GAME -> {
                 return clientGameCoder.encode((ClientGame) content, level);
             }
-            case GAME_INFO_LIST, GAME_INFO_LIST_WAITING, GAME_INFO_LIST_STARTED, GAME_INFO_LIST_FINISHED -> {
+            case GAME_INFO_LIST -> {
                 return encodeGameInfoList((List<GameBase>) content, level);
             }
             case GAME_STATUS -> {
@@ -165,11 +165,10 @@ public class PacketCoder implements Coder<Packet> {
             case STRING_LIST -> {
                 return CoderHelper.decodeStringList(level, contentUnwrapped);
             }
-
             case GAME -> {
                 return clientGameCoder.decode(contentUnwrapped, level);
             }
-            case GAME_INFO_LIST, GAME_INFO_LIST_STARTED, GAME_INFO_LIST_WAITING, GAME_INFO_LIST_FINISHED -> {
+            case GAME_INFO_LIST -> {
                 return decodeGameInfoList(contentUnwrapped, level);
             }
             case GAME_STATUS -> {

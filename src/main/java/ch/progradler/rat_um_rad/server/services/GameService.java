@@ -14,12 +14,19 @@ import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.*;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
+import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
 
@@ -65,14 +72,21 @@ public class GameService implements IGameService {
         ClientGame clientGame = GameServiceUtil.toClientGame(gameCreated, creatorIpAddress);
         Packet response = new Packet(Command.GAME_CREATED, clientGame, ContentType.GAME);
         outputPacketGateway.sendPacket(creatorIpAddress, response);
+
+        //Send updated game list to all players
+        Packet packet = new Packet(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
+        outputPacketGateway.broadcast(packet);
     }
 
     @Override
     public void joinGame(String ipAddress, String gameId) {
-        // TODO: check if player not already in other game?
         Game game = gameRepository.getGame(gameId);
         if (game.getStatus() == WAITING_FOR_PLAYERS) {
             addPlayerAndSaveGame(ipAddress, game);
+            //send game to joined player
+            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
+
             GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
@@ -81,6 +95,10 @@ public class GameService implements IGameService {
 
         if (game.hasReachedRequiredPlayers()) {
             GameServiceUtil.startGame(game, gameRepository, outputPacketGateway);
+
+            //send updated game list to all players
+            Packet packet = new Packet(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
+            outputPacketGateway.broadcast(packet);
         }
     }
 
@@ -100,20 +118,20 @@ public class GameService implements IGameService {
     @Override
     public void selectShortDestinationCards(String ipAddress, List<String> selectedCardIds) {
         if (selectedCardIds.isEmpty()) {
-            sendInvalidActionResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
+            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
             return;
         }
 
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
         if (game == null) {
-            sendInvalidActionResponse(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME);
+            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME);
             return;
         }
 
         Player player = game.getPlayers().get(ipAddress);
 
         if (!checkValidSelectedCardIds(player, selectedCardIds)) {
-            sendInvalidActionResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
+            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
             return;
         }
 
@@ -147,6 +165,13 @@ public class GameService implements IGameService {
             if (!playerSelected) return false;
         }
         return true;
+    }
+
+    private void sendInvalidSelectedShortDestCardsResponse(String ipAddress, String errorMessage) {
+        Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
+                errorMessage,
+                STRING);
+        outputPacketGateway.sendPacket(ipAddress, errorResponse);
     }
 
     private boolean checkValidSelectedCardIds(Player player, List<String> selectedCardIds) {
@@ -288,19 +313,19 @@ public class GameService implements IGameService {
 
     @Override
     public void getWaitingGames(String ipAddress) {
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST_WAITING);
+        Packet packet = new Packet(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     @Override
     public void getStartedGames(String ipAddress) {
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getStartedGames(), GAME_INFO_LIST_STARTED);
+        Packet packet = new Packet(SEND_STARTED_GAMES, gameRepository.getStartedGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     @Override
     public void getFinishedGames(String ipAddress) {
-        Packet packet = new Packet(SEND_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST_FINISHED);
+        Packet packet = new Packet(SEND_FINISHED_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 }

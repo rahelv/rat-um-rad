@@ -5,16 +5,15 @@ import ch.progradler.rat_um_rad.shared.models.game.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ShowAllGamesModel {
+public class GameOverviewModel {
     private final ControllerChangeListener<?> listener;
     private ObservableList<GameBase> openGameList;
     private ObservableList<GameBase> ongoingGameList;
     private ObservableList<GameBase> finishedGameList;
 
-    public ShowAllGamesModel(ControllerChangeListener<?> listener) {
+    public GameOverviewModel(ControllerChangeListener<?> listener) {
         this.listener = listener;
         this.openGameList = FXCollections.observableArrayList();
         this.ongoingGameList = FXCollections.observableArrayList();

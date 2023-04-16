@@ -13,6 +13,7 @@ import java.util.List;
  * Model for UsernameChange (stores the User)
  */
 public class UsernameChangeModel {
+    private String chosenUsernameCommandLine = null;
     private final ControllerChangeListener<?> listener;
     ComputerInfo computerInfo;
     private String systemUsername;
@@ -28,8 +29,20 @@ public class UsernameChangeModel {
         this.chosenUsername = new SimpleStringProperty(this.systemUsername);
     }
 
+    public UsernameChangeModel(User user, ControllerChangeListener<?> listener, String chosenUsernameCommandLine) {
+        this.listener = listener;
+        computerInfo = new ComputerInfo();
+        this.systemUsername = computerInfo.getSystemUsername();
+        this.user = user;
+        this.chosenUsername = new SimpleStringProperty(this.systemUsername);
+        this.chosenUsernameCommandLine = chosenUsernameCommandLine;
+    }
+
     public String getChosenUsername() {
          return chosenUsername.get();
+    }
+    public void setChosenUsername(String chosenUsername) {
+        this.chosenUsername.setValue(chosenUsername);
     }
 
     public String getCurrentUsername() {
@@ -54,5 +67,9 @@ public class UsernameChangeModel {
 
     public ControllerChangeListener<?> getListener() {
         return listener;
+    }
+
+    public String getChosenUsernameCommandLine() {
+        return chosenUsernameCommandLine;
     }
 }

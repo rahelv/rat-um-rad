@@ -1,45 +1,39 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.activity;
 
-import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
-import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.io.IOException;
+import java.util.List;
 
 /**
- * Controller for activitiesList.fxml. Activities that happened in the game are displayed in a list.
+ * Controller for Activitieslist.fxml. Activities that happened in the game are displayed in a list.
  */
-public class ActivityController implements Initializable, ServerResponseListener<String> {
+public class ActivityController extends AnchorPane {
     private ActivityModel activityModel;
     @FXML
     private ListView activitiesListView;
 
-    /**
-     * @param location  The location used to resolve relative paths for the root object, or
-     *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
-     *                  the root object was not localized.
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this); //add Listener for ServerInput (ServerReponseHandler)
+    public ActivityController() {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/game/ActivitiesList.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
 
-        this.activityModel = new ActivityModel();
-        this.activitiesListView.setItems(activityModel.latestActivities); //bind ListView to latestActivities in the activityModel
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 
-    /** Listens for Responses from the ServerResponseHandler
-     * @param activity
-     */
-    @Override
-    public void serverResponseReceived(String activity, ContentType contentType) {
-        Platform.runLater(() -> {
-            activityModel.addActivity(activity);
-        });
+    public void initData(ActivityModel activityModel) {
+        this.activityModel = activityModel;
+        this.activitiesListView.setItems(this.activityModel.getLatestActivities()); //bind ListView to latestActivities in the activityModel
+    }
+
+    public void updateActitivites(List<String> activities) {
+        this.activityModel.updateLatestActivities(activities);
     }
 }

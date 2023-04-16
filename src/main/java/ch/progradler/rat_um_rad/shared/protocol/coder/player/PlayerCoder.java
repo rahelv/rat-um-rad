@@ -44,7 +44,7 @@ public class PlayerCoder implements Coder<Player> {
 
     @Override
     public Player decode(String encoded, int level) {
-        if(encoded.equals("") || encoded.equals("null")) {
+        if(encoded.equals("null")) {
             return null;
         }
         List<String> fields = CoderHelper.decodeFields(level, encoded);

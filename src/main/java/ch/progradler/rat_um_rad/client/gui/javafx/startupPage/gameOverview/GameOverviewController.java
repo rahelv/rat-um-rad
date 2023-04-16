@@ -1,11 +1,14 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview;
 
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -24,38 +27,56 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ShowAllGamesController implements Initializable, ServerResponseListener<List<GameBase>> {
-    public Button backToLobbyButton;
-    public ListView openGamesListView;
-    public ListView onGoingListView;
-    public ListView finishedGamesListView;
+public class GameOverviewController implements Initializable {
+    @FXML
+    private LobbyController lobbyController;
+    @FXML
+    private Button backToLobbyButton;
+    @FXML
+    private ListView onGoingListView;
+    @FXML
+    private ListView finishedGamesListView;
 
     private IGameService gameService;
-    private ShowAllGamesModel showAllGamesModel;
+    private GameOverviewModel gameOverviewModel;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(this);
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<List<GameBase>>() {
+            @Override
+            public void serverResponseReceived(List<GameBase> content) {
+                startedGameListReceived(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.SEND_STARTED_GAMES;
+            }
+        });
+
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<List<GameBase>>() {
+            @Override
+            public void serverResponseReceived(List<GameBase> content) {
+                finishedGameListReceived(content);
+            }
+
+            @Override
+            public Command forCommand() {
+                return Command.SEND_FINISHED_GAMES;
+            }
+        });
 
         this.gameService = new GameService();
     }
 
-    public void initData(ShowAllGamesModel model) {
-        this.showAllGamesModel = model;
+    public void initData(GameOverviewModel model, LobbyModel lobbyModel) {
+        this.lobbyController.initData(lobbyModel);
+        this.gameOverviewModel = model;
 
         try {
             requestListsFromServer();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        this.openGamesListView.setItems(this.showAllGamesModel.getOpenGameList());
-        openGamesListView.setCellFactory(param -> new ShowAllGamesController.OpenGameCell());
-
-        this.onGoingListView.setItems(this.showAllGamesModel.getOngoingGameList());
-        onGoingListView.setCellFactory(param -> new ShowAllGamesController.Cell());
-
-        this.finishedGamesListView.setItems(this.showAllGamesModel.getFinishedGameList());
-        finishedGamesListView.setCellFactory(param -> new ShowAllGamesController.Cell());
     }
 
     private void requestListsFromServer() throws IOException {
@@ -64,41 +85,25 @@ public class ShowAllGamesController implements Initializable, ServerResponseList
         this.gameService.requestFinishedGames();
     }
 
-    private void reloadScene() { //TODO: überarbeiten
-        this.openGamesListView.setItems(this.showAllGamesModel.getOpenGameList());
-        openGamesListView.setCellFactory(param -> new ShowAllGamesController.OpenGameCell());
-
-        this.onGoingListView.setItems(this.showAllGamesModel.getOngoingGameList());
-        onGoingListView.setCellFactory(param -> new ShowAllGamesController.Cell());
-
-        this.finishedGamesListView.setItems(this.showAllGamesModel.getFinishedGameList());
-        finishedGamesListView.setCellFactory(param -> new ShowAllGamesController.Cell());
-    }
-
     @FXML
     private void returnButtonAction(ActionEvent event) {
         Platform.runLater(() -> {
-            showAllGamesModel.getListener().controllerChanged("showStartupPage"); //returns to main Page...
+            gameOverviewModel.getListener().controllerChanged("showStartupPage"); //returns to main Page...
         });
     }
 
-    @Override
-    public void serverResponseReceived(List<GameBase> content, ContentType contentType) {
-        switch(contentType) {
-            case GAME_INFO_LIST_WAITING -> {
-                this.showAllGamesModel.setOpenGameList(content);
-                this.reloadScene();
-            }
-            case GAME_INFO_LIST_STARTED -> {
-                this.showAllGamesModel.setOngoingGameList(content);
-                this.reloadScene();
-            }
-            case GAME_INFO_LIST_FINISHED -> {
-                this.showAllGamesModel.setFinishedGameList(content);
-                this.reloadScene();
-            }
-        }
+    public void startedGameListReceived(List<GameBase> content) {
+        this.gameOverviewModel.setOngoingGameList(content);
+        this.onGoingListView.setItems(this.gameOverviewModel.getOngoingGameList());
+        onGoingListView.setCellFactory(param -> new GameOverviewController.Cell());
     }
+
+    public void finishedGameListReceived(List<GameBase> content) {
+        this.gameOverviewModel.setFinishedGameList(content);
+        this.finishedGamesListView.setItems(this.gameOverviewModel.getFinishedGameList());
+        finishedGamesListView.setCellFactory(param -> new GameOverviewController.Cell());
+    }
+
 
     static class OpenGameCell extends ListCell<GameBase> {
         Pane pane = new Pane();

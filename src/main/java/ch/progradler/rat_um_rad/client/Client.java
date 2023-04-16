@@ -10,7 +10,20 @@ import ch.progradler.rat_um_rad.client.protocol.ServerInputListener;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.protocol.ServerResponseHandler;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
+import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
+import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.coder.*;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.DestinationCardCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.WheelCardCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.CityCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.GameMapCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
 import javafx.application.Application;
@@ -42,9 +55,10 @@ public class Client {
             OutputPacketGatewaySingleton.setOutputPacketGateway(serverOutput);
 
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
+            //startCommandHandler(userService, host, usernameHandler, username);
             startServerListener(socket, packetCoder, clientPingPongRunner);
 
-            Application.launch(GUI.class); //TODO: how to pass userService to this class
+            Application.launch(GUI.class, username);
         } catch (Exception e) {
             e.printStackTrace();
             if (e instanceof ConnectException) {

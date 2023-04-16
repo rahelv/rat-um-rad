@@ -7,10 +7,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.control.TextArea?>
+<?import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController?>
 <AnchorPane pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController">
-    <fx:include source="mainMenu.fxml" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+    <fx:include source="MainMenu.fxml" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
     <VBox layoutY="28.0" pickOnBounds="false" prefHeight="470.0" prefWidth="208.0" AnchorPane.topAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0">
         <Label prefHeight="75.0" prefWidth="315.0" text="Rat um Rad" textAlignment="CENTER">
             <font>
@@ -21,11 +20,11 @@
             <Label fx:id="welcomeLabel" prefHeight="28.0" prefWidth="236.0" />
             <Button onAction="#changeUsernameButtonTriggered" text="Change username" />
         </HBox>
-        <fx:include source="lobbyView.fxml"/>
+        <LobbyController fx:id="lobbyController"></LobbyController>
         <HBox spacing="5">
             <Button fx:id="showAllGamesButton" onAction="#showAllGamesAction" text="show all games"/>
             <Button fx:id="createGameButton" onAction="#createGameAction" text="create game"/>
-            <Label fx:id="currentPlayersTextArea" text="current online players : 15" />
+            <Button fx:id="currentPlayersLabelButton"></Button>
         </HBox>
     </VBox>
 </AnchorPane>

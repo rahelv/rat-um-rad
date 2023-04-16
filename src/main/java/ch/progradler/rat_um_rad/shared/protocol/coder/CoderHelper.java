@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Helper class for de- and encoding content.
@@ -23,7 +24,8 @@ public class CoderHelper {
             case 2 -> ";/;";
             case 3 -> ",/,";
             case 4 -> "-/-";
-            case 5 -> "*/*";
+            case 5 -> "|/|";
+            case 6 -> "*/*";
             default -> throw new IllegalArgumentException("To high separatorLevel: " + separatorLevel +
                     ". Add a new separator to allow this level."
             );
@@ -43,7 +45,7 @@ public class CoderHelper {
      */
     public static List<String> decodeFields(int separatorLevel, String encoded) {
         String separator = getSeparator(separatorLevel);
-        return Arrays.asList(encoded.split(separator));
+        return Arrays.asList(encoded.split(Pattern.quote(separator)));
     }
 
     public static String encodeDate(Date date) {

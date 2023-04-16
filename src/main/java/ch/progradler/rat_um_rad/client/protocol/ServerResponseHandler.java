@@ -2,18 +2,16 @@ package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
-import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.ShowAllGamesController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.server.Server;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
@@ -57,32 +55,49 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case USERNAME_CONFIRMED -> {
                 UsernameChange change = (UsernameChange) packet.getContent();
-                notifyListenersOfType(change, UsernameChangeController.class, packet.getContentType());
+                notifyListenersOfType(change, packet.getCommand());
             }
             case INVALID_ACTION_FATAL -> {
+                //TODO: differentiate further between fatal actions
+                //this.userService.chooseAndSendUsername(this.serverOutput);
                 switch((String) packet.getContent()) {
                     case JOINING_NOT_POSSIBLE -> {
                         //TODO: implement
                     }
                     case USERNAME_INVALID -> {
-                        //this.userService.chooseAndSendUsername(this.serverOutput);
+                        //this.usernameHandler.chooseAndSendUsername(userService);
                     }
                 }
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
-                //TODO: implement
+                List<String> allOnlinePlayers = (List<String>)packet.getContent();
+                notifyListenersOfType(allOnlinePlayers, packet.getCommand()); //TODO check if interface works correctly
             }
-            case SEND_BROADCAST_CHAT -> {
+            case SEND_GAME_INTERNAL_CHAT -> {
                 //TODO: update chatRoomModel
                 ChatMessage message = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
-                notifyListenersOfType(message, ChatRoomController.class, packet.getContentType());
+                notifyListenersOfType(message, packet.getCommand());
             }
-            case SEND_GAMES -> {
-                //TODO: implement
+            case SEND_WAITING_GAMES, SEND_STARTED_GAMES, SEND_FINISHED_GAMES -> {
+                Object content = packet.getContent();
+                ContentType contentType = packet.getContentType();
+                notifyListenersOfType((List<GameBase>) content, packet.getCommand());
             }
-            case NEW_PLAYER -> {
-                //TODO: implement
+            case NEW_USER -> {
+                String content = (String) packet.getContent();
+            }
+            case GAME_CREATED -> {
+                ClientGame content = (ClientGame) packet.getContent();
+                notifyListenersOfType(content, packet.getCommand());
+            }
+            case GAME_JOINED -> {
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, packet.getCommand());
+            }
+            case NEW_PLAYER-> {
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, packet.getCommand()); //updated ClientGame is sent to Controller, so it can display the new state
             }
             case GAME_STARTED_SELECT_DESTINATION_CARDS -> {
                 //TODO: implement
@@ -91,29 +106,20 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ContentType contentType = packet.getContentType();
                 if(contentType == ContentType.GAME_INFO_LIST) {
                     // TODO: Lobby should only get list when it's calling for it
-                    notifyListenersOfType((List<GameBase>) content, LobbyController.class, packet.getContentType());
-                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                    notifyListenersOfType((List<GameBase>) content, packet.getCommand());
+                    notifyListenersOfType((List<GameBase>) content, packet.getCommand());
                 } else {
-                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                    notifyListenersOfType((List<GameBase>) content, packet.getCommand());
                 }
             }
-            case NEW_USER -> {
-                String content = (String) packet.getContent();
-                notifyListenersOfType(content + " entered the game", ActivityController.class, packet.getContentType());
-            }
-            case GAME_CREATED -> {
-                ClientGame content = (ClientGame) packet.getContent();
-                notifyListenersOfType(content, CreateGameController.class, packet.getContentType());
-            }
             default -> presenter.display(packet);
-            //TODO: send Activity to ActivityController when ein Spielzug passiert
         }
     }
 
-    private <T> void notifyListenersOfType(T event, Class<? extends ServerResponseListener<T>> cls, ContentType contentType) {
+    private <T> void notifyListenersOfType(T event, Command command) {
         for (ServerResponseListener<?> listener : listeners) {
-            if (listener.getClass().equals(cls)) {
-                ((ServerResponseListener<T>) listener).serverResponseReceived(event, contentType);
+            if (listener.forCommand() == command) {
+                ((ServerResponseListener<T>) listener).serverResponseReceived(event);
             }
         }
     }

@@ -19,4 +19,10 @@ public interface OutputPacketGateway {
      * @param clients list of ipAddress to which the packet should be broadcast
      */
     void broadCastOnly(Packet packet, List<String> clients);
+
+    /**
+     * Broadcasts the packet to all connected users.
+     * @param packet
+     */
+    void broadcast(Packet packet);
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.ComboBox?>
+<?import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController?>
+<?import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapController?>
+<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.game.GameController">
+    <fx:include source="../MainMenu.fxml" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+        <Label prefHeight="75.0" prefWidth="315.0" text="Rat um Rad" textAlignment="CENTER" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30">
+            <font>
+                <Font name="Arial Black" size="36.0"/>
+            </font>
+        </Label>
+        <GameMapController fx:id="gameMapController" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="105"></GameMapController>
+        <VBox AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="105">
+            <fx:include source="ChatRoomView.fxml" />
+            <ActivityController fx:id="activityController"></ActivityController>
+        </VBox>
+</AnchorPane>

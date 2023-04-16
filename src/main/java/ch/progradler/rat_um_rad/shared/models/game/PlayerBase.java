@@ -54,12 +54,12 @@ public class PlayerBase {
         return playingOrder;
     }
 
-    public void setWheelsRemaining(int wheelsRemaining) {
-        this.wheelsRemaining = wheelsRemaining;
-    }
-
     public void setPlayingOrder(int playingOrder) {
         this.playingOrder = playingOrder;
+    }
+
+    public void setWheelsRemaining(int wheelsRemaining) {
+        this.wheelsRemaining = wheelsRemaining;
     }
 
     @Override
