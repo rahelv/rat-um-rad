@@ -3,7 +3,7 @@ package ch.progradler.rat_um_rad.client.protocol;
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.GameController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
@@ -92,7 +92,6 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case NEW_USER -> {
                 String content = (String) packet.getContent();
-                notifyListenersOfType(content + " entered the game", ActivityController.class, packet.getContentType());
             }
             case GAME_CREATED -> {
                 ClientGame content = (ClientGame) packet.getContent();
@@ -103,10 +102,10 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(clientGame, StartupPageController.class, packet.getContentType());
             }
             case NEW_PLAYER -> {
-                //TODO: implement
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, GameController.class, packet.getContentType()); //updated ClientGame is sent to Controller, so it can display the new state
             }
             default -> presenter.display(packet);
-            //TODO: send Activity to ActivityController when ein Spielzug passiert
         }
     }
 

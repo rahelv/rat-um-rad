@@ -22,7 +22,6 @@ public class LobbyController extends GridPane {
     private LobbyModel lobbyModel;
 
     public LobbyController() {
-        System.out.println("new lobbycontroller");
         this.gameService = new GameService();
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/LobbyControl.fxml"));
@@ -33,12 +32,10 @@ public class LobbyController extends GridPane {
             fxmlLoader.load();
         } catch (IOException exception) {
             exception.printStackTrace();
-            throw new RuntimeException(exception);
         }
     }
 
     public void initData(LobbyModel lobbyModel) {
-        System.out.println("init Data of lobbyController");
         this.lobbyModel = lobbyModel;
 
         try {
