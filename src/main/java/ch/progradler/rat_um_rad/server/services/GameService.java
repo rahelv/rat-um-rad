@@ -84,10 +84,9 @@ public class GameService implements IGameService {
             addPlayerAndSaveGame(ipAddress, game);
             //send game to joined player
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            //TODO: send clientgame with empty map (because game has not started yet)
             outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
 
-            GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER); //TODO: problem starts here
+            GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             return;
@@ -96,7 +95,7 @@ public class GameService implements IGameService {
         if (game.hasReachedRequiredPlayers()) {
             GameServiceUtil.startGame(game, gameRepository, outputPacketGateway);
 
-            //send updated lobby list to all players
+            //send updated game list to all players
             Packet packet = new Packet(SEND_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST_WAITING);
             outputPacketGateway.broadcast(packet);
         }
