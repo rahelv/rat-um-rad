@@ -26,7 +26,7 @@ public class LobbyModel {
 
             @Override
             public Command forCommand() {
-                return Command.SEND_FINISHED_GAMES;
+                return Command.SEND_WAITING_GAMES;
             }
         });
         this.gameInfoList = FXCollections.observableArrayList();

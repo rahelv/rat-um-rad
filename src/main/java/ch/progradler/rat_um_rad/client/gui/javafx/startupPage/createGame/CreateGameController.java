@@ -44,7 +44,7 @@ public class CreateGameController implements Initializable {
 
             @Override
             public Command forCommand() {
-                return Command.GAME_JOINED;
+                return Command.GAME_CREATED;
             }
         });
 

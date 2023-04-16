@@ -2,14 +2,8 @@ package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
-import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.GameController;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.server.Server;
@@ -85,12 +79,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType(message, packet.getCommand());
             }
-            case SEND_WAITING_GAMES -> {
-                Object content = packet.getContent();
-                ContentType contentType = packet.getContentType();
-                notifyListenersOfType((List<GameBase>) content, packet.getCommand());
-            }
-            case SEND_STARTED_GAMES, SEND_FINISHED_GAMES -> {
+            case SEND_WAITING_GAMES, SEND_STARTED_GAMES, SEND_FINISHED_GAMES -> {
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType((List<GameBase>) content, packet.getCommand());
@@ -117,10 +106,10 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ContentType contentType = packet.getContentType();
                 if(contentType == ContentType.GAME_INFO_LIST) {
                     // TODO: Lobby should only get list when it's calling for it
-                    notifyListenersOfType((List<GameBase>) content, LobbyController.class, packet.getContentType());
-                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                    notifyListenersOfType((List<GameBase>) content, packet.getCommand());
+                    notifyListenersOfType((List<GameBase>) content, packet.getCommand());
                 } else {
-                    notifyListenersOfType((List<GameBase>) content, ShowAllGamesController.class, packet.getContentType());
+                    notifyListenersOfType((List<GameBase>) content, packet.getCommand());
                 }
             }
             default -> presenter.display(packet);

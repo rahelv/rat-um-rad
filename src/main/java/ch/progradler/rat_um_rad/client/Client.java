@@ -102,19 +102,6 @@ public class Client {
         Thread t = new Thread(listener);
         t.start();
     }
-
-    //TODO: needed after merge?
-    private static Coder<Packet> getPacketCoder() {
-        Coder<ChatMessage> chatMessageCoder = new ChatMessageCoder();
-        Coder<UsernameChange> usernameChangeCoder = new UsernameChangeCoder();
-        Coder<GameMap> gameMapCoder = new GameMapCoder(new CityCoder(new PointCoder()), new RoadCoder());
-        Coder<Player> playerCoder = new PlayerCoder(new WheelCardCoder(), new DestinationCardCoder(new CityCoder(new PointCoder())));
-
-        return new PacketCoder(chatMessageCoder,
-                usernameChangeCoder,
-                new GameBaseCoder(gameMapCoder),
-                new ClientGameCoder(gameMapCoder, new VisiblePlayerCoder(), playerCoder));
-    }
 }
 
 //TODO: stop all threads when logging out
