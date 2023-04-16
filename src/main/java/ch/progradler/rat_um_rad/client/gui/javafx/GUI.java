@@ -4,6 +4,8 @@ import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeC
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.GameController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.GameModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.chooseCard.ChooseCardController;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.chooseCard.ChooseCardModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
@@ -14,6 +16,7 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -33,6 +36,7 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     private CreateGameModel createGameModel;
     private LobbyModel lobbyModel;
     private GameModel gameModel;
+    private ChooseCardModel chooseCardModel;
     Stage window;
     Scene mainScene;
 
@@ -72,6 +76,7 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         this.createGameModel = new CreateGameModel(this);
         this.gameOverviewModel = new GameOverviewModel(this);
         this.lobbyModel = new LobbyModel();
+        this.chooseCardModel = new ChooseCardModel(this);
 
         this.window = primaryStage;
 
@@ -135,10 +140,17 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
      */
     @Override
     public void gameCreated(ClientGame content) {
-        this.gameModel = new GameModel(content);
+        this.gameModel = new GameModel(this, content);
 
         GameController controller = this.loadFXMLView("/views/game/GameView.fxml").getController();
         controller.initData(this.gameModel, this.window);
         this.window.show();
+    }
+
+    @Override
+    public void selectDestinationCards(List<DestinationCard> list) {
+        ChooseCardController controller = this.loadFXMLView("/views/game/ChooseCardView.fxml").getController();
+        this.chooseCardModel.updateDestinationCardList(list);
+        controller.initData(this.chooseCardModel, this.window);
     }
 }

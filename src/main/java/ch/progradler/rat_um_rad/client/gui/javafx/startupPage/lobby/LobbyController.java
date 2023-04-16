@@ -89,6 +89,5 @@ public class LobbyController extends GridPane {
                 setGraphic(hbox);
             }
         }
-
     }
 }

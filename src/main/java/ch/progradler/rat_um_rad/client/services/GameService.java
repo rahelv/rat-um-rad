@@ -3,11 +3,13 @@ package ch.progradler.rat_um_rad.client.services;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Implementation of {@link IGameService}.
@@ -52,6 +54,11 @@ public class GameService implements IGameService {
     public void requestFinishedGames() throws IOException {
         Packet packet = new Packet(Command.REQUEST_GAMES, GameStatus.FINISHED, ContentType.GAME_STATUS);
         outputPacketGateway.sendPacket(packet);
+    }
+
+    @Override
+    public void selectCards(List<DestinationCard> selectedItems) {
+        //TODO: implement
     }
 
 }

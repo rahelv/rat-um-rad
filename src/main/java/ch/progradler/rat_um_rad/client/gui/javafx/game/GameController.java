@@ -9,7 +9,9 @@ import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Road;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable, ServerResponseListener<ClientGame> {
@@ -62,5 +65,13 @@ public class GameController implements Initializable, ServerResponseListener<Cli
         this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
         //TODO: this.activityController.updateActitivites();
         this.gameMapController.udpateGameMapModel(content);
+
+        //TODO: if destinationcards received run chooseDestinationCards();
+    }
+
+    private void chooseDestinationCards(List<DestinationCard> destinationCardList) {
+        Platform.runLater(() -> {
+            gameModel.getListener().selectDestinationCards(destinationCardList);
+        });
     }
 }

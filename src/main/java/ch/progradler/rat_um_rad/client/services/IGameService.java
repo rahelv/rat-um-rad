@@ -1,6 +1,10 @@
 package ch.progradler.rat_um_rad.client.services;
 
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
+import javafx.collections.ObservableList;
+
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Allows client to send game-related requests to server.
@@ -15,4 +19,6 @@ public interface IGameService {
     void requestStartedGames() throws IOException;
 
     void requestFinishedGames() throws IOException;
+
+    void selectCards(List<DestinationCard> selectedItems);
 }
