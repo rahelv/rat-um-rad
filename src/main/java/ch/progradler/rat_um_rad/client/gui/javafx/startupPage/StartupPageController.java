@@ -119,7 +119,6 @@ public class StartupPageController implements Initializable {
             startupPageModel.addPlayersToList(players);
             this.currentPlayersLabelButton.setText("Currently Online Players: " + String.valueOf(startupPageModel.getOnlinePlayersCount()));
             this.currentPlayersLabelButton.setTooltip(new Tooltip(startupPageModel.getOnlinePlayersListAsString()));
-            System.out.println("added players to list");
         });
     }
 
