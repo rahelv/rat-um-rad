@@ -76,9 +76,8 @@ public class ChatRoomController implements Initializable, ServerResponseListener
 
     private void handleAllPlayersUpdate(List<String> allPlayersList, ContentType contentType) {
         Platform.runLater(() -> {
-            //chatRoomModel.chatTargetsList = FXCollections.observableArrayList(allPlayersList);
             chatRoomModel.addPlayersToTargetList(allPlayersList);
-            System.out.println("here is called");//actually here is not be operated
+            System.out.println("here should be invoked");//actually here is not be operated
         });
     }
     @Override

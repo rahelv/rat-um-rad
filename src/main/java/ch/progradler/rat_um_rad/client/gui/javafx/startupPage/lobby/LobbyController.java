@@ -148,11 +148,9 @@ public class LobbyController implements Initializable, ServerResponseListener<Li
 
     }
     private void handleAllPlayersUpdate(List<String> content, ContentType contentType) {
-        //currentPlayersTextArea.setText("all online players : "+content.size());
         Platform.runLater(() -> {
-            //lobbyModel.updateAllOnlinePlayersList(content);
             lobbyModel.allOnlinePlayersProperty = new SimpleStringProperty("All online players : "+content.size());
-            System.out.println(content.size());
+            System.out.println("here should be invoked");
         });
     }
 }

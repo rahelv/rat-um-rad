@@ -58,11 +58,12 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 //TODO: differentiate further between fatal actions
                 //this.userService.chooseAndSendUsername(this.serverOutput);
             }
-            case SEND_ALL_CONNECTED_PLAYERS -> {
+            case SEND_ALL_CONNECTED_PLAYERS -> { //here failed in Junit test
                 //TODO: implement
                 List<String> allOnlinePlayers = (List<String>)packet.getContent();
                 notifyListenersOfType(allOnlinePlayers, ChatRoomController.AllPlayersListener.class, packet.getContentType());
                 notifyListenersOfType(allOnlinePlayers,LobbyController.AllOnlinePlayersListener.class, packet.getContentType());
+                System.out.println("response all connected players");
             }
             case SEND_BROADCAST_CHAT -> {
                 //TODO: update chatRoomModel
@@ -73,6 +74,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case SEND_WHISPER_CHAT -> {
                 ChatMessage message = (ChatMessage)packet.getContent();
                 notifyListenersOfType(message, ChatRoomController.class,packet.getContentType());
+                System.out.println("response:send whisper chat ");
             }
             case SEND_GAMES -> {
                 System.out.println("sendgames " + packet);
@@ -103,6 +105,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
         for (ServerResponseListener<?> listener : listeners) {
             if (listener.getClass().equals(cls)) {
                 ((ServerResponseListener<T>) listener).serverResponseReceived(event, contentType);
+
             }
         }
     }
