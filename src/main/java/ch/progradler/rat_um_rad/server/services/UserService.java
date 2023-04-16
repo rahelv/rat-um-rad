@@ -8,6 +8,7 @@ import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 
@@ -43,7 +44,7 @@ public class UserService implements IUserService {
     public void handleNewUser(String username, String ipAddress) {
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
         if (!usernameValidator.isUsernameValid(chosenUsername)) {
-            Packet errorPacket = new Packet(Command.INVALID_ACTION_FATAL, "Username invalid. Please try again", ContentType.STRING); //TODO: on client, user has to enter username again
+            Packet errorPacket = new Packet(Command.INVALID_ACTION_FATAL, ErrorResponse.USERNAME_INVALID, ContentType.STRING); //TODO: on client, user has to enter username again
             outputPacketGateway.sendPacket(ipAddress, errorPacket);
             return;
         }
@@ -103,7 +104,7 @@ public class UserService implements IUserService {
         Game currentPlayerGame = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
         if (currentPlayerGame == null) return; // TODO: send error message to sender?
 
-        List<String> otherPlayers = new ArrayList<>(currentPlayerGame.getPlayers().keySet());
+        List<String> otherPlayers = new ArrayList<>(currentPlayerGame.getPlayerIpAddresses());
         otherPlayers.remove(ipAddress);
 
         String username = userRepository.getUsername(ipAddress);

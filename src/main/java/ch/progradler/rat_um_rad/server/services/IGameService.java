@@ -2,9 +2,10 @@ package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
+
+import java.util.List;
 
 /**
  * This is the interface with actions the players can do and important services like exitGame().
@@ -15,19 +16,21 @@ public interface IGameService {
 
     /**
      * Called when a new player connects to the game.
+     *
+     * If number of players is equal to requiredPlayers, then:
+     * - status must be changed to PREPARATION,
+     * - all players must get a long destination card
+     * - all players must be informed that the game has started
+     * - all players must get a proposal of destination cards
      */
-    void addPlayer(String ipAddress);
-
-    void sendMessageTo(String ipAddressFrom, String ipAddressTo);
-
-    void sendMessageToAll(String ipAddressFrom);
+    void joinGame(String ipAddress, String gameIp);
 
     void exitGame(String ipAddress);
 
     /**
      * This method is used in the game {@link GameStatus#PREPARATION} as well as in {@link GameStatus#STARTED}.
      */
-    void selectShortDestinationCards(String ipAddress, DestinationCardDeck destinationCardDeck);
+    void selectShortDestinationCards(String ipAddress, List<String> selectedCards);
 
     void buildRoad(String ipAddress, String roadId);
 

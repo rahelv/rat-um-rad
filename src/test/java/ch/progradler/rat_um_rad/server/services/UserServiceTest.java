@@ -10,6 +10,7 @@ import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +70,7 @@ public class UserServiceTest {
         // prepare
         String username = "5Johnny";
         String ipAddress = "clientJ";
-        Packet errorPacket = new Packet(Command.INVALID_ACTION_FATAL, "Username invalid. Please try again", ContentType.STRING);
+        Packet errorPacket = new Packet(Command.INVALID_ACTION_FATAL, ErrorResponse.USERNAME_INVALID, ContentType.STRING);
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(false);
         doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), eq(errorPacket));
 

@@ -13,8 +13,8 @@ import java.util.Objects;
  */
 public class Player extends PlayerBase {
     private final List<WheelCard> wheelCards;
-    private final DestinationCard longDestinationCard;
-    private final List<DestinationCard> shortDestinationCards;
+    private DestinationCard longDestinationCard;
+    private List<DestinationCard> shortDestinationCards;
 
     //TODO List of roads built by player?
 
@@ -44,8 +44,16 @@ public class Player extends PlayerBase {
         return longDestinationCard;
     }
 
+    public void setLongDestinationCard(DestinationCard longDestinationCard) {
+        this.longDestinationCard = longDestinationCard;
+    }
+
     public List<DestinationCard> getShortDestinationCards() {
         return shortDestinationCards;
+    }
+
+    public void setShortDestinationCards(List<DestinationCard> shortDestinationCards) {
+        this.shortDestinationCards = shortDestinationCards;
     }
 
     public void setColor(WheelColor color) {
