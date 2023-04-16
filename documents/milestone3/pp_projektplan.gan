@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Programmierprojekt_RREJ" company="" webLink="http://pp_rrej" view-date="2023-04-03" view-index="0" gantt-divider-location="367" resource-divider-location="300" version="3.2.3247" locale="de_DE">
+    <description/>
+    <view zooming-state="default:7" id="gantt-chart">
+        <field id="tpd3" name="Vorgang" width="196" order="0"/>
+        <field id="tpd4" name="Anfang" width="77" order="1"/>
+        <field id="tpd5" name="Ende" width="78" order="2"/>
+        <option id="filter.completedTasks" value="false"/>
+        <timeline>
+            <![CDATA[0]]>
+        </timeline>
+        <option id="color.recent">
+            <![CDATA[#000000 #cc0000]]>
+        </option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Ressource" width="210" order="0"/>
+        <field id="1" name="Rolle" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="true"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" name="Meilenstein 1" color="#cc0000" meeting="true" start="2023-03-08" duration="0" complete="0" thirdDate="2023-02-27" thirdDate-constraint="0" priority="2" expand="true">
+            <notes>
+                <![CDATA[Abgabe um 17.00 
+Vortrag am 09.03 oder 10.03]]>
+            </notes>
+        </task>
+        <task id="1" name="Meilenstein 2" color="#cc0000" meeting="true" start="2023-03-27" duration="0" complete="0" thirdDate="2023-02-17" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Abgabe um 07:00 (?) 
+Besprechung in der Übungsstunde am 29.03]]>
+            </notes>
+        </task>
+        <task id="2" name="Meilenstein 3" color="#cc0000" meeting="true" start="2023-04-17" duration="0" complete="0" thirdDate="2023-03-02" thirdDate-constraint="0" priority="2" expand="true">
+            <notes>
+                <![CDATA[Mo. 17.04. 07:00 Uhr Projekt;
+Mi. 19.04. 17:00 Uhr Präsentation
+
+Übungsstunde: 19.04]]>
+            </notes>
+        </task>
+        <task id="3" name="Meilenstein 4" color="#cc0000" meeting="true" start="2023-05-02" duration="0" complete="0" thirdDate="2023-03-02" thirdDate-constraint="0" priority="2" expand="true">
+            <notes>
+                <![CDATA[Abgabe 02.05 07.00 
+In Übungsstunde 03.05 besprechen ]]>
+            </notes>
+        </task>
+        <task id="4" name="Meilenstein 5" color="#cc0000" meeting="true" start="2023-05-22" duration="0" complete="0" thirdDate="2023-04-17" thirdDate-constraint="0" priority="2" expand="true">
+            <notes>
+                <![CDATA[Mo. 22.5. 7:00 Uhr Projekt;
+Mi. 24.5. 17:00 Uhr Präsentation
+
+
+Komplette Distribution des Spiels muss abgegeben werden: 
+- Quellcode
+- Readme 
+- Handbuch 
+- Screenshot und Gameplay Video
+
+]]>
+            </notes>
+        </task>
+        <task id="71" name="Spiel auswählen" color="#8cb6ce" meeting="false" start="2023-02-24" duration="3" complete="0" thirdDate="2023-02-20" thirdDate-constraint="0" expand="true">
+            <depend id="70" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="70" name="Spielregeln festlegen" color="#8cb6ce" meeting="false" start="2023-02-27" duration="2" complete="0" thirdDate="2023-02-13" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rahel: Erste Fassung geschrieben
+Emanuele: Ergänzt
+Alle: Korrekturgelesen]]>
+            </notes>
+            <depend id="72" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="72" name="System- und Softwareanforderungen" color="#8cb6ce" meeting="false" start="2023-03-01" duration="3" complete="0" thirdDate="2023-02-19" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Alle: Brainstorming
+Emanuele: Aufarbeiten und ergänzen
+Alle: Korrekturlesen]]>
+            </notes>
+            <depend id="73" type="2" difference="0" hardness="Strong"/>
+            <depend id="76" type="2" difference="7" hardness="Strong"/>
+            <depend id="77" type="2" difference="7" hardness="Strong"/>
+            <depend id="78" type="2" difference="7" hardness="Strong"/>
+            <depend id="79" type="2" difference="20" hardness="Strong"/>
+        </task>
+        <task id="73" name="Projektplan erstellen" color="#8cb6ce" meeting="false" start="2023-03-04" duration="2" complete="0" thirdDate="2023-02-19" thirdDate-constraint="0" expand="true"/>
+        <task id="76" name="Client-Server-Protokoll" color="#8cb6ce" meeting="false" start="2023-03-11" duration="5" complete="0" thirdDate="2023-03-06" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Definition von Verhalten von Client und Server, Befehle aufschreiben und Beispiele bringen
+
+Aufschreiben: Emanuele und Rui
+Korrekturlesen: Rahel und Jonah]]>
+            </notes>
+            <depend id="92" type="2" difference="29" hardness="Strong"/>
+        </task>
+        <task id="92" name="Protocol document" color="#8cb6ce" meeting="false" start="2023-04-14" duration="2" complete="0" thirdDate="2023-03-27" thirdDate-constraint="0" expand="true">
+            <depend id="112" type="2" difference="12" hardness="Strong"/>
+        </task>
+        <task id="112" name="protocol document update milestone 4" color="#8cb6ce" meeting="false" start="2023-04-28" duration="2" complete="0" thirdDate="2023-03-27" thirdDate-constraint="0" expand="true">
+            <depend id="113" type="2" difference="18" hardness="Strong"/>
+        </task>
+        <task id="113" name="protocol document update milestone 5" color="#8cb6ce" meeting="false" start="2023-05-18" duration="2" complete="0" thirdDate="2023-04-30" thirdDate-constraint="0" expand="true"/>
+        <task id="77" name="Client-Architektur" color="#8cb6ce" meeting="false" start="2023-03-11" duration="5" complete="0" thirdDate="2023-03-13" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rahel und Rui: Brainstorming
+Rahel: Detaillieter Vorschlag
+Rui: Korrekturlesen]]>
+            </notes>
+        </task>
+        <task id="78" name="Server-Architektur" color="#8cb6ce" meeting="false" start="2023-03-11" duration="5" complete="0" thirdDate="2023-03-13" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Jonah und Emanuele: Brainstorming
+Jonah: detaillierter Vorschlag
+Emanuele: Korrekturlesen]]>
+            </notes>
+            <depend id="118" type="2" difference="14" hardness="Strong"/>
+        </task>
+        <task id="118" name="Datenstrukturen" color="#8cb6ce" meeting="false" start="2023-03-30" duration="5" complete="0" thirdDate="2023-03-16" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele und Jonah]]>
+            </notes>
+            <depend id="114" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="114" name="GameStatus WAITING" color="#8cb6ce" meeting="false" start="2023-04-04" duration="5" complete="0" thirdDate="2023-02-27" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele: neue Spieler kommen rein
+Jonah: neue Gameinstanz erstelllen]]>
+            </notes>
+            <depend id="115" type="2" difference="0" hardness="Strong"/>
+            <depend id="116" type="2" difference="0" hardness="Strong"/>
+            <depend id="119" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="115" name="GameStatus PREPARATION" color="#8cb6ce" meeting="false" start="2023-04-09" duration="5" complete="0" thirdDate="2023-02-27" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Jonah und Emanuele]]>
+            </notes>
+        </task>
+        <task id="116" name="GameStatus STARTED Emanuele" color="#8cb6ce" meeting="false" start="2023-04-09" duration="5" complete="0" thirdDate="2023-02-27" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Radkartenstapel
+Radkartenablagestapel
+Zielkartenstapel]]>
+            </notes>
+            <depend id="117" type="2" difference="5" hardness="Strong"/>
+        </task>
+        <task id="119" name="GameStatus STARTED Jonah" color="#8cb6ce" meeting="false" start="2023-04-09" duration="5" complete="0" thirdDate="2023-03-06" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Strecke bauen
+Städte
+Roads
+Karte]]>
+            </notes>
+            <depend id="117" type="2" difference="5" hardness="Strong"/>
+        </task>
+        <task id="117" name="GameStatus FINISHED" color="#8cb6ce" meeting="false" start="2023-04-19" duration="3" complete="0" thirdDate="2023-04-14" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele und Jonah]]>
+            </notes>
+            <depend id="126" type="2" difference="0" hardness="Strong"/>
+            <depend id="127" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="126" name="Sauberer ConnectionLoss" color="#8cb6ce" meeting="false" start="2023-04-22" duration="6" complete="0" thirdDate="2023-04-22" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Jonah]]>
+            </notes>
+        </task>
+        <task id="127" name="Want-to-Finish-Game" color="#8cb6ce" meeting="false" start="2023-04-22" duration="6" complete="0" thirdDate="2023-04-22" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele]]>
+            </notes>
+        </task>
+        <task id="74" name="Diary-Konzept" color="#8cb6ce" meeting="false" start="2023-02-27" duration="3" complete="0" thirdDate="2023-02-16" thirdDate-constraint="0" expand="true"/>
+        <task id="75" name="Mockup" color="#8cb6ce" meeting="false" start="2023-02-27" duration="6" complete="0" thirdDate="2023-02-16" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rahel: Karte und Orte
+Rui: Karte und Orte
+Jonah: funktionales Design]]>
+            </notes>
+        </task>
+        <task id="79" name="QA concept" color="#8cb6ce" meeting="false" start="2023-03-24" duration="3" complete="0" thirdDate="2023-03-13" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Aufgabe ausführen: Emanuele
+Korrekturlesen: Jonah]]>
+            </notes>
+            <depend id="111" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="111" name="QA-concept überarbeiten" color="#8cb6ce" meeting="false" start="2023-03-27" duration="4" complete="0" thirdDate="2023-03-27" thirdDate-constraint="0" expand="true">
+            <depend id="93" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="93" name="QA concept advanced" color="#8cb6ce" meeting="false" start="2023-03-31" duration="7" complete="0" thirdDate="2023-03-27" thirdDate-constraint="0" expand="true">
+            <depend id="102" type="2" difference="11" hardness="Strong"/>
+        </task>
+        <task id="102" name="QA Messungen 1" color="#8cb6ce" meeting="false" start="2023-04-18" duration="1" complete="0" thirdDate="2023-02-06" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele]]>
+            </notes>
+            <depend id="104" type="2" difference="3" hardness="Strong"/>
+        </task>
+        <task id="104" name="QA Komponententestung" color="#8cb6ce" meeting="false" start="2023-04-22" duration="7" complete="0" thirdDate="2023-05-01" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele und Jonah: Testung einer grossen Komponente]]>
+            </notes>
+            <depend id="120" type="2" difference="3" hardness="Strong"/>
+        </task>
+        <task id="120" name="QA Messung 2" color="#8cb6ce" meeting="false" start="2023-05-02" duration="1" complete="0" thirdDate="2023-04-29" thirdDate-constraint="0" expand="true">
+            <depend id="121" type="2" difference="10" hardness="Strong"/>
+        </task>
+        <task id="121" name="QA Messung 3" color="#8cb6ce" meeting="false" start="2023-05-13" duration="1" complete="0" thirdDate="2023-04-10" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele]]>
+            </notes>
+            <depend id="122" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="122" name="QA Report" color="#8cb6ce" meeting="false" start="2023-05-14" duration="5" complete="0" thirdDate="2023-05-14" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele und Jonah]]>
+            </notes>
+        </task>
+        <task id="80" name="Client-Server-Verbindung" color="#8cb6ce" meeting="false" start="2023-03-16" duration="9" complete="0" thirdDate="2023-03-13" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rahel: übernimmt Client-Seite
+Jonah: übernimmt Server-Seite
+Emanuele: hat vielleicht Kapazitäten, um hier mitzuhelfen
+
+Dazu gehört: arbitrarily many clients can log on the server, Namensentscheidung durch Benutzer, Namensveränderung durch Server, Logout]]>
+            </notes>
+        </task>
+        <task id="81" name="Spielstart und Chat" color="#8cb6ce" meeting="false" start="2023-03-16" duration="9" complete="0" thirdDate="2023-03-13" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rui und Rahel: übernehmen Client Seite
+Jonah: übernimmt Server Seite
+Emanuele: Korrekturlesen von Jonah
+Chatfunktionalität wird komplett implementiert und auf dem Server können Spiele gestartet werden]]>
+            </notes>
+        </task>
+        <task id="82" name="Ping-Pong" color="#8cb6ce" meeting="false" start="2023-03-16" duration="9" complete="0" thirdDate="2023-03-13" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rui: übernimmt Client-Seite
+Emanuele: übernimmt Server-Seite]]>
+            </notes>
+        </task>
+        <task id="83" name="Graphisches Design auswählen" color="#8cb6ce" meeting="false" start="2023-04-01" duration="5" complete="0" thirdDate="2023-03-27" thirdDate-constraint="0" expand="true"/>
+        <task id="85" name="GUI: Lobby implementieren" color="#8cb6ce" meeting="false" start="2023-04-06" duration="5" complete="0" thirdDate="2023-03-27" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rui: implementiert: Liste offener, angefangener und beendeter Spiele sowie Liste der Spieler
+Rahel: Korrekturlesen]]>
+            </notes>
+            <depend id="94" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="94" name="GUI: Spiel WAITING und Chat" color="#8cb6ce" meeting="false" start="2023-04-11" duration="5" complete="0" thirdDate="2023-03-27" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rui und Rahel]]>
+            </notes>
+            <depend id="123" type="2" difference="0" hardness="Strong"/>
+            <depend id="124" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="124" name="GUI: Karte" color="#8cb6ce" meeting="false" start="2023-04-16" duration="5" complete="0" thirdDate="2023-03-20" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rahel]]>
+            </notes>
+        </task>
+        <task id="123" name="GUI: Spiel PREPARATION und STARTED" color="#8cb6ce" meeting="false" start="2023-04-16" duration="8" complete="0" thirdDate="2023-03-20" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rui und Rahel]]>
+            </notes>
+            <depend id="125" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="125" name="GUI: Spiel FINISHED" color="#8cb6ce" meeting="false" start="2023-04-24" duration="3" complete="0" thirdDate="2023-03-20" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rui und Rahel]]>
+            </notes>
+            <depend id="129" type="2" difference="4" hardness="Strong"/>
+        </task>
+        <task id="129" name="GUI: improve design" color="#8cb6ce" meeting="false" start="2023-05-01" duration="5" complete="0" thirdDate="2023-04-27" thirdDate-constraint="0" expand="true">
+            <depend id="108" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="91" name="Manual" color="#8cb6ce" meeting="false" start="2023-04-11" duration="3" complete="0" thirdDate="2023-03-27" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rui]]>
+            </notes>
+            <depend id="130" type="2" difference="20" hardness="Strong"/>
+        </task>
+        <task id="130" name="Finish Manual" color="#8cb6ce" meeting="false" start="2023-05-04" duration="5" complete="0" thirdDate="2023-04-14" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rui]]>
+            </notes>
+        </task>
+        <task id="95" name="Progress report" color="#8cb6ce" meeting="false" start="2023-04-08" duration="2" complete="0" thirdDate="2023-02-20" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele]]>
+            </notes>
+        </task>
+        <task id="103" name="Logo" color="#8cb6ce" meeting="false" start="2023-05-11" duration="3" complete="0" thirdDate="2023-05-01" thirdDate-constraint="0" expand="true"/>
+        <task id="106" name="Präsentation des Spiels" color="#8cb6ce" meeting="false" start="2023-05-11" duration="3" complete="0" thirdDate="2023-05-01" thirdDate-constraint="0" expand="true"/>
+        <task id="107" name="Clips und Screenshots" color="#8cb6ce" meeting="false" start="2023-05-11" duration="3" complete="0" thirdDate="2023-05-01" thirdDate-constraint="0" expand="true"/>
+        <task id="108" name="Client fertigstellen" color="#8cb6ce" meeting="false" start="2023-05-06" duration="5" complete="0" thirdDate="2023-04-10" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rahel und Rui]]>
+            </notes>
+            <depend id="110" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="109" name="Server fertigstellen" color="#8cb6ce" meeting="false" start="2023-05-06" duration="5" complete="0" thirdDate="2023-04-10" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Emanuele und Jonah]]>
+            </notes>
+            <depend id="110" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="110" name="Jar-File fertigstellen" color="#8cb6ce" meeting="false" start="2023-05-11" duration="2" complete="0" thirdDate="2023-04-10" thirdDate-constraint="0" expand="true"/>
+        <task id="128" name="Review von anderem Spiel" color="#8cb6ce" meeting="false" start="2023-05-10" duration="5" complete="0" thirdDate="2023-04-10" thirdDate-constraint="0" expand="true">
+            <notes>
+                <![CDATA[Rahel und Rui]]>
+            </notes>
+        </task>
+    </tasks>
+    <resources>
+        <resource id="2" name="Rui" function="Default:0" contacts="" phone=""/>
+        <resource id="1" name="Rahel" function="Default:0" contacts="" phone=""/>
+        <resource id="3" name="Jonah" function="Default:0" contacts="" phone=""/>
+        <resource id="0" name="Emanuele" function="Default:0" contacts="" phone=""/>
+    </resources>
+    <allocations>
+        <allocation task-id="71" resource-id="2" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="72" resource-id="2" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="75" resource-id="2" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="77" resource-id="2" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="81" resource-id="2" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="82" resource-id="2" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="83" resource-id="2" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="85" resource-id="2" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="91" resource-id="2" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="107" resource-id="2" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="108" resource-id="2" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="106" resource-id="2" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="94" resource-id="2" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="71" resource-id="1" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="70" resource-id="1" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="72" resource-id="1" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="75" resource-id="1" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="77" resource-id="1" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="80" resource-id="1" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="81" resource-id="1" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="85" resource-id="1" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="103" resource-id="1" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="108" resource-id="1" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="106" resource-id="1" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="94" resource-id="1" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="92" resource-id="1" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="113" resource-id="1" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="112" resource-id="1" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="71" resource-id="3" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="72" resource-id="3" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="73" resource-id="3" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="75" resource-id="3" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="78" resource-id="3" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="80" resource-id="3" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="103" resource-id="3" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="109" resource-id="3" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="110" resource-id="3" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="71" resource-id="0" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="70" resource-id="0" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="72" resource-id="0" function="Default:0" responsible="false" load="1.0"/>
+        <allocation task-id="73" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="74" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="76" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="78" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="79" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="82" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="93" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="95" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="102" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+        <allocation task-id="104" resource-id="0" function="Default:0" responsible="true" load="1.0"/>
+    </allocations>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
