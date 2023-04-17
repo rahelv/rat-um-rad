@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Helper class for de- and encoding content.
@@ -48,7 +49,7 @@ public class CoderHelper {
      */
     public static List<String> decodeFields(int separatorLevel, String encoded) {
         String separator = getSeparator(separatorLevel);
-        return Arrays.asList(encoded.split(separator));
+        return Arrays.asList(encoded.split(Pattern.quote(separator)));
     }
 
     public static String encodeDate(Date date) {
