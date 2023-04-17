@@ -1,13 +1,10 @@
 package ch.progradler.rat_um_rad.server.services;
 
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
-import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -25,11 +22,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.INVALID_ACTION_FATAL;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.NEW_PLAYER;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -620,7 +617,7 @@ class GameServiceTest {
 
         Map<String, String> roadsBuilt = new HashMap<>();
 
-        Game game = new Game("game1", GameStatus.STARTED, map, new Date(),
+        Game game = new Game("game1", STARTED, map, new Date(),
                 "creator", 3,
                 Map.of(ipAddress, player), 4, roadsBuilt);
 

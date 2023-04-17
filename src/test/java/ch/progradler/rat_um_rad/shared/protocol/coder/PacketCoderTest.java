@@ -1,12 +1,12 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder;
 
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.models.Point;
+import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
-import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
-import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
@@ -41,6 +42,39 @@ public class PacketCoderTest {
     @BeforeEach
     public void initPacketCoder() {
         packetCoder = new PacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder, clientGameCoder, buildRoadInfoCoder);
+    }
+
+    @Test
+    public void defaultCoderCanCodeClientGame() {
+        // prepare
+        int level = 1;
+
+        Player player =  new Player("own player", WheelColor.BLUE, 4, 5, 1,
+                Arrays.asList(new WheelCard(40)), new DestinationCard(
+                "longCard1", new City("city1", "City1", new Point(3,4)),
+                new City("city2", "City2", new Point(1,4)),
+                5),new ArrayList<>());
+
+        ClientGame clientGame =new ClientGame("game1", GameStatus.STARTED, GameMap.defaultMap(),
+                new Date(), "creator", 4, Arrays.asList(
+                        new VisiblePlayer("Player1", WheelColor.GREEN, 4, 20, 0, "ip", 5, 3)
+        ),player,30, new HashMap<>());
+
+
+        Command command = Command.GAME_CREATED;
+        ContentType contentType = ContentType.GAME;
+        Packet packet = new Packet(command, clientGame, contentType);
+
+        packetCoder= PacketCoder.defaultPacketCoder();
+
+        // execute
+        String encoded = packetCoder.encode(packet, level);
+        Packet decoded = packetCoder.decode(encoded, level);
+
+        // assert
+        //assertEquals(packet, decoded);
+       // assertEquals(packet.getContentType(), decoded.getContentType()); //das goht aber
+        assertEquals(packet.getContent(), decoded.getContent());
     }
 
     @Test
@@ -279,7 +313,7 @@ public class PacketCoderTest {
                 new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>())
         );
 
-        Command command = Command.SEND_GAMES;
+        Command command = Command.SEND_STARTED_GAMES;
         ContentType contentType = ContentType.GAME_INFO_LIST;
 
 
@@ -311,7 +345,7 @@ public class PacketCoderTest {
         GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>());
 
 
-        Command command = Command.SEND_GAMES;
+        Command command = Command.SEND_STARTED_GAMES;
         ContentType contentType = ContentType.GAME_INFO_LIST;
 
         String game1Encoded = "game1Encoded";

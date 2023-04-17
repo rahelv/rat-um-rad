@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.client.protocol;
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -33,12 +34,13 @@ class ServerResponseHandlerTest {
     @Test
     void handlesUsernameConfirmedCommandCorrectly() {
         UsernameChangeController mockController = mock(UsernameChangeController.class);
-        serverResponseHandler.addListener(mockController);
+        ServerResponseListener<UsernameChange> mockListener = mock(ServerResponseListener.class);
+        serverResponseHandler.addListener(mockListener);
 
         UsernameChange change = new UsernameChange("old", "new");
         Packet packet = new Packet(Command.USERNAME_CONFIRMED, change, ContentType.USERNAME_CHANGE);
         serverResponseHandler.handleResponse(packet);
 
-        verify(mockController).serverResponseReceived(change, ContentType.USERNAME_CHANGE);
+        verify(mockController).usernameChangeReceived(change);
     }
 }

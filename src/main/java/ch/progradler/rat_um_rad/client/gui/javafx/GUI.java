@@ -16,7 +16,6 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -133,6 +132,7 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
                 this.window.show();
             }
         }
+
     }
 
     /** Listener for createGameView --> creates the game model, instantiates the game View
@@ -148,9 +148,11 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     }
 
     @Override
-    public void selectDestinationCards(List<DestinationCard> list) {
+    public void selectDestinationCards(ClientGame clientGame) {
         ChooseCardController controller = this.loadFXMLView("/views/game/ChooseCardView.fxml").getController();
-        this.chooseCardModel.updateDestinationCardList(list);
+        this.chooseCardModel.setLongDestinationCard(clientGame.getOwnPlayer().getLongDestinationCard());
+        this.chooseCardModel.updateDestinationCardList(clientGame.getOwnPlayer().getShortDestinationCards());
         controller.initData(this.chooseCardModel, this.window);
+        this.window.show();
     }
 }

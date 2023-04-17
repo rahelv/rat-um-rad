@@ -51,7 +51,7 @@ public class GameController implements Initializable {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
             @Override
             public void serverResponseReceived(ClientGame content) {
-                gameUpdated(content);
+                startGameChooseDestinationCards(content);
             }
 
             @Override
@@ -85,9 +85,11 @@ public class GameController implements Initializable {
         //TODO: if destinationcards received run chooseDestinationCards();
     }
 
-    private void chooseDestinationCards(List<DestinationCard> destinationCardList) {
+    private void startGameChooseDestinationCards(ClientGame clientGame) {
         Platform.runLater(() -> {
-            gameModel.getListener().selectDestinationCards(destinationCardList);
+            gameModel.getListener().selectDestinationCards(clientGame);
         });
     }
+
+    //TODO: method for chooseDestinationCards during game
 }

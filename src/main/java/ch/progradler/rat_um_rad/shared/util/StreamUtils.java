@@ -1,10 +1,7 @@
 package ch.progradler.rat_um_rad.shared.util;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -15,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 public class StreamUtils {
     public static String readStringFromStream(InputStream stream) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024]; // expects no string with bigger size
+        byte[] buffer = new byte[2054]; // expects no string with bigger size
         int length = stream.read(buffer);
         result.write(buffer, 0, length);
         return result.toString(StandardCharsets.UTF_8);

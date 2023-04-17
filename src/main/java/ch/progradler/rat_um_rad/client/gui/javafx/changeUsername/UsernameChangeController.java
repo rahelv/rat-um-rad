@@ -155,7 +155,7 @@ public class UsernameChangeController implements Initializable {
     /** listens to changes from the ServerResponseHandler and reacts accordingly. (When username confirmation is received from the server, goes to next page)
      * @param content
      */
-    private void usernameChangeReceived(UsernameChange content) {
+    public void usernameChangeReceived(UsernameChange content) {
         this.usernameChangeModel.setConfirmedUsername(content.getNewName());
         //TODO: Confirm UsernameChange for User And Next View...
         Platform.runLater(() -> {

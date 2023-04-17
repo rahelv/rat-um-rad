@@ -1,8 +1,5 @@
 package ch.progradler.rat_um_rad.client.services;
 
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import javafx.collections.ObservableList;
-
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
 import java.io.IOException;
@@ -26,5 +23,5 @@ public interface IGameService {
 
     void requestFinishedGames() throws IOException;
 
-    void selectCards(List<DestinationCard> selectedItems);
+    void selectCards(List<String> selectedItems) throws IOException;
 }
