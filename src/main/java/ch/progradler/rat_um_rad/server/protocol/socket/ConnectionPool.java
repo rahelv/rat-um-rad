@@ -18,7 +18,6 @@ import java.util.Map;
 public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
-
     /**
      * Keys are IP-Addresses.
      */
@@ -39,11 +38,24 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     }
 
     @Override
-    public void broadCast(Packet packet, List<String> excludeClients) {
+    public void broadCastExclude(Packet packet, List<String> excludeClients) {
         final List<String> clientsForBroadCast = new ArrayList<>(connections.keySet());
         clientsForBroadCast.removeAll(excludeClients);
 
-        for (String ipAddress : clientsForBroadCast) {
+        broadCastOnly(packet, clientsForBroadCast);
+    }
+
+    @Override
+    public void broadCastOnly(Packet packet, List<String> clients) {
+        for (String ipAddress : clients) {
+            sendPacket(ipAddress, packet);
+        }
+    }
+
+    @Override
+    public void broadcast(Packet packet) {
+        final List<String> clientsForBroadCast = new ArrayList<>(connections.keySet());
+        for(String ipAddress : clientsForBroadCast) {
             sendPacket(ipAddress, packet);
         }
     }

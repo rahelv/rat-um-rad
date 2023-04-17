@@ -17,7 +17,7 @@ public class ClientOutput {
     private final String ipAddress;
     private final Coder<Packet> packetCoder;
 
-    public ClientOutput(Socket socket, String ipAddress,Coder<Packet> packetCoder) {
+    public ClientOutput(Socket socket, String ipAddress, Coder<Packet> packetCoder) {
         this.socket = socket;
         this.packetCoder = packetCoder;
         this.ipAddress = ipAddress;
@@ -29,8 +29,8 @@ public class ClientOutput {
     }
 
     public void sendPacketToClient(Packet packet) {
-        String sendStr = packetCoder.encode(packet);
-        StreamUtils.writeStringToStream(sendStr,out);
+        String sendStr = packetCoder.encode(packet, 0);
+        StreamUtils.writeStringToStream(sendStr, out);
     }
 
     public String getIpAddress() {

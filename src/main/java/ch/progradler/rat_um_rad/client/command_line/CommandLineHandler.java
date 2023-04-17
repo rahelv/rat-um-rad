@@ -1,10 +1,8 @@
 package ch.progradler.rat_um_rad.client.command_line;
 
 import ch.progradler.rat_um_rad.client.Client;
-import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
-import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.client.services.IUserService;
+import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,24 +19,26 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
     public static final Logger LOGGER = LogManager.getLogger();
 
     private final InputReader inputReader;
-    private final OutputPacketGateway outputPacketGateway;
+    private final IUserService userService;
     private final UsernameHandler usernameHandler;
+    private final String initialUsername;
     private boolean quit = false;
 
-    public CommandLineHandler(InputReader inputReader, OutputPacketGateway outputPacketGateway, String host, UsernameHandler usernameHandler) {
+    public CommandLineHandler(InputReader inputReader, IUserService userService, String host, UsernameHandler usernameHandler, String initialUsername) {
         this.inputReader = inputReader;
-        this.outputPacketGateway = outputPacketGateway;
+        this.userService = userService;
         this.usernameHandler = usernameHandler;
+        this.initialUsername = initialUsername;
     }
 
     /**
-     * starts the CommandLineHandler. Condition: username has to be sent to the server, waits until username is set
+     * starts the CommandLineHandler. Condition: waits until username is set before it listens to general input commands.
      *
      * @see UsernameHandler#addUsernameObserver(PropertyChangeListener)
      */
     @Override
     public void run() {
-        usernameHandler.chooseAndSendUsername(outputPacketGateway);
+        sendUsername();
         try {
             synchronized (this) {
                 wait();
@@ -49,10 +49,28 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
         listenToCommands();
     }
 
+    private void sendUsername() {
+        if (initialUsername != null) {
+            if (new UsernameValidator().isUsernameValid(initialUsername)) {
+                try {
+                    userService.sendUsername(initialUsername);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Entered starting username invalid!");
+                usernameHandler.chooseAndSendUsername(userService);
+            }
+        } else {
+            usernameHandler.chooseAndSendUsername(userService);
+        }
+    }
+
     /**
      * Listens for username changes, as CommandLineHandler only runs when user has set username.
+     *
      * @param evt A PropertyChangeEvent object describing the event source
-     *          and the property that has changed.
+     *            and the property that has changed.
      * @see Client (CommandLineHandler observes UsernameHandler)
      */
     @Override
@@ -89,13 +107,10 @@ public class CommandLineHandler implements PropertyChangeListener, Runnable {
             quit = true;
             return;
         } else if (message.toLowerCase().contains("changeusername")) {
-            usernameHandler.changeAndSendNewUsername(outputPacketGateway);
+            usernameHandler.changeAndSendNewUsername(userService);
         } else { //TODO: add more commands and handle seperately
-            Packet packet = new Packet(Command.SEND_CHAT,
-                    message,
-                    ContentType.STRING);
             try {
-                outputPacketGateway.sendPacket(packet);
+                userService.sendBroadCastMessage(message);
             } catch (IOException e) {
                 LOGGER.warn("Failed to send command to server!");
                 e.printStackTrace();

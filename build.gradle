@@ -2,11 +2,12 @@ plugins {
     id 'java-library'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'jacoco'
 }
 
 javafx {
     version = "19.0.2.1"
-    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base', 'javafx.web']
 }
 
 group 'ch.progradler'
@@ -71,4 +72,13 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     duplicatesStrategy(DuplicatesStrategy.INCLUDE)
+}
+
+tasks.register('build-cs108') {
+    dependsOn build
+    dependsOn javadoc
+    dependsOn clean
+
+    javadoc.mustRunAfter(clean)
+    build.mustRunAfter(javadoc)
 }

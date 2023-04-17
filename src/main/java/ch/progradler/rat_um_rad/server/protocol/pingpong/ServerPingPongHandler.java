@@ -49,14 +49,14 @@ public class ServerPingPongHandler {
 
     /**
      * @param clientsWithPongReceived: the ipAddresses of the clients, from which a pong was received within certain time.
-     * A Ping is resent to those clients and {@link ServerPingPongHandler#pongArrived} is set to false for those clients.
+     *                                 A Ping is resent to those clients and {@link ServerPingPongHandler#pongArrived} is set to false for those clients.
      */
     private void handleConnectedClients(int pingSentCount, List<String> clientsWithPongReceived) {
         for (String ipAddress : clientsWithPongReceived) {
-            LOGGER.log(Level.forName("PINGPONG", 700),"{}. PONG arrived from {}", pingSentCount, ipAddress);
+            LOGGER.log(Level.forName("PINGPONG", 700), "{}. PONG arrived from {}", pingSentCount, ipAddress);
             pongArrived.put(ipAddress, false);
             connectionPool.sendPacket(ipAddress, new Packet(PING, null, ContentType.NONE));
-            LOGGER.log(Level.forName("PINGPONG", 700),"{}. PING sent to {}", pingSentCount, ipAddress);
+            LOGGER.log(Level.forName("PINGPONG", 700), "{}. PING sent to {}", pingSentCount, ipAddress);
         }
     }
 
@@ -66,7 +66,7 @@ public class ServerPingPongHandler {
      */
     private void handleRemoveConnections(int pingSentCount, List<String> clientsWithNoPongReceived) {
         for (String ipAddress : clientsWithNoPongReceived) {
-            LOGGER.log(Level.forName("PINGPONG", 700),"{}. PONG didn't arrive from {}", pingSentCount, ipAddress);
+            LOGGER.log(Level.forName("PINGPONG", 700), "{}. PONG didn't arrive from {}", pingSentCount, ipAddress);
             connectionPool.removeConnection(ipAddress);
             pongArrived.remove(ipAddress);
         }
