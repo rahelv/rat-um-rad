@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Collection of the roads and cities. Needed for the GUI.
@@ -32,5 +33,18 @@ public class GameMap {
 
     public List<Road> getRoads() {
         return roads;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GameMap)) return false;
+        GameMap map = (GameMap) o;
+        return cities.equals(map.cities) && roads.equals(map.roads);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cities, roads);
     }
 }
