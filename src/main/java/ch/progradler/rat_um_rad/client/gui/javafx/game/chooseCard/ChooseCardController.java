@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +96,10 @@ public class ChooseCardController implements Initializable {
     @FXML
     public void chooseCardsAction(ActionEvent actionEvent) {
         List<String> selectedCards = this.selectedRoadIdList;
-        this.gameService.selectCards(selectedCards);
+        try {
+            this.gameService.selectCards(selectedCards);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
