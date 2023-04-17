@@ -63,7 +63,8 @@ public class ClientInputListener implements Runnable {
 
             while (true) {
                 String encoded = StreamUtils.readStringFromStream(inputStream);
-                Packet packet = packetCoder.decode(encoded);
+                //System.out.println("encoded packet " + encoded);
+                Packet packet = packetCoder.decode(encoded, 0);
                 inputPacketGateway.handleClientCommand(packet, ipAddress);
                 // TODO: unittest
 
@@ -88,9 +89,8 @@ public class ClientInputListener implements Runnable {
 
     private void readUsername() throws IOException {
         String usernamePacketEncoded = StreamUtils.readStringFromStream(inputStream);
-        Packet usernamePacket = packetCoder.decode(usernamePacketEncoded);
+        Packet usernamePacket = packetCoder.decode(usernamePacketEncoded, 0);
         String username = (String) usernamePacket.getContent();
-        //TODO: Validate username
         usernameReceivedListener.onUsernameReceived(username);
         inputPacketGateway.handleClientCommand(usernamePacket, ipAddress);
     }

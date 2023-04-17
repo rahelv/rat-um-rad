@@ -8,5 +8,5 @@ import java.io.IOException;
  * Interface which allows sending a packet so server.
  */
 public interface OutputPacketGateway {
-     void sendPacket(Packet packet) throws IOException;
+    void sendPacket(Packet packet) throws IOException;
 }

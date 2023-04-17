@@ -21,11 +21,13 @@ hinterlegt.
 Sowohl Client als auch Server können über das Terminal gestartet werden. Der Server muss laufen, damit der Client
 gestartet werden kann.
 
-### JAR
+### JAR & Javadoc
 
-Um ein JAR-File zu erstellen, öffne das Repository im Terminal und gebe
-`gradlew clean build` ein. Danach gehe in den [build/libs](./build/libs) Order und führe die JAR-File mit
-z.B. `java -jar rat-um-rad-0.0.1-ALPHA.jar server 9090` aus.
+Um ein JAR-File und die Javacod zu erstellen, öffne das Repository im Terminal und gebe
+`gradlew build-cs108` ein. Um die Jar-File auszuführen, gehe in den [build/libs](./build/libs) Order und führe die
+JAR-File mit z.B. `java -jar rat-um-rad-0.0.1-ALPHA.jar server 9090` aus. Um die Javadoc anzuschauen, gehe in
+den [build/docs/javadoc](.build/docs/javadoc) und öffne dort die [index.html](.build/docs/javadoc/index.html) Datei mit
+einem Browser.
 
 ### Server Input Parameter
 
@@ -38,5 +40,5 @@ z.B. `java -jar rat-um-rad-0.0.1-ALPHA.jar server 9090` aus.
 
 | Befehl                 | Beschreibung                                                                                                                 |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| client \<ip\> \<port\> | startet den Client und stellt eine socket-Verbindung zur gewählten IP und Port her |
-| client                 | zu Testzwecken, startet den Client mit Default-Parametern Host: localhost und Port: 8090                                     |
+| client \<hostaddress\>:\<port\> [\<username\>] | startet den Client und stellt eine socket-Verbindung zur gewählten Host-IP-Adresse des Servers und Port her. Der username ist optional und der Client wird (falls angegeben) damit eingeloggt.  |
+| client                 | zu Testzwecken, startet der Client mit Default-Parametern Host: localhost und Port: 8090                                     |

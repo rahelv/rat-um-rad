@@ -10,5 +10,11 @@ public interface IUserService {
 
     void handleUserDisconnected(String ipAddress);
 
-    void handleMessageFromUser(String message, String ipAddress);
+    void requestOnlinePlayers(String ipAddress);
+
+    void handleBroadCastMessageFromUser(String message, String ipAddress);
+
+    void handleGameInternalMessageFromUser(String message, String ipAddress);
+
+    void handleWhisperMessageFromUser(String message, String toUsername, String ipAddress);
 }

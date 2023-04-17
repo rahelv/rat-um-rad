@@ -36,8 +36,8 @@ class UsernameValidatorTest {
     }
 
     @Test
-    void isUsernameValidReturnsFalseWhenLessThan5Chars() {
-        String wrongUsername = "user";
+    void isUsernameValidReturnsFalseWhenLessThan3Chars() {
+        String wrongUsername = "us";
 
         assertFalse(usernameValidator.isUsernameValid(wrongUsername));
     }

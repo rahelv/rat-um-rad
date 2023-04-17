@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class ConnectionPoolTest {
 
 
     @Test
-    void broadcastSendsMessageToCorrectClients() {
+    void broadcastExcludeSendsMessageToCorrectClients() {
         Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.STRING);
 
         doNothing().when(connection1).sendPacketToClient(isA(Packet.class));
@@ -60,7 +61,21 @@ public class ConnectionPoolTest {
 
         List<String> exclude = Collections.singletonList("client2");
 
-        connectionPool.broadCast(packet, exclude);
+        connectionPool.broadCastExclude(packet, exclude);
+
+        verify(connection1, times(1)).sendPacketToClient(packet);
+        verify(connection2, times(0)).sendPacketToClient(packet);
+        verify(connection3, times(1)).sendPacketToClient(packet);
+    }
+
+    @Test
+    void broadcastOnlySendsMessageToCorrectClients() {
+        Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.STRING);
+
+        String client1 = "client1", client3 = "client3";
+        List<String> only = Arrays.asList(client1, client3);
+
+        connectionPool.broadCastOnly(packet, only);
 
         verify(connection1, times(1)).sendPacketToClient(packet);
         verify(connection2, times(0)).sendPacketToClient(packet);

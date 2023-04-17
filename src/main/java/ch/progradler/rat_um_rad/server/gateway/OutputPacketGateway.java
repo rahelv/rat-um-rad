@@ -11,7 +11,18 @@ public interface OutputPacketGateway {
     void sendPacket(String ipAddress, Packet packet);
 
     /**
-     * @param excludeClients list of ipAddresses to which message should not be broadcast.
+     * @param excludeClients list of ipAddresses to which packet should not be broadcast.
      */
-    void broadCast(Packet packet, List<String> excludeClients);
+    void broadCastExclude(Packet packet, List<String> excludeClients);
+
+    /**
+     * @param clients list of ipAddress to which the packet should be broadcast
+     */
+    void broadCastOnly(Packet packet, List<String> clients);
+
+    /**
+     * Broadcasts the packet to all connected users.
+     * @param packet
+     */
+    void broadcast(Packet packet);
 }

@@ -1,8 +1,8 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
-import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 
 import java.io.IOException;
@@ -31,14 +31,15 @@ public class ServerOutput implements OutputPacketGateway {
 
     /**
      * Sends packet to the server.
+     *
      * @param packet
      * @throws IOException
      */
     @Override
-    public  void sendPacket(Packet packet) throws IOException {
+    public void sendPacket(Packet packet) throws IOException {
         // TODO: unittest
 
-        String sendStr = packetCoder.encode(packet);
-        StreamUtils.writeStringToStream(sendStr,outStream);
+        String sendStr = packetCoder.encode(packet, 0);
+        StreamUtils.writeStringToStream(sendStr, outStream);
     }
 }
