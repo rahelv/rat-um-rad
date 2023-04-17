@@ -22,7 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.INVALID_ACTION_FATAL;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.NEW_PLAYER;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
@@ -242,11 +243,7 @@ class GameServiceTest {
 
             gameService.selectShortDestinationCards(ipAddress, Collections.singletonList("card1"));
 
-            verify(mockGameRepository, never()).updateGame(any());
-            Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
-                    ErrorResponse.PLAYER_IN_NO_GAME,
-                    STRING);
-            verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
+            utilities.verify(() -> GameServiceUtil.sendInvalidActionResponse(ipAddress, PLAYER_IN_NO_GAME, mockOutputPacketGateway));
         }
     }
 
@@ -265,24 +262,24 @@ class GameServiceTest {
                 allShortDestCards.get(6).getCardID());
 
         Map<String, Player> players = new HashMap<>();
-        Player player = new Player("Player A", null, 0, 35, 2,
-                new ArrayList<>(), null, optionalCards);
+        Player player = new Player("Player A", null, 0, 35, 2);
+        player.setShortDestinationCardsToChooseFrom(optionalCards);
         players.put(ipAddress, player);
 
         Game game = mock(Game.class);
+        when(game.getStatus()).thenReturn(PREPARATION);
         when(game.getPlayers()).thenReturn(players);
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
                     .thenReturn(game);
+            utilities.when(() -> GameServiceUtil.validateAndHandleActionPrecondition(
+                    ipAddress, game, mockOutputPacketGateway)).thenReturn(true);
 
             gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
 
-            verify(mockGameRepository, never()).updateGame(any());
-            Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
-                    ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID,
-                    STRING);
-            verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
+            utilities.verify(() -> GameServiceUtil.sendInvalidActionResponse(ipAddress,
+                    SELECTED_SHORT_DESTINATION_CARDS_INVALID, mockOutputPacketGateway));
         }
     }
 
@@ -291,11 +288,8 @@ class GameServiceTest {
         String ipAddress = "clientA";
         gameService.selectShortDestinationCards(ipAddress, new ArrayList<>());
 
-        verify(mockGameRepository, never()).updateGame(any());
-        Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
-                ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID,
-                STRING);
-        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
+        Packet packet = new Packet(INVALID_ACTION_FATAL, SELECTED_SHORT_DESTINATION_CARDS_INVALID, STRING);
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 
     @Test
@@ -313,8 +307,8 @@ class GameServiceTest {
                 allShortDestCards.get(6).getCardID());
 
         Map<String, Player> players = new HashMap<>();
-        Player player = new Player("Player A", null, 0, 35, 2,
-                new ArrayList<>(), null, optionalCards);
+        Player player = new Player("Player A", null, 0, 35, 2);
+        player.setShortDestinationCardsToChooseFrom(optionalCards);
         players.put(ipAddress, player);
 
         Game game = new Game("game1", PREPARATION, GameMap.defaultMap(), "creator", 4, players);
@@ -356,8 +350,8 @@ class GameServiceTest {
         List<String> selectedCardIds = Collections.singletonList(allShortDestCards.get(2).getCardID());
 
         Map<String, Player> players = new HashMap<>();
-        Player player = new Player("Player A", null, 0, 35, 2,
-                new ArrayList<>(), null, optionalCards);
+        Player player = new Player("Player A", null, 0, 35, 2);
+        player.setShortDestinationCardsToChooseFrom(optionalCards);
         players.put(ipAddress, player);
 
         Game game = new Game("game1", PREPARATION, GameMap.defaultMap(), "creator", 4, players);
@@ -385,8 +379,8 @@ class GameServiceTest {
         List<String> selectedCardIds = Collections.singletonList(allShortDestCards.get(2).getCardID());
 
         Map<String, Player> players = new HashMap<>();
-        Player player = new Player("Player A", null, 0, 35, 2,
-                new ArrayList<>(), null, optionalCards);
+        Player player = new Player("Player A", null, 0, 35, 2);
+        player.setShortDestinationCardsToChooseFrom(optionalCards);
         players.put(ipAddress, player);
         String playerBIp = "clientB";
         players.put(ipAddress, player);
@@ -402,6 +396,25 @@ class GameServiceTest {
             gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
 
             utilities.verify(() -> GameServiceUtil.startGameRounds(game, mockGameRepository, mockOutputPacketGateway), never());
+        }
+    }
+
+    @Test
+    void selectShortDestinationCardWithStatusStartedDoesNotChangeGameIfGeneralValidationReturnsFalse() {
+        String ipAddress = "clientA";
+
+        Game game = mock(Game.class);
+        when(game.getStatus()).thenReturn(GameStatus.STARTED);
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(game);
+            utilities.when(() -> GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway))
+                    .thenReturn(false);
+
+            gameService.selectShortDestinationCards(ipAddress, Collections.singletonList("card1"));
+
+            verifyNoInteractions(mockGameRepository);
         }
     }
 
@@ -441,67 +454,22 @@ class GameServiceTest {
         verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 
-
     @Test
-    void buildRoadSendsErrorAndDoesNotChangeGameIfPlayerInNoGame() {
+    void buildRoadDoesNotChangeGameGeneralValidationReturnsFalse() {
         String ipAddress = "clientA";
 
-
+        Game game = mock(Game.class);
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
-                    .thenReturn(null);
+                    .thenReturn(game);
+            utilities.when(() -> GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway))
+                    .thenReturn(false);
 
             gameService.buildRoad(ipAddress, "someRoad");
 
-            verifyGameNotUpdatedAndCorrectErrorSent(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME);
+            verifyNoInteractions(game);
+            verifyNoInteractions(mockGameRepository);
         }
-    }
-
-    @Test
-    void buildRoadSendsErrorAndDoesNotChangeGameIfGameDoesNotHaveStatusStarted() {
-        String ipAddress = "clientA";
-        Game game = mock(Game.class);
-
-        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
-            for (GameStatus status : Arrays.asList(WAITING_FOR_PLAYERS, PREPARATION, FINISHED)) {
-                when(game.getStatus()).thenReturn(status);
-                utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
-                        .thenReturn(game);
-
-                gameService.buildRoad(ipAddress, "someRoad");
-
-            }
-
-            verify(mockGameRepository, never()).updateGame(any());
-            Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
-                    ErrorResponse.GAME_NOT_STARTED,
-                    STRING);
-            verify(mockOutputPacketGateway, times(3)).sendPacket(ipAddress, errorResponse);
-        }
-    }
-
-    @Test
-    void buildRoadSendsErrorAndDoesNotChangeGameIfIsNotPlayersTurn() {
-        String ipAddress = "clientA";
-        Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
-
-        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
-            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository)).thenReturn(game);
-            utilities.when(() -> GameServiceUtil.isPlayersTurn(game, ipAddress)).thenReturn(false);
-
-            gameService.buildRoad(ipAddress, "someRoad");
-
-            verifyGameNotUpdatedAndCorrectErrorSent(ipAddress, ErrorResponse.NOT_PLAYERS_TURN);
-        }
-    }
-
-    private void verifyGameNotUpdatedAndCorrectErrorSent(String ipAddress, String errorMessage) {
-        verify(mockGameRepository, never()).updateGame(any());
-        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
-                errorMessage,
-                STRING);
-        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
     }
 
     @Test
@@ -512,17 +480,16 @@ class GameServiceTest {
 
         Game game = mock(Game.class);
         when(game.getRoadsBuilt()).thenReturn(Map.of(roadId, playerBIpAddress));
-        when(game.getStatus()).thenReturn(STARTED);
 
         try (MockedStatic<GameServiceUtil> utilities = mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository)).thenReturn(game);
-            utilities.when(() -> GameServiceUtil.isPlayersTurn(game, ipAddress)).thenReturn(true);
+            utilities.when(() -> GameServiceUtil.validateAndHandleActionPrecondition(
+                    ipAddress, game, mockOutputPacketGateway)).thenReturn(true);
 
             gameService.buildRoad(ipAddress, roadId);
 
             verify(mockGameRepository, never()).updateGame(any());
-            Packet packet = new Packet(Command.INVALID_ACTION_FATAL, ROAD_ALREADY_BUILT_ON, ContentType.STRING);
-            verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
+            utilities.verify(() -> GameServiceUtil.sendInvalidActionResponse(ipAddress, ROAD_ALREADY_BUILT_ON, mockOutputPacketGateway));
         }
     }
 
@@ -534,7 +501,6 @@ class GameServiceTest {
         Player player = new Player("PlayerA", null, 0, 7, 0);
 
         Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
 
         int requiredWheels = 8;
         Road toBuild = new Road(roadId, "city1", "city2", requiredWheels, WheelColor.RED);
@@ -546,13 +512,14 @@ class GameServiceTest {
 
         try (MockedStatic<GameServiceUtil> utilities = mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository)).thenReturn(game);
-            utilities.when(() -> GameServiceUtil.isPlayersTurn(game, ipAddress)).thenReturn(true);
+            utilities.when(() -> GameServiceUtil.validateAndHandleActionPrecondition(
+                    ipAddress, game, mockOutputPacketGateway)).thenReturn(true);
 
             gameService.buildRoad(ipAddress, roadId);
 
             verify(mockGameRepository, never()).updateGame(any());
-            Packet packet = new Packet(Command.INVALID_ACTION_FATAL, NOT_ENOUGH_WHEELS_TO_BUILD_ROAD, ContentType.STRING);
-            verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
+            utilities.verify(() -> GameServiceUtil.sendInvalidActionResponse(ipAddress,
+                    NOT_ENOUGH_WHEELS_TO_BUILD_ROAD, mockOutputPacketGateway));
         }
     }
 
@@ -569,7 +536,6 @@ class GameServiceTest {
         Player player = new Player("PlayerA", null, 0, 20, 0, wheelCards, null, new ArrayList<>());
 
         Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
 
         int requiredWheels = 2;
         WheelColor color = WheelColor.RED;
@@ -582,13 +548,14 @@ class GameServiceTest {
 
         try (MockedStatic<GameServiceUtil> utilities = mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository)).thenReturn(game);
-            utilities.when(() -> GameServiceUtil.isPlayersTurn(game, ipAddress)).thenReturn(true);
+            utilities.when(() -> GameServiceUtil.validateAndHandleActionPrecondition(
+                    ipAddress, game, mockOutputPacketGateway)).thenReturn(true);
 
             gameService.buildRoad(ipAddress, roadId);
 
             verify(mockGameRepository, never()).updateGame(any());
-            Packet packet = new Packet(Command.INVALID_ACTION_FATAL, NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD, ContentType.STRING);
-            verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
+            utilities.verify(() -> GameServiceUtil.sendInvalidActionResponse(ipAddress,
+                    NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD, mockOutputPacketGateway));
         }
     }
 
@@ -617,14 +584,15 @@ class GameServiceTest {
 
         Map<String, String> roadsBuilt = new HashMap<>();
 
-        Game game = new Game("game1", STARTED, map, new Date(),
+        Game game = new Game("game1", GameStatus.STARTED, map, new Date(),
                 "creator", 3,
                 Map.of(ipAddress, player), 4, roadsBuilt);
 
 
         try (MockedStatic<GameServiceUtil> utilities = mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository)).thenReturn(game);
-            utilities.when(() -> GameServiceUtil.isPlayersTurn(game, ipAddress)).thenReturn(true);
+            utilities.when(() -> GameServiceUtil.validateAndHandleActionPrecondition(
+                    ipAddress, game, mockOutputPacketGateway)).thenReturn(true);
 
             // act
             gameService.buildRoad(ipAddress, roadId);
@@ -647,34 +615,4 @@ class GameServiceTest {
             utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, Command.BUILD_ROAD));
         }
     }
-
-
-    /*
-    @Test
-    void buildRoadSendsEventToAllPlayers() {
-        String roadId = "road1";
-        String ipAddress = "clientA";
-        String playerBIpAddress = "clientB";
-
-        Game game = mock(Game.class);
-        Map<String, Player> players = Map.of(
-                ipAddress, new Player("Player A", WheelColor.WHITE, 5, 10, 0),
-                playerBIpAddress, new Player("Player B", WheelColor.GREEN, 5, 10, 0)
-        );
-        when(game.getPlayers()).thenReturn(players);
-
-        // act
-        gameService.buildRoad(ipAddress, roadId);
-
-        // assert
-        ArgumentCaptor<Game> gameCaptor = ArgumentCaptor.forClass(Game.class);
-        verify(mockGameRepository).up(gameCaptor.capture());
-        Game createdGame = gameCaptor.getValue();
-
-        ClientGame sentGame = GameServiceUtil.toClientGame(createdGame, creatorIp);//new ClientGame(createdGame.getId())
-        Packet packet = new Packet(Command.GAME_CREATED, sentGame, ContentType.GAME);
-        verify(mockOutputPacketGateway).sendPacket(creatorIp, packet);
-    }
-
-     */
 }

@@ -1,12 +1,12 @@
 package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
@@ -21,8 +21,12 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
+import static ch.progradler.rat_um_rad.shared.protocol.Command.INVALID_ACTION_FATAL;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 
 /**
  * Util class for {@link GameService} with complex methods that are used multiple times.
@@ -79,7 +83,7 @@ public class GameServiceUtil {
 
     public static void notifyPlayersOfGameUpdate(Game game, OutputPacketGateway outputPacketGateway, Command command) {
         Set<String> playerIps = game.getPlayerIpAddresses();
-        for (String ipAddress: playerIps) {
+        for (String ipAddress : playerIps) {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet(command, clientGame, ContentType.GAME));
         }
@@ -97,7 +101,7 @@ public class GameServiceUtil {
         for (int i = 0; i < playerCount; i++) {
             String ipAddress = playerIpAddresses.get(i);
             GameServiceUtil.handOutLongDestinationCard(game, ipAddress);
-            GameServiceUtil.handOutShortDestinationCards(game, ipAddress);
+            GameServiceUtil.handOutShortDestinationCardsTooChoose(game, ipAddress);
             game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, false);
 
             Player player = players.get(ipAddress);
@@ -124,17 +128,17 @@ public class GameServiceUtil {
         player.setLongDestinationCard(longDestinationCard);
     }
 
-    static void handOutShortDestinationCards(Game game, String ipAddress) {
+    static void handOutShortDestinationCardsTooChoose(Game game, String ipAddress) {
         Player player = game.getPlayers().get(ipAddress);
         DestinationCardDeck shortDestinationCardDeck = game.getDecksOfGame().getShortDestinationCardDeck();
 
-        List<DestinationCard> playerShortDestinationCards = player.getShortDestinationCards();
+        List<DestinationCard> cardsToChooseFrom = player.getShortDestinationCards();
         for (int i = 0; i < 3; i++) {
             DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(shortDestinationCardDeck.getCardDeck().toArray(new DestinationCard[0]));
             shortDestinationCardDeck.getCardDeck().remove(shortDestinationCard);
-            playerShortDestinationCards.add(shortDestinationCard);
+            cardsToChooseFrom.add(shortDestinationCard);
         }
-        player.setShortDestinationCards(playerShortDestinationCards);
+        player.setShortDestinationCardsToChooseFrom(cardsToChooseFrom);
     }
 
     public static void startGameRounds(Game game, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
@@ -155,5 +159,33 @@ public class GameServiceUtil {
         int playerOrder = players.get(playerIp).getPlayingOrder();
 
         return turn % playerCount == playerOrder;
+    }
+
+    /**
+     * @return whether or not action is generally valid.
+     */
+    public static boolean validateAndHandleActionPrecondition(String ipAddress, Game game, OutputPacketGateway outputPacketGateway) {
+        if (game == null) {
+            sendInvalidActionResponse(ipAddress, PLAYER_IN_NO_GAME, outputPacketGateway);
+            return false;
+        }
+
+        if (game.getStatus() != STARTED) {
+            sendInvalidActionResponse(ipAddress, GAME_NOT_STARTED, outputPacketGateway);
+            return false;
+        }
+
+        if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) {
+            sendInvalidActionResponse(ipAddress, NOT_PLAYERS_TURN, outputPacketGateway);
+            return false;
+        }
+        return true;
+    }
+
+    public static void sendInvalidActionResponse(String ipAddress, String errorMessage, OutputPacketGateway outputPacketGateway) {
+        Packet errorResponse = new Packet(INVALID_ACTION_FATAL,
+                errorMessage,
+                STRING);
+        outputPacketGateway.sendPacket(ipAddress, errorResponse);
     }
 }

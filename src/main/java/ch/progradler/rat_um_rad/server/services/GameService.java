@@ -13,20 +13,15 @@ import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
+import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.*;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
+import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.sendInvalidActionResponse;
+import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.validateAndHandleActionPrecondition;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
 
@@ -80,6 +75,7 @@ public class GameService implements IGameService {
 
     @Override
     public void joinGame(String ipAddress, String gameId) {
+        // TODO: check if player not already in other game?
         Game game = gameRepository.getGame(gameId);
         if (game.getStatus() == WAITING_FOR_PLAYERS) {
             addPlayerAndSaveGame(ipAddress, game);
@@ -118,32 +114,27 @@ public class GameService implements IGameService {
     @Override
     public void selectShortDestinationCards(String ipAddress, List<String> selectedCardIds) {
         if (selectedCardIds.isEmpty()) {
-            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
+            sendInvalidActionResponse(ipAddress,
+                    ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID, outputPacketGateway);
             return;
         }
 
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
         if (game == null) {
-            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME);
+            sendInvalidActionResponse(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME, outputPacketGateway);
             return;
         }
 
         Player player = game.getPlayers().get(ipAddress);
 
-        if (!checkValidSelectedCardIds(player, selectedCardIds)) {
-            sendInvalidSelectedShortDestCardsResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID);
-            return;
-        }
-
         switch (game.getStatus()) {
             case PREPARATION -> {
-                List<DestinationCard> shortDestCardDeck = game.getDecksOfGame()
-                        .getShortDestinationCardDeck().getCardDeck();
-                List<DestinationCard> selectedCards = shortDestCardDeck.stream()
-                        .filter(c -> selectedCardIds.contains(c.getCardID())).toList();
+                if (!checkValidSelectedCardIds(player, selectedCardIds)) {
+                    sendInvalidActionResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID, outputPacketGateway);
+                    return;
+                }
 
-                player.setShortDestinationCards(selectedCards);
-                shortDestCardDeck.removeAll(selectedCards);
+                handleShortDestCardsSelection(selectedCardIds, game, player);
                 game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, true);
 
                 gameRepository.updateGame(game);
@@ -153,9 +144,24 @@ public class GameService implements IGameService {
                 }
             }
             case STARTED -> {
-                //TODO: implement
+                if (!validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
+                    return;
+                }
+                handleShortDestCardsSelection(selectedCardIds, game, player);
+                gameRepository.updateGame(game);
+                GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_STARTED_SELECT_DESTINATION_CARDS);
             }
         }
+    }
+
+    private void handleShortDestCardsSelection(List<String> selectedCardIds, Game game, Player player) {
+        List<DestinationCard> shortDestCardDeck = game.getDecksOfGame()
+                .getShortDestinationCardDeck().getCardDeck();
+        List<DestinationCard> selectedCards = shortDestCardDeck.stream()
+                .filter(c -> selectedCardIds.contains(c.getCardID())).toList();
+
+        player.setShortDestinationCards(selectedCards);
+        shortDestCardDeck.removeAll(selectedCards);
     }
 
     private boolean allPlayersSelectedShortDestCards(Game game) {
@@ -167,16 +173,35 @@ public class GameService implements IGameService {
         return true;
     }
 
-    private void sendInvalidSelectedShortDestCardsResponse(String ipAddress, String errorMessage) {
-        Packet errorResponse = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION,
-                errorMessage,
-                STRING);
-        outputPacketGateway.sendPacket(ipAddress, errorResponse);
+    @Override
+    public void requestShortDestinationCards(String ipAddress) {
+        // TODO: add more checks and unit test
+        Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
+        if (!GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
+            return;
+        }
+
+        List<DestinationCard> available = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck();
+        List<DestinationCard> tooChoseFrom = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (available.size() > 0) {
+                DestinationCard picked = RandomGenerator.randomFromList(available);
+                available.remove(picked);
+                tooChoseFrom.add(picked);
+            }
+        }
+        Player player = game.getPlayers().get(ipAddress);
+        player.setShortDestinationCardsToChooseFrom(tooChoseFrom);
+        gameRepository.updateGame(game);
+
+        Packet packet = new Packet(REQUEST_SHORT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ipAddress), GAME);
+        outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     private boolean checkValidSelectedCardIds(Player player, List<String> selectedCardIds) {
         if (selectedCardIds.size() > 3) return false;
-        List<String> optionCardIds = player.getShortDestinationCards().stream().map(DestinationCard::getCardID).toList();
+        List<String> optionCardIds = player.getShortDestinationCardsToChooseFrom().stream()
+                .map(DestinationCard::getCardID).toList();
         for (String selectedCardId : selectedCardIds) {
             if (!optionCardIds.contains(selectedCardId)) {
                 return false;
@@ -188,12 +213,20 @@ public class GameService implements IGameService {
     @Override
     public void buildRoad(String ipAddress, String roadId) {
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
-        if (!validateAndHandleBuildRoadsPrecondition(ipAddress, roadId, game)) return;
+        if (!GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
+            return;
+        }
+
+        Map<String, String> roadsBuilt = game.getRoadsBuilt();
+        if (roadsBuilt.containsKey(roadId)) {
+            sendInvalidActionResponse(ipAddress, ROAD_ALREADY_BUILT_ON, outputPacketGateway);
+            return;
+        }
 
         List<Road> roads = game.getMap().getRoads();
         Optional<Road> roadOpt = roads.stream().filter((r) -> r.getId().equals(roadId)).findFirst();
         if (roadOpt.isEmpty()) {
-            sendInvalidActionResponse(ipAddress, ROAD_DOES_NOT_EXIST);
+            sendInvalidActionResponse(ipAddress, ROAD_DOES_NOT_EXIST, outputPacketGateway);
             return;
         }
 
@@ -201,40 +234,16 @@ public class GameService implements IGameService {
         Player player = game.getPlayers().get(ipAddress);
 
         if (player.getWheelsRemaining() < road.getRequiredWheels()) {
-            sendInvalidActionResponse(ipAddress, NOT_ENOUGH_WHEELS_TO_BUILD_ROAD);
+            sendInvalidActionResponse(ipAddress, NOT_ENOUGH_WHEELS_TO_BUILD_ROAD, outputPacketGateway);
             return;
         }
 
         if (!hasRequiredCardsToBuild(player, road)) {
-            sendInvalidActionResponse(ipAddress, NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD);
+            sendInvalidActionResponse(ipAddress, NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD, outputPacketGateway);
             return;
         }
 
         handleBuildRoad(ipAddress, game, road);
-    }
-
-    private boolean validateAndHandleBuildRoadsPrecondition(String ipAddress, String roadId, Game game) {
-        if (game == null) {
-            sendInvalidActionResponse(ipAddress, PLAYER_IN_NO_GAME);
-            return false;
-        }
-
-        if (game.getStatus() != STARTED) {
-            sendInvalidActionResponse(ipAddress, GAME_NOT_STARTED);
-            return false;
-        }
-
-        if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) {
-            sendInvalidActionResponse(ipAddress, NOT_PLAYERS_TURN);
-            return false;
-        }
-
-        Map<String, String> roadsBuilt = game.getRoadsBuilt();
-        if (roadsBuilt.containsKey(roadId)) {
-            sendInvalidActionResponse(ipAddress, ROAD_ALREADY_BUILT_ON);
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -267,14 +276,6 @@ public class GameService implements IGameService {
                 .toList();
         return playersCardsOfColor.size() >= road.getRequiredWheels();
     }
-
-    private void sendInvalidActionResponse(String ipAddress, String errorMessage) {
-        Packet errorResponse = new Packet(INVALID_ACTION_FATAL,
-                errorMessage,
-                STRING);
-        outputPacketGateway.sendPacket(ipAddress, errorResponse);
-    }
-
 
     @Override
     public void buildGreyRoad(String ipAddress, String roadId, WheelColor color) {

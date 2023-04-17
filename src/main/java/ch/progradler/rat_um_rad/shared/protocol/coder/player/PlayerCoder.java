@@ -10,18 +10,19 @@ import ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper;
 import java.util.List;
 
 public class PlayerCoder implements Coder<Player> {
-    private Coder<WheelCard> wheelCardCoder;
-    private Coder<DestinationCard> destinationCardCoder;
+    private final Coder<WheelCard> wheelCardCoder;
+    private final Coder<DestinationCard> destinationCardCoder;
 
-     public PlayerCoder(Coder<WheelCard> wheelCardCoder, Coder<DestinationCard> destinationCardCoder) {
-         this.wheelCardCoder = wheelCardCoder;
-         this.destinationCardCoder = destinationCardCoder;
-     }
+    public PlayerCoder(Coder<WheelCard> wheelCardCoder, Coder<DestinationCard> destinationCardCoder) {
+        this.wheelCardCoder = wheelCardCoder;
+        this.destinationCardCoder = destinationCardCoder;
+    }
+
     @Override
     public String encode(Player player, int level) {
-         if(player == null) {
-             return "null";
-         }
+        if (player == null) {
+            return "null";
+        }
         List<String> wheelCardsList = player.getWheelCards().stream()
                 .map((wheelCard) -> wheelCardCoder.encode(wheelCard, level + 2))
                 .toList();
@@ -31,6 +32,10 @@ public class PlayerCoder implements Coder<Player> {
                 .map((destinationCard) -> destinationCardCoder.encode(destinationCard, level + 2))
                 .toList();
         String shortDestinationCardsListEncoded = CoderHelper.encodeStringList(level + 1, shortDestinationCardsList);
+        List<String> shortDestinationCardsChooseFrom = player.getShortDestinationCardsToChooseFrom().stream()
+                .map((destinationCard) -> destinationCardCoder.encode(destinationCard, level + 2))
+                .toList();
+        String shortDestinationCardsChooseFromListEncoded = CoderHelper.encodeStringList(level + 1, shortDestinationCardsChooseFrom);
         return CoderHelper.encodeFields(level,
                 player.getName(),
                 player.getColor().toString(),
@@ -39,7 +44,8 @@ public class PlayerCoder implements Coder<Player> {
                 String.valueOf(player.getPlayingOrder()),
                 wheelCardsListEncoded,
                 longDestinationCardEncoded,
-                shortDestinationCardsListEncoded);
+                shortDestinationCardsListEncoded,
+                shortDestinationCardsChooseFromListEncoded);
     }
 
     @Override
@@ -53,18 +59,25 @@ public class PlayerCoder implements Coder<Player> {
         int score = Integer.parseInt(fields.get(2));
         int wheelsRemaining = Integer.parseInt(fields.get(3));
         int playingOrder = Integer.parseInt(fields.get(4));
-        List<String> wheelCardsListStrings = CoderHelper.decodeStringList(level + 1, fields.get(5));
-        List<WheelCard> wheelCardsList = wheelCardsListStrings.stream()
-                .map((s) -> {
-                    if(wheelCardsListStrings.equals("[]")) { //TODO: is this needed ?
-                        return null;
-                    }
-                    return  wheelCardCoder.decode(s, level + 2);
-                }).toList();
+
+        String wheelCardsListStringsEncoded = fields.get(5);
+        List<WheelCard> wheelCardsList = decodeWheelCards(level, wheelCardsListStringsEncoded);
         DestinationCard longDestinationCard = destinationCardCoder.decode(fields.get(6), level + 1);
         List<String> shortDestinationCardsListStrings = CoderHelper.decodeStringList(level + 1, fields.get(7));
         List<DestinationCard> shortDestinationCardsList = shortDestinationCardsListStrings.stream()
                 .map((s) -> destinationCardCoder.decode(s, level + 2)).toList();
-        return new Player(name, color, score, wheelsRemaining, playingOrder, wheelCardsList, longDestinationCard, shortDestinationCardsList);
+        List<String> shortDestinationCardsChooseFromStrings = CoderHelper.decodeStringList(level + 1, fields.get(8));
+        List<DestinationCard> shortDestinationCardsChooseFrom = shortDestinationCardsChooseFromStrings.stream()
+                .map((s) -> destinationCardCoder.decode(s, level + 2)).toList();
+        return new Player(name, color, score, wheelsRemaining, playingOrder, wheelCardsList, longDestinationCard, shortDestinationCardsList, shortDestinationCardsChooseFrom);
+    }
+
+    private List<WheelCard> decodeWheelCards(int level, String wheelCardsListStringsEncoded) {
+        if (wheelCardsListStringsEncoded.equals("[]")) { //TODO: is this needed ?
+            return null;
+        }
+        List<String> wheelCardsListStrings = CoderHelper.decodeStringList(level + 1, wheelCardsListStringsEncoded);
+        return wheelCardsListStrings.stream()
+                .map((s) -> wheelCardCoder.decode(s, level + 2)).toList();
     }
 }
