@@ -2,6 +2,8 @@ package ch.progradler.rat_um_rad.shared.models.game;
 
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
+import java.util.Objects;
+
 /**
  * Implementation of the "Radstrecken".
  */
@@ -40,5 +42,18 @@ public class Road {
 
     public WheelColor getColor() {
         return color;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Road)) return false;
+        Road road = (Road) o;
+        return requiredWheels == road.requiredWheels && id.equals(road.id) && fromCityId.equals(road.fromCityId) && toCityId.equals(road.toCityId) && color == road.color;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, fromCityId, toCityId, requiredWheels, color);
     }
 }

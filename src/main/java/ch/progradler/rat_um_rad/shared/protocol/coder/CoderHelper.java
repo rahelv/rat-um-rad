@@ -29,7 +29,6 @@ public class CoderHelper {
             case 7 -> ".-.";
             case 8 -> "_:,";
             case 9 -> "_/,";
-            case 10 -> "___";
             default -> throw new IllegalArgumentException("To high separatorLevel: " + separatorLevel +
                     ". Add a new separator to allow this level."
             );
@@ -72,7 +71,7 @@ public class CoderHelper {
     }
 
     public static List<String> decodeStringList(int separatorLevel, String encoded) {
-        if(encoded.equals("null")) {
+        if (encoded.equals("null")) {
             return Collections.emptyList();
         }
         return decodeFields(separatorLevel, encoded);
@@ -97,14 +96,14 @@ public class CoderHelper {
     }
 
     public static String encodeNullableField(Object object) {
-        if(object == null) {
+        if (object == null) {
             return "null";
         }
         return "";
     }
 
     public static Object decodeNullableField(String encoded) {
-        if(encoded.equals("null")) {
+        if (encoded.equals("null")) {
             return null;
         }
         return new String("");
