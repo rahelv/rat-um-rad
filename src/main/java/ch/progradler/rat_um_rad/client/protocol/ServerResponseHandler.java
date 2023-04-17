@@ -100,7 +100,6 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(clientGame, packet.getCommand()); //updated ClientGame is sent to Controller, so it can display the new state
             }
             case GAME_STARTED_SELECT_DESTINATION_CARDS -> {
-                //TODO: implement
                 System.out.println("sendgames " + packet); // TODO: replace with logger
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
