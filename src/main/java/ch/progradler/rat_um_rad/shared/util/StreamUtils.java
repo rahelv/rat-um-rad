@@ -12,13 +12,14 @@ import java.nio.charset.StandardCharsets;
 public class StreamUtils {
     public static String readStringFromStream(InputStream stream) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[2054]; // expects no string with bigger size
+        byte[] buffer = new byte[50000]; // expects no string with bigger size
         int length = stream.read(buffer);
         result.write(buffer, 0, length);
         return result.toString(StandardCharsets.UTF_8);
     }
 
     public static void writeStringToStream(String sendStr, OutputStream outStream) {
+        sendStr += "_/_";
         byte[] bytes = sendStr.getBytes(StandardCharsets.UTF_8);
         try {
             outStream.write(bytes);
