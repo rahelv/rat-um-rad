@@ -16,7 +16,7 @@ public interface IGameService {
 
     /**
      * Called when a new player connects to the game.
-     *
+     * <p>
      * If number of players is equal to requiredPlayers, then:
      * - status must be changed to PREPARATION,
      * - all players must get a long destination card
@@ -31,6 +31,8 @@ public interface IGameService {
      * This method is used in the game {@link GameStatus#PREPARATION} as well as in {@link GameStatus#STARTED}.
      */
     void selectShortDestinationCards(String ipAddress, List<String> selectedCards);
+
+    void requestShortDestinationCards(String ipAddress);
 
     void buildRoad(String ipAddress, String roadId);
 
@@ -62,19 +64,19 @@ public interface IGameService {
 
     /**
      * @param ipAddress of client who requested list of game instances that have not yet started.
-     * (i.e. their {@link Game#getStatus()} is {@link GameStatus#WAITING_FOR_PLAYERS}
+     *                  (i.e. their {@link Game#getStatus()} is {@link GameStatus#WAITING_FOR_PLAYERS}
      */
     void getWaitingGames(String ipAddress);
 
     /**
      * @param ipAddress of client who requested list of game instances that are finished.
-     * (i.e. their {@link Game#getStatus()} is {@link GameStatus#PREPARATION} and {@link GameStatus#STARTED}
+     *                  (i.e. their {@link Game#getStatus()} is {@link GameStatus#PREPARATION} and {@link GameStatus#STARTED}
      */
     void getStartedGames(String ipAddress);
 
     /**
      * @param ipAddress of client who requested list of game instances that are finished.
-     * (i.e. their {@link Game#getStatus()} is {@link GameStatus#FINISHED}
+     *                  (i.e. their {@link Game#getStatus()} is {@link GameStatus#FINISHED}
      */
     void getFinishedGames(String ipAddress);
 }

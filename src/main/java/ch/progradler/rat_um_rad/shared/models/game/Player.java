@@ -15,6 +15,7 @@ public class Player extends PlayerBase {
     private final List<WheelCard> wheelCards;
     private DestinationCard longDestinationCard;
     private List<DestinationCard> shortDestinationCards;
+    private List<DestinationCard> shortDestinationCardsToChooseFrom = new ArrayList<>();
 
     //TODO List of roads built by player?
 
@@ -30,11 +31,29 @@ public class Player extends PlayerBase {
                   List<WheelCard> wheelCards,
                   DestinationCard longDestinationCard,
                   List<DestinationCard> shortDestinationCards) {
+        this(name,
+                color,
+                score,
+                wheelsRemaining,
+                playingOrder,
+                wheelCards,
+                longDestinationCard,
+                shortDestinationCards,
+                new ArrayList<>());
+    }
+
+    public Player(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder,
+                  List<WheelCard> wheelCards,
+                  DestinationCard longDestinationCard,
+                  List<DestinationCard> shortDestinationCards,
+                  List<DestinationCard> shortDestinationCardsToChooseFrom) {
         super(name, color, score, wheelsRemaining, playingOrder);
         this.wheelCards = wheelCards;
         this.longDestinationCard = longDestinationCard;
         this.shortDestinationCards = shortDestinationCards;
+        this.shortDestinationCardsToChooseFrom = shortDestinationCardsToChooseFrom;
     }
+
 
     public List<WheelCard> getWheelCards() {
         return wheelCards;
@@ -56,6 +75,14 @@ public class Player extends PlayerBase {
         this.shortDestinationCards = shortDestinationCards;
     }
 
+    public List<DestinationCard> getShortDestinationCardsToChooseFrom() {
+        return shortDestinationCardsToChooseFrom;
+    }
+
+    public void setShortDestinationCardsToChooseFrom(List<DestinationCard> shortDestinationCardsToChooseFrom) {
+        this.shortDestinationCardsToChooseFrom = shortDestinationCardsToChooseFrom;
+    }
+
     public void setColor(WheelColor color) {
         this.color = color;
     }
@@ -63,14 +90,14 @@ public class Player extends PlayerBase {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Player)) return false;
         if (!super.equals(o)) return false;
         Player player = (Player) o;
-        return wheelCards.equals(player.wheelCards) && Objects.equals(longDestinationCard, player.longDestinationCard) && shortDestinationCards.equals(player.shortDestinationCards);
+        return wheelCards.equals(player.wheelCards) && Objects.equals(longDestinationCard, player.longDestinationCard) && shortDestinationCards.equals(player.shortDestinationCards) && shortDestinationCardsToChooseFrom.equals(player.shortDestinationCardsToChooseFrom);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), wheelCards, longDestinationCard, shortDestinationCards);
+        return Objects.hash(super.hashCode(), wheelCards, longDestinationCard, shortDestinationCards, shortDestinationCardsToChooseFrom);
     }
 }

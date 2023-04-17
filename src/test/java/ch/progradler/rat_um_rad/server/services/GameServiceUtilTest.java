@@ -7,13 +7,17 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
+import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import org.junit.jupiter.api.Test;
@@ -23,11 +27,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
 import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor.*;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.NEW_PLAYER;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -98,6 +103,7 @@ class GameServiceUtilTest {
         assertEquals(GameConfig.STARTING_WHEELS_PER_PLAYER, player.getWheelsRemaining());
         assertNull(player.getLongDestinationCard());
         assertTrue(player.getShortDestinationCards().isEmpty());
+        assertTrue(player.getShortDestinationCardsToChooseFrom().isEmpty());
         assertTrue(player.getWheelCards().isEmpty());
     }
 
@@ -200,9 +206,9 @@ class GameServiceUtilTest {
         assertNotNull(long2);
         assertNotEquals(long1, long2);
 
-        // check short dest cards handed out:
-        List<DestinationCard> shorts1 = player1.getShortDestinationCards();
-        List<DestinationCard> shorts2 = player2.getShortDestinationCards();
+        // check short dest cards too choose handed out:
+        List<DestinationCard> shorts1 = player1.getShortDestinationCardsToChooseFrom();
+        List<DestinationCard> shorts2 = player2.getShortDestinationCardsToChooseFrom();
         assertEquals(3, shorts1.size());
         assertEquals(3, shorts2.size());
         assertFalse(shorts1.contains(shorts2.get(0)));
@@ -281,8 +287,8 @@ class GameServiceUtilTest {
 
         //testing
         int sizeInGameBeforeCalling = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck().size();
-        GameServiceUtil.handOutShortDestinationCards(game, ip1);
-        GameServiceUtil.handOutShortDestinationCards(game, ip2);
+        GameServiceUtil.handOutShortDestinationCardsTooChoose(game, ip1);
+        GameServiceUtil.handOutShortDestinationCardsTooChoose(game, ip2);
 
         List<DestinationCard> destinationCards1 = game.getPlayers().get(ip1).getShortDestinationCards();
         List<DestinationCard> destinationCards2 = game.getPlayers().get(ip2).getShortDestinationCards();
@@ -324,20 +330,86 @@ class GameServiceUtilTest {
         when(game.getTurn()).thenReturn(1);
         assertFalse(GameServiceUtil.isPlayersTurn(game, player1));
         assertTrue(GameServiceUtil.isPlayersTurn(game, player2));
-        assertFalse(GameServiceUtil.isPlayersTurn(game,  player3));
-        assertFalse(GameServiceUtil.isPlayersTurn(game,  player4));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player3));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player4));
 
         when(game.getTurn()).thenReturn(3);
-        assertFalse(GameServiceUtil.isPlayersTurn(game,player1));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player1));
         assertFalse(GameServiceUtil.isPlayersTurn(game, player2));
         assertFalse(GameServiceUtil.isPlayersTurn(game, player3));
-        assertTrue(GameServiceUtil.isPlayersTurn(game,  player4));
+        assertTrue(GameServiceUtil.isPlayersTurn(game, player4));
 
 
         when(game.getTurn()).thenReturn(5);
-        assertFalse(GameServiceUtil.isPlayersTurn(game,player1));
-        assertTrue(GameServiceUtil.isPlayersTurn(game,  player2));
+        assertFalse(GameServiceUtil.isPlayersTurn(game, player1));
+        assertTrue(GameServiceUtil.isPlayersTurn(game, player2));
         assertFalse(GameServiceUtil.isPlayersTurn(game, player3));
         assertFalse(GameServiceUtil.isPlayersTurn(game, player4));
+    }
+
+    @Test
+    void validateAndHandleActionSendsErrorAndReturnsFalseIfGameNull() {
+        String ipAddress = "clientA";
+        boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, null, mockOutputPacketGateway);
+        assertFalse(result);
+        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
+                ErrorResponse.PLAYER_IN_NO_GAME,
+                STRING);
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
+    }
+
+    @Test
+    void validateAndHandleActionSendsErrorAndReturnsFalseIfGameDoesNotHaveStatusStarted() {
+        String ipAddress = "clientA";
+        Game game = mock(Game.class);
+
+        for (GameStatus status : Arrays.asList(WAITING_FOR_PLAYERS, PREPARATION, FINISHED)) {
+            when(game.getStatus()).thenReturn(status);
+            boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
+            assertFalse(result);
+        }
+
+        verify(mockGameRepository, never()).updateGame(any());
+        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
+                ErrorResponse.GAME_NOT_STARTED,
+                STRING);
+        verify(mockOutputPacketGateway, times(3)).sendPacket(ipAddress, errorResponse);
+    }
+
+    @Test
+    void validateAndHandleActionSendsErrorAndReturnsFalseIfIsNotPlayersTurn() {
+        String ipAddress = "clientA";
+        Game game = mock(Game.class);
+        when(game.getStatus()).thenReturn(STARTED);
+        when(game.getTurn()).thenReturn(0);
+
+        Player player = mock(Player.class);
+        when(player.getPlayingOrder()).thenReturn(1);
+        when(game.getPlayers()).thenReturn(Map.of(ipAddress, player, "otherPlayer", mock(Player.class)));
+
+        boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
+        assertFalse(result);
+
+        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
+                ErrorResponse.NOT_PLAYERS_TURN,
+                STRING);
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
+    }
+
+    @Test
+    void validateAndHandleActionSendsNoErrorAndReturnsTrueIfAllOk() {
+        String ipAddress = "clientA";
+        Game game = mock(Game.class);
+        when(game.getStatus()).thenReturn(STARTED);
+        when(game.getTurn()).thenReturn(2);
+
+        Player player = mock(Player.class);
+        when(player.getPlayingOrder()).thenReturn(0);
+        when(game.getPlayers()).thenReturn(Map.of(ipAddress, player, "otherPlayer", mock(Player.class)));
+
+        boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
+        assertTrue(result);
+
+        verify(mockOutputPacketGateway, never()).sendPacket(any(), any());
     }
 }
