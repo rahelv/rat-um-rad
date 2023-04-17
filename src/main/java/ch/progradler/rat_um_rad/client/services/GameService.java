@@ -71,8 +71,12 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void selectCards(List<DestinationCard> selectedItems) {
-        //TODO: implement
+    public void selectCards(List<String> selectedItems) throws IOException {
+        for(String card : selectedItems) {
+            System.out.println(card);
+        }
+        Packet packet = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedItems, ContentType.STRING_LIST);
+        outputPacketGateway.sendPacket(packet);
     }
 
 }

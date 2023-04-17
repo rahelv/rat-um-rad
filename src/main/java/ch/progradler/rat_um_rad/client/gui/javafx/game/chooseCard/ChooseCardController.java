@@ -1,17 +1,22 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.chooseCard;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
+import ch.progradler.rat_um_rad.shared.models.game.Road;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -23,6 +28,7 @@ public class ChooseCardController implements Initializable {
     private ListView cardsListView;
     private ChooseCardModel chooseCardModel;
     private IGameService gameService;
+    List<String> selectedRoadIdList = new ArrayList<>();
 
     /** initializes the controller.
      * @param location  The location used to resolve relative paths for the root object, or
@@ -43,7 +49,43 @@ public class ChooseCardController implements Initializable {
         //TODO: multiple types of cards to chose from
         this.chooseCardModel = chooseCardModel;
         this.cardsListView.setItems(this.chooseCardModel.getDestinationCardList());
-        this.cardsListView.setCellFactory(param -> new CardCell());
+        this.cardsListView.setCellFactory(CheckBoxListCell.forListView(new Callback<DestinationCard, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(DestinationCard item) {
+                CheckBoxListCell<DestinationCard> cell = new CheckBoxListCell<DestinationCard>() {
+                    @Override
+                    public void updateItem(DestinationCard item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(null);
+                        setGraphic(null);
+                        if (item != null && !empty) {
+                            //TODO: text is never displayed correctly
+                            setText(item.getDestination1().getName() + " to " + item.getDestination2().getName());
+                        }
+                    }
+                };
+                cell.setConverter(new StringConverter() {
+                    @Override
+                    public String toString(Object destinationCard) {
+                        return ((DestinationCard)destinationCard).getDestination1().getName() + " " + ((DestinationCard)destinationCard).getDestination2().getName();
+                    }
+                    @Override
+                    public Object fromString(String string) {
+                        return string;
+                    }
+                });
+
+                BooleanProperty observable = new SimpleBooleanProperty();
+                observable.addListener((obs, wasSelected, isNowSelected) -> {
+                    if (isNowSelected) {
+                        selectedRoadIdList.add(item.getCardID());
+                    } else {
+                        selectedRoadIdList.remove(item.getCardID());
+                    }
+                });
+                return observable;
+            }
+        }));
         this.stage = window;
     }
 
@@ -52,36 +94,7 @@ public class ChooseCardController implements Initializable {
      */
     @FXML
     public void chooseCardsAction(ActionEvent actionEvent) {
-        List<DestinationCard> selectedCards = cardsListView.getSelectionModel().getSelectedItems().stream().toList();
+        List<String> selectedCards = this.selectedRoadIdList;
         this.gameService.selectCards(selectedCards);
-    }
-
-    /**
-     * Cell Class to set the Cells in the List View. Add two Buttons to each cell (players and join) and sets the id as text.)
-     */
-    static class CardCell extends ListCell<DestinationCard> {
-        Pane pane = new Pane();
-        HBox hbox = new HBox();
-        Label nameLabel = new Label();
-        CheckBox cardSelectedCheckBox = new CheckBox();
-
-        public CardCell() {
-            super();
-            hbox.getChildren().addAll(nameLabel, pane, cardSelectedCheckBox);
-            hbox.setHgrow(pane, Priority.ALWAYS);
-            cardSelectedCheckBox.setOnAction(event -> {
-                //TODO:
-            });
-        }
-
-        protected void updateItem(DestinationCard item, boolean empty) {
-            super.updateItem(item, empty);
-            setText(null);
-            setGraphic(null);
-            if (item != null && !empty) {
-                nameLabel.setText(item.getDestination1() + " to " + item.getDestination2());
-                setGraphic(hbox);
-            }
-        }
     }
 }

@@ -6,13 +6,16 @@ import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.beans.DesignMode;
 import java.util.List;
 
 public class ChooseCardModel {
-    private String type;
+    //TODO: private String type;
     private final ControllerChangeListener<?> listener;
+    private DestinationCard longDestinationCard;
 
     private ObservableList<DestinationCard> destinationCardList;
+    private ObservableList<DestinationCard> selectedDestinationCardList;
 
     public ChooseCardModel(ControllerChangeListener<?> listener) {
         this.listener = listener;
@@ -29,5 +32,9 @@ public class ChooseCardModel {
 
     public ObservableList<DestinationCard> getDestinationCardList() {
         return destinationCardList;
+    }
+
+    public void setLongDestinationCard(DestinationCard longDestinationCard) {
+        this.longDestinationCard = longDestinationCard;
     }
 }

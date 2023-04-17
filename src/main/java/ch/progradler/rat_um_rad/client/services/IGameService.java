@@ -26,5 +26,5 @@ public interface IGameService {
 
     void requestFinishedGames() throws IOException;
 
-    void selectCards(List<DestinationCard> selectedItems);
+    void selectCards(List<String> selectedItems) throws IOException;
 }
