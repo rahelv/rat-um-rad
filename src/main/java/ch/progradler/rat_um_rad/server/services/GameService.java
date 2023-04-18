@@ -19,6 +19,7 @@ import java.util.*;
 
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.sendInvalidActionResponse;
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.validateAndHandleActionPrecondition;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
@@ -147,6 +148,7 @@ public class GameService implements IGameService {
 
                 if (allPlayersSelectedShortDestCards(game)) {
                     GameServiceUtil.startGameRounds(game, gameRepository, outputPacketGateway);
+                    game.setStatus(STARTED);
                 }
             }
             case STARTED -> {

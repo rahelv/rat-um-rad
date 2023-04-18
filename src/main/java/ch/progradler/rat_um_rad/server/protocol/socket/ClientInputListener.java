@@ -65,7 +65,6 @@ public class ClientInputListener implements Runnable {
                 String encoded = StreamUtils.readStringFromStream(inputStream);
                 //System.out.println("encoded packet " + encoded);
                 Packet packet = packetCoder.decode(encoded, 0);
-                System.out.println("encoded packet on server" + encoded);
                 inputPacketGateway.handleClientCommand(packet, ipAddress);
                 // TODO: unittest
 

@@ -49,6 +49,8 @@ public class LobbyModel {
     }
 
     public void waitingGamesReceived(List<GameBase> content) {
-        this.updateGameList(content);
+        Platform.runLater(() -> {
+            this.updateGameList(content);
+        });
     }
 }

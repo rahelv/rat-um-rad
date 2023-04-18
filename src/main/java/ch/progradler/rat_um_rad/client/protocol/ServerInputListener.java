@@ -42,7 +42,6 @@ public class ServerInputListener implements Runnable {
                 continue;
                 // TODO: display error to user?
             }
-            System.out.println(encodedPacket);
             Packet packet = packetCoder.decode(encodedPacket, 0);
             inputPacketGateway.handleResponse(packet);
         }

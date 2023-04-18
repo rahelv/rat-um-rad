@@ -30,7 +30,6 @@ public class ClientOutput {
 
     public void sendPacketToClient(Packet packet) {
         String sendStr = packetCoder.encode(packet, 0);
-        System.out.println(sendStr);
         StreamUtils.writeStringToStream(sendStr, out);
     }
 
