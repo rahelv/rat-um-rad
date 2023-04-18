@@ -7,7 +7,7 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,8 +53,8 @@ public class StartupPageController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.GAME_JOINED;
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_JOINED;
             }
         });
 
@@ -65,8 +65,8 @@ public class StartupPageController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.SEND_ALL_CONNECTED_PLAYERS;
+            public ServerCommand forCommand() {
+                return ServerCommand.SEND_ALL_CONNECTED_PLAYERS;
             }
         });
         this.userService = new UserService();
@@ -95,7 +95,7 @@ public class StartupPageController implements Initializable {
     }
 
     @FXML
-    public void showAllGamesAction(ActionEvent event){
+    public void showAllGamesAction(ActionEvent event) {
         Platform.runLater(() -> {
             startupPageModel.getListener().controllerChanged("showAllGamesView");
         });

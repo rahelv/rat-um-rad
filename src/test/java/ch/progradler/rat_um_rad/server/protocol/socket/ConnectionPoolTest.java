@@ -1,8 +1,8 @@
 package ch.progradler.rat_um_rad.server.protocol.socket;
 
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,10 +37,10 @@ public class ConnectionPoolTest {
 
     @Test
     void sendMessageSendsMessageToCorrectClient() {
-        Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.STRING);
+        Packet.Server packet = new Packet.Server(ServerCommand.NEW_USER, "Content", ContentType.STRING);
 
-        doNothing().when(connection1).sendPacketToClient(isA(Packet.class));
-        doNothing().when(connection2).sendPacketToClient(isA(Packet.class));
+        doNothing().when(connection1).sendPacketToClient(isA(Packet.Server.class));
+        doNothing().when(connection2).sendPacketToClient(isA(Packet.Server.class));
 
         connectionPool.sendPacket("client2", packet);
         connectionPool.sendPacket("client1", packet);
@@ -54,10 +54,10 @@ public class ConnectionPoolTest {
 
     @Test
     void broadcastExcludeSendsMessageToCorrectClients() {
-        Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.STRING);
+        Packet.Server packet = new Packet.Server(ServerCommand.NEW_USER, "Content", ContentType.STRING);
 
-        doNothing().when(connection1).sendPacketToClient(isA(Packet.class));
-        doNothing().when(connection3).sendPacketToClient(isA(Packet.class));
+        doNothing().when(connection1).sendPacketToClient(isA(Packet.Server.class));
+        doNothing().when(connection3).sendPacketToClient(isA(Packet.Server.class));
 
         List<String> exclude = Collections.singletonList("client2");
 
@@ -70,7 +70,7 @@ public class ConnectionPoolTest {
 
     @Test
     void broadcastOnlySendsMessageToCorrectClients() {
-        Packet packet = new Packet(Command.NEW_USER, "Content", ContentType.STRING);
+        Packet.Server packet = new Packet.Server(ServerCommand.NEW_USER, "Content", ContentType.STRING);
 
         String client1 = "client1", client3 = "client3";
         List<String> only = Arrays.asList(client1, client3);
@@ -98,7 +98,7 @@ public class ConnectionPoolTest {
 
     @Test
     void sendPacketThrowsNoErrorIfIPAddressNotPresent() {
-        Packet packet = new Packet(Command.PONG, null, ContentType.NONE);
+        Packet.Server packet = new Packet.Server(ServerCommand.PING, null, ContentType.NONE);
         assertDoesNotThrow(() -> connectionPool.sendPacket("nonExistentClient", packet));
     }
 }

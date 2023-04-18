@@ -1,9 +1,6 @@
 package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
-import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
@@ -15,10 +12,10 @@ import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,10 +26,10 @@ import java.util.*;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
 import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor.*;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.NEW_PLAYER;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.GAME_STARTED_SELECT_DESTINATION_CARDS;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.NEW_PLAYER;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -169,8 +166,8 @@ class GameServiceUtilTest {
         Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
 
         GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, NEW_PLAYER);
-        verify(mockOutputPacketGateway).sendPacket(ip1, new Packet(NEW_PLAYER, GameServiceUtil.toClientGame(game, ip1), ContentType.GAME));
-        verify(mockOutputPacketGateway).sendPacket(ip2, new Packet(NEW_PLAYER, GameServiceUtil.toClientGame(game, ip2), ContentType.GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip1, new Packet.Server(NEW_PLAYER, GameServiceUtil.toClientGame(game, ip1), ContentType.GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip2, new Packet.Server(NEW_PLAYER, GameServiceUtil.toClientGame(game, ip2), ContentType.GAME));
     }
 
     @Test
@@ -224,8 +221,8 @@ class GameServiceUtilTest {
 
         verify(mockGameRepository, times(1)).updateGame(game);
 
-        verify(mockOutputPacketGateway).sendPacket(ip1, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip1), GAME));
-        verify(mockOutputPacketGateway).sendPacket(ip2, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip2), GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip1, new Packet.Server(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip1), GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip2, new Packet.Server(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip2), GAME));
     }
 
     @Test
@@ -352,7 +349,7 @@ class GameServiceUtilTest {
         String ipAddress = "clientA";
         boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, null, mockOutputPacketGateway);
         assertFalse(result);
-        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
+        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
                 ErrorResponse.PLAYER_IN_NO_GAME,
                 STRING);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
@@ -370,7 +367,7 @@ class GameServiceUtilTest {
         }
 
         verify(mockGameRepository, never()).updateGame(any());
-        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
+        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
                 ErrorResponse.GAME_NOT_STARTED,
                 STRING);
         verify(mockOutputPacketGateway, times(3)).sendPacket(ipAddress, errorResponse);
@@ -390,7 +387,7 @@ class GameServiceUtilTest {
         boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
         assertFalse(result);
 
-        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
+        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
                 ErrorResponse.NOT_PLAYERS_TURN,
                 STRING);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);

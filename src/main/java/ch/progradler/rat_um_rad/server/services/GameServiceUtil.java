@@ -2,7 +2,6 @@ package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
-import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
@@ -11,9 +10,9 @@ import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
@@ -22,11 +21,11 @@ import java.util.stream.IntStream;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.INVALID_ACTION_FATAL;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.GAME_STARTED_SELECT_DESTINATION_CARDS;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.INVALID_ACTION_FATAL;
 
 /**
  * Util class for {@link GameService} with complex methods that are used multiple times.
@@ -81,11 +80,11 @@ public class GameServiceUtil {
         return null;
     }
 
-    public static void notifyPlayersOfGameUpdate(Game game, OutputPacketGateway outputPacketGateway, Command command) {
+    public static void notifyPlayersOfGameUpdate(Game game, OutputPacketGateway outputPacketGateway, ServerCommand command) {
         Set<String> playerIps = game.getPlayerIpAddresses();
         for (String ipAddress : playerIps) {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            outputPacketGateway.sendPacket(ipAddress, new Packet(command, clientGame, ContentType.GAME));
+            outputPacketGateway.sendPacket(ipAddress, new Packet.Server(command, clientGame, ContentType.GAME));
         }
     }
 
@@ -110,7 +109,7 @@ public class GameServiceUtil {
         gameRepository.updateGame(game);
         for (String ipAddress : game.getPlayerIpAddresses()) {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, clientGame, GAME));
+            outputPacketGateway.sendPacket(ipAddress, new Packet.Server(GAME_STARTED_SELECT_DESTINATION_CARDS, clientGame, GAME));
         }
     }
 
@@ -183,7 +182,7 @@ public class GameServiceUtil {
     }
 
     public static void sendInvalidActionResponse(String ipAddress, String errorMessage, OutputPacketGateway outputPacketGateway) {
-        Packet errorResponse = new Packet(INVALID_ACTION_FATAL,
+        Packet.Server errorResponse = new Packet.Server(INVALID_ACTION_FATAL,
                 errorMessage,
                 STRING);
         outputPacketGateway.sendPacket(ipAddress, errorResponse);
