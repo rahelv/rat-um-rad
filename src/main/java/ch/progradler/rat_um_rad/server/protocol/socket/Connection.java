@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.server.protocol.socket;
 
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -19,7 +20,7 @@ public class Connection implements IConnection {
         this.clientInputListener = clientInputListener;
     }
 
-    public void sendPacketToClient(Packet packet) {
+    public void sendPacketToClient(Packet<ServerCommand> packet) {
         clientOutput.sendPacketToClient(packet);
     }
 
