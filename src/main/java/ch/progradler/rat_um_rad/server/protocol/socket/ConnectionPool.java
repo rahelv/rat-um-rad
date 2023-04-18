@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.server.protocol.socket;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.protocol.ClientDisconnectedListener;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +29,7 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     }
 
     @Override
-    public void sendPacket(String ipAddress, Packet packet) {
+    public void sendPacket(String ipAddress, Packet<ServerCommand> packet) {
         IConnection connection = connections.get(ipAddress);
         if (connection == null) {
             LOGGER.info("No connection for IP-address {} found! Packet not sent.", ipAddress);
@@ -38,7 +39,7 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     }
 
     @Override
-    public void broadCastExclude(Packet packet, List<String> excludeClients) {
+    public void broadCastExclude(Packet<ServerCommand> packet, List<String> excludeClients) {
         final List<String> clientsForBroadCast = new ArrayList<>(connections.keySet());
         clientsForBroadCast.removeAll(excludeClients);
 
@@ -46,14 +47,14 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     }
 
     @Override
-    public void broadCastOnly(Packet packet, List<String> clients) {
+    public void broadCastOnly(Packet<ServerCommand> packet, List<String> clients) {
         for (String ipAddress : clients) {
             sendPacket(ipAddress, packet);
         }
     }
 
     @Override
-    public void broadcast(Packet packet) {
+    public void broadcast(Packet<ServerCommand> packet) {
         final List<String> clientsForBroadCast = new ArrayList<>(connections.keySet());
         for(String ipAddress : clientsForBroadCast) {
             sendPacket(ipAddress, packet);

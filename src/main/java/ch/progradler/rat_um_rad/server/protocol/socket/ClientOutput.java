@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.server.protocol.socket;
 
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 
@@ -15,9 +16,9 @@ public class ClientOutput {
     private Socket socket;
     private OutputStream out; //TODO: implement using own serialization
     private final String ipAddress;
-    private final Coder<Packet> packetCoder;
+    private final Coder<Packet<ServerCommand>> packetCoder;
 
-    public ClientOutput(Socket socket, String ipAddress, Coder<Packet> packetCoder) {
+    public ClientOutput(Socket socket, String ipAddress, Coder<Packet<ServerCommand>> packetCoder) {
         this.socket = socket;
         this.packetCoder = packetCoder;
         this.ipAddress = ipAddress;
@@ -28,7 +29,7 @@ public class ClientOutput {
         }
     }
 
-    public void sendPacketToClient(Packet packet) {
+    public void sendPacketToClient(Packet<ServerCommand> packet) {
         String sendStr = packetCoder.encode(packet, 0);
         StreamUtils.writeStringToStream(sendStr, out);
     }

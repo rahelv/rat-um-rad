@@ -8,10 +8,10 @@ import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.Server.class), eq(Collections.singletonList(ipAddress)));
 
         // execute
         userService.handleNewUser(username, ipAddress);
@@ -70,7 +70,7 @@ public class UserServiceTest {
         // prepare
         String username = "5Johnny";
         String ipAddress = "clientJ";
-        Packet errorPacket = new Packet(Command.INVALID_ACTION_FATAL, ErrorResponse.USERNAME_INVALID, ContentType.STRING);
+        Packet.Server errorPacket = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL, ErrorResponse.USERNAME_INVALID, ContentType.STRING);
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(false);
         doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), eq(errorPacket));
 
@@ -90,14 +90,14 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
+                .broadCastExclude(isA(Packet.Server.class), eq(Collections.singletonList(ipAddress)));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.Server.class));
 
         // execute
         userService.handleNewUser(username, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.NEW_USER, username, ContentType.STRING);
+        Packet.Server packet = new Packet.Server(ServerCommand.NEW_USER, username, ContentType.STRING);
         verify(outputPacketGatewayMock)
                 .broadCastExclude(packet, Collections.singletonList(ipAddress));
     }
@@ -111,14 +111,14 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).addUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
+                .broadCastExclude(isA(Packet.Server.class), eq(Collections.singletonList(ipAddress)));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.Server.class));
 
         // execute
         userService.handleNewUser(username, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, username), ContentType.USERNAME_CHANGE);
+        Packet.Server packet = new Packet.Server(ServerCommand.USERNAME_CONFIRMED, new UsernameChange(username, username), ContentType.USERNAME_CHANGE);
         verify(outputPacketGatewayMock, atLeastOnce()).sendPacket(eq(ipAddress), eq(packet));
     }
 
@@ -131,8 +131,8 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).updateUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
+                .broadCastExclude(isA(Packet.Server.class), eq(Collections.singletonList(ipAddress)));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.Server.class));
 
         // execute
         userService.updateUsername(username, ipAddress);
@@ -146,7 +146,7 @@ public class UserServiceTest {
         // prepare
         String username = "5Johnny";
         String ipAddress = "clientJ";
-        Packet errorPacket = new Packet(Command.INVALID_ACTION_WARNING, "The chosen username was invalid. Please try again", ContentType.STRING); //on client: user has to trigger usernamechange dialog again
+        Packet.Server errorPacket = new Packet.Server(ServerCommand.INVALID_ACTION_WARNING, "The chosen username was invalid. Please try again", ContentType.STRING); //on client: user has to trigger usernamechange dialog again
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(false);
         doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), eq(errorPacket));
 
@@ -168,14 +168,14 @@ public class UserServiceTest {
         when(userRepositoryMock.getUsername(ipAddress)).thenReturn(oldUsername);
         doNothing().when(userRepositoryMock).updateUsername(newUsername, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
+                .broadCastExclude(isA(Packet.Server.class), eq(Collections.singletonList(ipAddress)));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.Server.class));
 
         // execute
         userService.updateUsername(newUsername, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.CHANGED_USERNAME,
+        Packet.Server packet = new Packet.Server(ServerCommand.CHANGED_USERNAME,
                 new UsernameChange(oldUsername, newUsername),
                 ContentType.USERNAME_CHANGE);
         verify(outputPacketGatewayMock)
@@ -191,14 +191,14 @@ public class UserServiceTest {
         when(usernameValidatorMock.isUsernameValid(username)).thenReturn(true);
         doNothing().when(userRepositoryMock).updateUsername(username, ipAddress);
         doNothing().when(outputPacketGatewayMock)
-                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
-        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.class));
+                .broadCastExclude(isA(Packet.Server.class), eq(Collections.singletonList(ipAddress)));
+        doNothing().when(outputPacketGatewayMock).sendPacket(eq(ipAddress), isA(Packet.Server.class));
 
         // execute
         userService.updateUsername(username, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.USERNAME_CONFIRMED, new UsernameChange(username, username), ContentType.USERNAME_CHANGE);
+        Packet.Server packet = new Packet.Server(ServerCommand.USERNAME_CONFIRMED, new UsernameChange(username, username), ContentType.USERNAME_CHANGE);
         verify(outputPacketGatewayMock, atLeastOnce()).sendPacket(eq(ipAddress), eq(packet));
     }
 
@@ -212,7 +212,7 @@ public class UserServiceTest {
         when(userRepositoryMock.removeUsername(ipAddress))
                 .thenReturn(username);
         doNothing().when(outputPacketGatewayMock)
-                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.Server.class), eq(Collections.singletonList(ipAddress)));
 
         // execute
         userService.handleUserDisconnected(ipAddress);
@@ -230,13 +230,13 @@ public class UserServiceTest {
         when(userRepositoryMock.removeUsername(ipAddress))
                 .thenReturn(username);
         doNothing().when(outputPacketGatewayMock)
-                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.Server.class), eq(Collections.singletonList(ipAddress)));
 
         // execute
         userService.handleUserDisconnected(ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.USER_DISCONNECTED, username, ContentType.STRING);
+        Packet.Server packet = new Packet.Server(ServerCommand.USER_DISCONNECTED, username, ContentType.STRING);
         verify(outputPacketGatewayMock)
                 .broadCastExclude(packet, Collections.singletonList(ipAddress));
     }
@@ -251,13 +251,13 @@ public class UserServiceTest {
         when(userRepositoryMock.getUsername(ipAddress))
                 .thenReturn(username);
         doNothing().when(outputPacketGatewayMock)
-                .broadCastExclude(isA(Packet.class), eq(Collections.singletonList(ipAddress)));
+                .broadCastExclude(isA(Packet.Server.class), eq(Collections.singletonList(ipAddress)));
 
         // execute
         userService.handleBroadCastMessageFromUser(message, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.SEND_BROADCAST_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
+        Packet.Server packet = new Packet.Server(ServerCommand.BROADCAST_CHAT_SENT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         verify(outputPacketGatewayMock)
                 .broadCastExclude(packet, Collections.singletonList(ipAddress));
     }
@@ -292,7 +292,7 @@ public class UserServiceTest {
         userService.handleGameInternalMessageFromUser(message, ipAddress);
 
         // assert
-        Packet packet = new Packet(Command.SEND_GAME_INTERNAL_CHAT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
+        Packet.Server packet = new Packet.Server(ServerCommand.GAME_INTERNAL_CHAT_SENT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         ArgumentCaptor<List<String>> clientsArgCaptor = ArgumentCaptor.forClass(List.class);
         verify(outputPacketGatewayMock)
                 .broadCastOnly(eq(packet), clientsArgCaptor.capture());
@@ -339,7 +339,7 @@ public class UserServiceTest {
         userService.handleWhisperMessageFromUser(message, toName, senderIpAddress);
 
         // assert
-        Packet packet = new Packet(Command.SEND_WHISPER_CHAT, new ChatMessage(senderName, message), ContentType.CHAT_MESSAGE);
+        Packet.Server packet = new Packet.Server(ServerCommand.WHISPER_CHAT_SENT, new ChatMessage(senderName, message), ContentType.CHAT_MESSAGE);
         verify(outputPacketGatewayMock).sendPacket(toIpAddress, packet);
     }
 
@@ -359,13 +359,13 @@ public class UserServiceTest {
 
     @Test
     void requestOnlinePlayersTest() {
-        List<String> names = new LinkedList<String>();
+        List<String> names = new LinkedList<>();
         names.add("name1");
         names.add("name2");
         when(userRepositoryMock.getAllUsernames()).thenReturn(names);
 
         String ipAddress = "ipAddressA";
-        Packet packet = new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, names, ContentType.STRING_LIST);
+        Packet.Server packet = new Packet.Server(ServerCommand.SEND_ALL_CONNECTED_PLAYERS, names, ContentType.STRING_LIST);
 
         userService.requestOnlinePlayers(ipAddress);
         verify(outputPacketGatewayMock).sendPacket(ipAddress, packet);
@@ -377,7 +377,7 @@ public class UserServiceTest {
         when(userRepositoryMock.getAllUsernames()).thenReturn(names);
 
         String ipAddress = "ipAddressA";
-        Packet packet = new Packet(Command.SEND_ALL_CONNECTED_PLAYERS, names, ContentType.STRING_LIST);
+        Packet.Server packet = new Packet.Server(ServerCommand.SEND_ALL_CONNECTED_PLAYERS, names, ContentType.STRING_LIST);
 
         userService.requestOnlinePlayers(ipAddress);
         verify(outputPacketGatewayMock).sendPacket(ipAddress, packet);

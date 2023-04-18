@@ -7,7 +7,7 @@ import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,9 +44,9 @@ class CommandHandlerTest {
     void handlesSendBroadCastChatPacketCorrectly() {
         String message = "Hello";
         String ipAddress = "clientA";
-        Packet packet = new Packet(Command.SEND_BROADCAST_CHAT, message, ContentType.STRING);
+        Packet.Client packet = new Packet.Client(ClientCommand.SEND_BROADCAST_CHAT, message, ContentType.STRING);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockUserService).handleBroadCastMessageFromUser(message, ipAddress);
     }
@@ -55,9 +55,9 @@ class CommandHandlerTest {
     void handlesSendGameInternalChatPacketCorrectly() {
         String message = "Hello";
         String ipAddress = "clientA";
-        Packet packet = new Packet(Command.SEND_GAME_INTERNAL_CHAT, message, ContentType.STRING);
+        Packet.Client packet = new Packet.Client(ClientCommand.SEND_GAME_INTERNAL_CHAT, message, ContentType.STRING);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockUserService).handleGameInternalMessageFromUser(message, ipAddress);
     }
@@ -68,10 +68,10 @@ class CommandHandlerTest {
         String toUsername = "John";
         String ipAddress = "clientA";
 
-        Packet packet = new Packet(Command.SEND_WHISPER_CHAT,
+        Packet.Client packet = new Packet.Client(ClientCommand.SEND_WHISPER_CHAT,
                 new ChatMessage(toUsername, message), ContentType.CHAT_MESSAGE);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockUserService).handleWhisperMessageFromUser(message, toUsername, ipAddress);
     }
@@ -80,9 +80,9 @@ class CommandHandlerTest {
     void handlesCreateGamePacketCorrectly() {
         int requiredPlayers = 4;
         String ipAddress = "clientA";
-        Packet packet = new Packet(Command.CREATE_GAME, requiredPlayers, ContentType.INTEGER);
+        Packet.Client packet = new Packet.Client(ClientCommand.CREATE_GAME, requiredPlayers, ContentType.INTEGER);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).createGame(ipAddress, requiredPlayers);
     }
@@ -90,9 +90,9 @@ class CommandHandlerTest {
     @Test
     void handlesAllConnectedPlayersRequest() {
         String ipAddress = "clientA";
-        Packet packet = new Packet(Command.REQUEST_ALL_CONNECTED_PLAYERS, null, ContentType.NONE);
+        Packet.Client packet = new Packet.Client(ClientCommand.REQUEST_ALL_CONNECTED_PLAYERS, null, ContentType.NONE);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockUserService).requestOnlinePlayers(ipAddress);
     }
@@ -100,9 +100,9 @@ class CommandHandlerTest {
     @Test
     void handlesWaitingGamesRequest() {
         String ipAddress = "clientA";
-        Packet packet = new Packet(Command.REQUEST_GAMES, GameStatus.WAITING_FOR_PLAYERS, ContentType.GAME_STATUS);
+        Packet.Client packet = new Packet.Client(ClientCommand.REQUEST_GAMES, GameStatus.WAITING_FOR_PLAYERS, ContentType.GAME_STATUS);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).getWaitingGames(ipAddress);
     }
@@ -110,9 +110,9 @@ class CommandHandlerTest {
     @Test
     void handlesStartedGamesRequest() {
         String ipAddress = "clientA";
-        Packet packet = new Packet(Command.REQUEST_GAMES, GameStatus.STARTED, ContentType.GAME_STATUS);
+        Packet.Client packet = new Packet.Client(ClientCommand.REQUEST_GAMES, GameStatus.STARTED, ContentType.GAME_STATUS);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).getStartedGames(ipAddress);
     }
@@ -120,9 +120,9 @@ class CommandHandlerTest {
     @Test
     void handlesFinishedGamesRequest() {
         String ipAddress = "clientA";
-        Packet packet = new Packet(Command.REQUEST_GAMES, GameStatus.FINISHED, ContentType.GAME_STATUS);
+        Packet.Client packet = new Packet.Client(ClientCommand.REQUEST_GAMES, GameStatus.FINISHED, ContentType.GAME_STATUS);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).getFinishedGames(ipAddress);
     }
@@ -131,9 +131,9 @@ class CommandHandlerTest {
     void handlesBuildRoadPacketCorrectly() {
         String roadId = "road1";
         String ipAddress = "clientA";
-        Packet packet = new Packet(Command.BUILD_ROAD, roadId, ContentType.STRING);
+        Packet.Client packet = new Packet.Client(ClientCommand.BUILD_ROAD, roadId, ContentType.STRING);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).buildRoad(ipAddress, roadId);
     }
@@ -143,9 +143,9 @@ class CommandHandlerTest {
         String roadId = "road1";
         WheelColor color = WheelColor.WHITE;
         String ipAddress = "clientA";
-        Packet packet = new Packet(Command.BUILD_ROAD, new BuildRoadInfo(roadId, color), ContentType.BUILD_ROAD_INFO);
+        Packet.Client packet = new Packet.Client(ClientCommand.BUILD_ROAD, new BuildRoadInfo(roadId, color), ContentType.BUILD_ROAD_INFO);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).buildGreyRoad(ipAddress, roadId, color);
     }
@@ -154,9 +154,9 @@ class CommandHandlerTest {
     void requestOnJoiningGameIsHandledCorrectly() {
         String ipAddress = "clientA";
         String gameId = "gameIdA";
-        Packet packet = new Packet(Command.WANT_JOIN_GAME, gameId, ContentType.STRING);
+        Packet.Client packet = new Packet.Client(ClientCommand.WANT_JOIN_GAME, gameId, ContentType.STRING);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).joinGame(ipAddress, gameId);
     }
@@ -165,9 +165,9 @@ class CommandHandlerTest {
     void requestOnSelectingDestinationCardsInPrepIsHandledCorrectly() {
         String ipAddress = "clientA";
         List<String> selectedCards = Arrays.asList("card1", "card2");
-        Packet packet = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedCards, ContentType.STRING_LIST);
+        Packet.Client packet = new Packet.Client(ClientCommand.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedCards, ContentType.STRING_LIST);
 
-        commandHandler.handleClientCommand(packet, ipAddress);
+        commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).selectShortDestinationCards(ipAddress, selectedCards);
     }

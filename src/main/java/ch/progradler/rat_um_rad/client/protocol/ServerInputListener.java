@@ -1,8 +1,8 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
-import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 
@@ -16,9 +16,9 @@ import java.net.Socket;
 public class ServerInputListener implements Runnable {
     private InputStream inputStream;
     private final ServerInputPacketGateway inputPacketGateway;
-    private final Coder<Packet> packetCoder;
+    private final Coder<Packet<ServerCommand>> packetCoder;
 
-    public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway, Coder<Packet> packetCoder) {
+    public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway, Coder<Packet<ServerCommand>> packetCoder) {
         this.inputPacketGateway = inputPacketGateway;
         this.packetCoder = packetCoder;
         try {
@@ -43,7 +43,7 @@ public class ServerInputListener implements Runnable {
                 continue;
                 // TODO: display error to user?
             }
-            Packet packet = packetCoder.decode(encodedPacket, 0);
+            Packet<ServerCommand> packet = packetCoder.decode(encodedPacket, 0);
             inputPacketGateway.handleResponse(packet);
         }
     }

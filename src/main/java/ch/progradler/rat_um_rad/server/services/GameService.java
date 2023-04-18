@@ -8,10 +8,10 @@ import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 
@@ -20,9 +20,9 @@ import java.util.*;
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.sendInvalidActionResponse;
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.validateAndHandleActionPrecondition;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
 
 /**
@@ -65,11 +65,11 @@ public class GameService implements IGameService {
         }
 
         ClientGame clientGame = GameServiceUtil.toClientGame(gameCreated, creatorIpAddress);
-        Packet response = new Packet(Command.GAME_CREATED, clientGame, ContentType.GAME);
+        Packet.Server response = new Packet.Server(ServerCommand.GAME_CREATED, clientGame, ContentType.GAME);
         outputPacketGateway.sendPacket(creatorIpAddress, response);
 
         //Send updated game list to all players
-        Packet packet = new Packet(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
+        Packet.Server packet = new Packet.Server(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
         outputPacketGateway.broadcast(packet);
     }
 
@@ -81,11 +81,11 @@ public class GameService implements IGameService {
             addPlayerAndSaveGame(ipAddress, game);
             //send game to joined player
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_JOINED, clientGame, GAME));
+            outputPacketGateway.sendPacket(ipAddress, new Packet.Server(GAME_JOINED, clientGame, GAME));
 
             GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
         } else {
-            outputPacketGateway.sendPacket(ipAddress, new Packet(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
+            outputPacketGateway.sendPacket(ipAddress, new Packet.Server(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             return;
         }
 
@@ -93,7 +93,7 @@ public class GameService implements IGameService {
             GameServiceUtil.startGame(game, gameRepository, outputPacketGateway);
 
             //send updated game list to all players
-            Packet packet = new Packet(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
+            Packet.Server packet = new Packet.Server(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
             outputPacketGateway.broadcast(packet);
         }
     }
@@ -194,7 +194,7 @@ public class GameService implements IGameService {
         player.setShortDestinationCardsToChooseFrom(tooChoseFrom);
         gameRepository.updateGame(game);
 
-        Packet packet = new Packet(REQUEST_SHORT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ipAddress), GAME);
+        Packet.Server packet = new Packet.Server(REQUEST_SHORT_DESTINATION_CARDS_RESULT, GameServiceUtil.toClientGame(game, ipAddress), GAME);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
@@ -267,7 +267,7 @@ public class GameService implements IGameService {
         // TODO: check if has very few wheels left -> send info that game will finish soon
 
         gameRepository.updateGame(game);
-        GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, BUILD_ROAD);
+        GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, ROAD_BUILT);
     }
 
     private boolean hasRequiredCardsToBuild(Player player, Road road) {
@@ -314,19 +314,19 @@ public class GameService implements IGameService {
 
     @Override
     public void getWaitingGames(String ipAddress) {
-        Packet packet = new Packet(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
+        Packet.Server packet = new Packet.Server(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     @Override
     public void getStartedGames(String ipAddress) {
-        Packet packet = new Packet(SEND_STARTED_GAMES, gameRepository.getStartedGames(), GAME_INFO_LIST);
+        Packet.Server packet = new Packet.Server(SEND_STARTED_GAMES, gameRepository.getStartedGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 
     @Override
     public void getFinishedGames(String ipAddress) {
-        Packet packet = new Packet(SEND_FINISHED_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST);
+        Packet.Server packet = new Packet.Server(SEND_FINISHED_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 }

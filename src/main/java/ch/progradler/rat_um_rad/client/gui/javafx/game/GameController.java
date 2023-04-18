@@ -8,15 +8,13 @@ import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
@@ -27,13 +25,14 @@ public class GameController implements Initializable {
     private ActivityController activityController;
     @FXML
     private GameMapController gameMapController;
+
     /**
      * 1. Warten auf Spieler in Lobby
      * 2. Game Startet
      * 3. --> Karten wählen
      * 4. --> Farbe zugewiesen, Radkarten bekommen etc.
      * 5. Karte anzeigen
-     * */
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.gameService = new GameService();
@@ -44,8 +43,8 @@ public class GameController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.NEW_PLAYER;
+            public ServerCommand forCommand() {
+                return ServerCommand.NEW_PLAYER;
             }
         });
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
@@ -55,13 +54,15 @@ public class GameController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_STARTED_SELECT_DESTINATION_CARDS;
             }
         });
     }
 
-    /** initializes the game model and binds data to view.
+    /**
+     * initializes the game model and binds data to view.
+     *
      * @param gameModel
      * @param stage
      */

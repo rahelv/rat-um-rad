@@ -12,14 +12,16 @@ import ch.progradler.rat_um_rad.server.services.GameService;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
 import ch.progradler.rat_um_rad.server.services.UserService;
-import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketCoder;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 
 public class Server {
     public void start(int port) {
         System.out.format("Starting Server on %d\n", port);
 
-        ClientConnectionsHandler connectionsHandler = new ClientConnectionsHandler(PacketCoder.defaultPacketCoder());
+        ClientConnectionsHandler connectionsHandler = new ClientConnectionsHandler(
+                PacketCoder.defaultServerPacketCoder(),
+                PacketCoder.defaultClientPacketCoder());
         ServerPingPongRunner serverPingPongRunner = new ServerPingPongRunner(connectionsHandler.connectionPool);
         new Thread(serverPingPongRunner).start();
         OutputPacketGateway outputPacketGateway = connectionsHandler.connectionPool;

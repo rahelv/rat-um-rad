@@ -5,13 +5,14 @@ import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.net.URL;
@@ -28,7 +29,9 @@ public class ChatRoomController implements Initializable {
     public ListView chatPaneListView;
     private IUserService userService;
 
-    /** send chat message to server through userService
+    /**
+     * send chat message to server through userService
+     *
      * @param event
      */
     @FXML
@@ -42,10 +45,12 @@ public class ChatRoomController implements Initializable {
         chatMsgTextField.clear();
     }
 
-    /** adds the own written message to ChatPanel
+    /**
+     * adds the own written message to ChatPanel
+     *
      * @param content
      */
-    public void addMyOwnChatContentToChatPaneList(String content){
+    public void addMyOwnChatContentToChatPaneList(String content) {
         chatRoomModel.addChatMessageToList(new ChatMessage("You", content));
     }
 
@@ -64,8 +69,8 @@ public class ChatRoomController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.SEND_GAME_INTERNAL_CHAT;
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_INTERNAL_CHAT_SENT;
             }
         });
 
@@ -80,7 +85,9 @@ public class ChatRoomController implements Initializable {
         }
     }
 
-    /** when a chatMessage is received on the ServerResponseHandler, adds the received message to the list.
+    /**
+     * when a chatMessage is received on the ServerResponseHandler, adds the received message to the list.
+     *
      * @param chatMessage
      */
     public void chatMessageReceived(ChatMessage chatMessage) {
