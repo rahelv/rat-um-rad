@@ -6,10 +6,8 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.Command;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -104,35 +102,6 @@ public class GameOverviewController implements Initializable {
         finishedGamesListView.setCellFactory(param -> new GameOverviewController.Cell());
     }
 
-
-    static class OpenGameCell extends ListCell<GameBase> {
-        Pane pane = new Pane();
-        HBox hbox = new HBox();
-        Label nameLabel = new Label();
-        Button listPlayersButton = new Button("players");
-        Button enterGameButton = new Button("join");
-        public OpenGameCell() {
-            super();
-            hbox.getChildren().addAll(nameLabel,pane,listPlayersButton, enterGameButton);
-            hbox.setHgrow(pane, Priority.ALWAYS);
-            enterGameButton.setOnAction(event -> {
-                System.out.println("wanting to join game " + getItem().getId());
-                //TODO: send anfrage to server: OutputPacketGatewaySingleton.;
-            });
-            listPlayersButton.setOnAction(event -> {
-                System.out.println("listing all players in this game");
-            });
-        }
-        protected void updateItem(GameBase item, boolean empty){
-            super.updateItem(item, empty);
-            setText(null);
-            setGraphic(null);
-            if(item != null && !empty){
-                nameLabel.setText(item.getId());
-                setGraphic(hbox);
-            }
-        }
-    }
     static class Cell extends ListCell<GameBase>{
         Pane pane = new Pane();
         HBox hbox = new HBox();

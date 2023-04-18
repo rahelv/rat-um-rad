@@ -139,6 +139,12 @@ public class GameService implements IGameService {
 
                 gameRepository.updateGame(game);
 
+
+                //confirms the selected cards for the players who has chosen the cards TODO: do this after all players have chosen their cards
+                ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+                Packet packet = new Packet(DESTINATION_CARDS_SELECTED, clientGame, GAME);
+                outputPacketGateway.sendPacket(ipAddress, packet);
+
                 if (allPlayersSelectedShortDestCards(game)) {
                     GameServiceUtil.startGameRounds(game, gameRepository, outputPacketGateway);
                 }
@@ -149,7 +155,14 @@ public class GameService implements IGameService {
                 }
                 handleShortDestCardsSelection(selectedCardIds, game, player);
                 gameRepository.updateGame(game);
-                GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_STARTED_SELECT_DESTINATION_CARDS);
+
+                //confirms the selected cards for the players who has chosen the cards
+                ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+                Packet packet = new Packet(DESTINATION_CARDS_SELECTED, clientGame, GAME);
+                outputPacketGateway.sendPacket(ipAddress, packet);
+
+                //inform all players about updated game state, TODO: informAllPlayers but exclude own player
+                GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_UPDATED);
             }
         }
     }

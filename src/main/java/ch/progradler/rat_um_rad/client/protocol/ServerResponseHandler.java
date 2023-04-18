@@ -93,17 +93,21 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case GAME_JOINED -> {
                 ClientGame clientGame = (ClientGame) packet.getContent();
-                notifyListenersOfType(clientGame, packet.getCommand());
+                notifyListenersOfType(clientGame, Command.GAME_JOINED);
             }
             case NEW_PLAYER-> {
                 ClientGame clientGame = (ClientGame) packet.getContent();
-                notifyListenersOfType(clientGame, packet.getCommand()); //updated ClientGame is sent to Controller, so it can display the new state
+                notifyListenersOfType(clientGame, Command.NEW_PLAYER); //updated ClientGame is sent to Controller, so it can display the new state
             }
-            case GAME_STARTED_SELECT_DESTINATION_CARDS -> {
+            case GAME_STARTED_SELECT_DESTINATION_CARDS -> { //TODO: soll auch benutzt werden um während dem Spiel karten zu ziehen
                 System.out.println("sendgames " + packet); // TODO: replace with logger
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType(content, packet.getCommand());
+            }
+            case DESTINATION_CARDS_SELECTED -> {
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, Command.DESTINATION_CARDS_SELECTED);
             }
             default -> presenter.display(packet);
         }

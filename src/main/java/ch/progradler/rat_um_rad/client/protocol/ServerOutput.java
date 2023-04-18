@@ -17,7 +17,6 @@ public class ServerOutput implements OutputPacketGateway {
     private final OutputStream outStream;
     private final Coder<Packet> packetCoder;
 
-
     public ServerOutput(Socket socket, Coder<Packet> packetCoder) throws Exception {
         this.socket = socket;
         this.packetCoder = packetCoder;

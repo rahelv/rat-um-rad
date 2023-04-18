@@ -45,5 +45,6 @@ public enum Command {
     GAME_JOINED,
     NEW_PLAYER,
     GAME_STARTED_SELECT_DESTINATION_CARDS,
-
+    DESTINATION_CARDS_SELECTED, //client receives updated game when his selected cards are confirmed
+    GAME_UPDATED //generic command to update players gamestate (somebody else did something)
 }

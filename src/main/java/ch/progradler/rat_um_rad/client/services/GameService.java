@@ -73,7 +73,7 @@ public class GameService implements IGameService {
     @Override
     public void selectCards(List<String> selectedItems) throws IOException {
         for(String card : selectedItems) {
-            System.out.println(card);
+            System.out.println(card); //TODO: remove
         }
         Packet packet = new Packet(Command.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedItems, ContentType.STRING_LIST);
         outputPacketGateway.sendPacket(packet);
