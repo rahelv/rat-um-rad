@@ -9,6 +9,7 @@ import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.List;
 
 /**
  * Listens to messages from server
@@ -35,16 +36,18 @@ public class ServerInputListener implements Runnable {
     @Override
     public void run() {
         while (true) { //so it keeps listening
-            String encodedPacket;
+            List<String> encodedPackets;
             try {
-                encodedPacket = StreamUtils.readStringFromStream(inputStream);
+                encodedPackets = StreamUtils.readStringsFromStream(inputStream);
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
                 // TODO: display error to user?
             }
-            Packet<ServerCommand> packet = packetCoder.decode(encodedPacket, 0);
-            inputPacketGateway.handleResponse(packet);
+            for (String encodedPacket : encodedPackets) {
+                Packet<ServerCommand> packet = packetCoder.decode(encodedPacket, 0);
+                inputPacketGateway.handleResponse(packet);
+            }
         }
     }
 }

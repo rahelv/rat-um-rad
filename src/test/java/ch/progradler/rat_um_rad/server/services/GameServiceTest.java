@@ -22,12 +22,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.INVALID_ACTION_FATAL;
-import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.NEW_PLAYER;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -229,7 +227,7 @@ class GameServiceTest {
 
             gameService.joinGame(ipAddressJoiner, gameId);
 
-            utilities.verify(() -> GameServiceUtil.startGame(game, mockGameRepository, mockOutputPacketGateway));
+            utilities.verify(() -> GameServiceUtil.prepareGame(game, mockGameRepository, mockOutputPacketGateway));
         }
     }
 
@@ -339,7 +337,7 @@ class GameServiceTest {
     }
 
     @Test
-    void selectShortDestinationCardStartsGameRoundsIfAllPlayersHaveSelected() {
+    void selectShortDestinationCardSetsStatusToStartedAndNotifiesEveryoneIfAllPlayersHaveSelectedAndStatusWasPrep() {
         String ipAddress = "clientA";
         List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
 
@@ -363,12 +361,14 @@ class GameServiceTest {
 
             gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
 
-            utilities.verify(() -> GameServiceUtil.startGameRounds(game, mockGameRepository, mockOutputPacketGateway));
+            assertEquals(STARTED, game.getStatus());
+            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameAction(ipAddress, game,
+                    mockOutputPacketGateway, DESTINATION_CARDS_SELECTED));
         }
     }
 
     @Test
-    void selectShortDestinationCardSetsDoesNotStartGameRoundsIfNotAllPlayersHaveSelected() {
+    void selectShortDestinationCardSetsDoesNotSetStatusToStartedIfNotAllPlayersHaveSelected() {
         String ipAddress = "clientA";
         List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
 
@@ -396,7 +396,8 @@ class GameServiceTest {
 
             gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
 
-            utilities.verify(() -> GameServiceUtil.startGameRounds(game, mockGameRepository, mockOutputPacketGateway), never());
+            assertEquals(PREPARATION, game.getStatus());
+            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameAction(any(), any(), any(), any()), never());
         }
     }
 

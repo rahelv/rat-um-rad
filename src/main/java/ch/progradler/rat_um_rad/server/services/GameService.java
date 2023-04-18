@@ -19,6 +19,7 @@ import java.util.*;
 
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.sendInvalidActionResponse;
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.validateAndHandleActionPrecondition;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
@@ -90,7 +91,7 @@ public class GameService implements IGameService {
         }
 
         if (game.hasReachedRequiredPlayers()) {
-            GameServiceUtil.startGame(game, gameRepository, outputPacketGateway);
+            GameServiceUtil.prepareGame(game, gameRepository, outputPacketGateway);
 
             //send updated game list to all players
             Packet.Server packet = new Packet.Server(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
@@ -129,32 +130,43 @@ public class GameService implements IGameService {
 
         switch (game.getStatus()) {
             case PREPARATION -> {
-                if (!checkValidSelectedCardIds(player, selectedCardIds)) {
-                    sendInvalidActionResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID, outputPacketGateway);
-                    return;
-                }
-
-                handleShortDestCardsSelection(selectedCardIds, game, player);
-                game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, true);
-
-                gameRepository.updateGame(game);
-
-                if (allPlayersSelectedShortDestCards(game)) {
-                    GameServiceUtil.startGameRounds(game, gameRepository, outputPacketGateway);
-                }
+                handleShortDestinationCardsSelectedInPreparation(ipAddress, selectedCardIds, game, player);
             }
             case STARTED -> {
-                if (!validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
-                    return;
-                }
-                handleShortDestCardsSelection(selectedCardIds, game, player);
-                gameRepository.updateGame(game);
-                GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_STARTED_SELECT_DESTINATION_CARDS);
+                handleShortDestinationCardsSelectedAsAction(ipAddress, selectedCardIds, game, player);
             }
         }
     }
 
-    private void handleShortDestCardsSelection(List<String> selectedCardIds, Game game, Player player) {
+    private void handleShortDestinationCardsSelectedInPreparation(String ipAddress, List<String> selectedCardIds, Game game, Player player) {
+        if (!checkValidSelectedCardIds(player, selectedCardIds)) {
+            sendInvalidActionResponse(ipAddress, ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID, outputPacketGateway);
+            return;
+        }
+
+        handleShortDestCardsSelectionGeneral(selectedCardIds, game, player);
+        game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, true);
+
+        if (allPlayersSelectedShortDestCards(game)) {
+            game.setStatus(STARTED);
+            GameServiceUtil.notifyPlayersOfGameAction(ipAddress, game, outputPacketGateway, DESTINATION_CARDS_SELECTED);
+        }
+
+        gameRepository.updateGame(game);
+    }
+
+    private void handleShortDestinationCardsSelectedAsAction(String ipAddress, List<String> selectedCardIds, Game game, Player player) {
+        if (!validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
+            return;
+        }
+
+        handleShortDestCardsSelectionGeneral(selectedCardIds, game, player);
+
+        gameRepository.updateGame(game);
+        GameServiceUtil.notifyPlayersOfGameAction(ipAddress, game, outputPacketGateway, DESTINATION_CARDS_SELECTED);
+    }
+
+    private void handleShortDestCardsSelectionGeneral(List<String> selectedCardIds, Game game, Player player) {
         List<DestinationCard> shortDestCardDeck = game.getDecksOfGame()
                 .getShortDestinationCardDeck().getCardDeck();
         List<DestinationCard> selectedCards = shortDestCardDeck.stream()
