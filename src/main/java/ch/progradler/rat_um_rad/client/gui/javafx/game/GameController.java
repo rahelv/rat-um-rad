@@ -87,7 +87,7 @@ public class GameController implements Initializable {
 
     private void startGameChooseDestinationCards(ClientGame clientGame) {
         Platform.runLater(() -> {
-            gameModel.getListener().selectDestinationCards(clientGame);
+            gameModel.getListener().selectDestinationCards(clientGame); //TODO: when game joined, this listener is never called
         });
     }
 

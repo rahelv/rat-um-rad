@@ -89,7 +89,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case GAME_CREATED -> {
                 ClientGame content = (ClientGame) packet.getContent();
-                notifyListenersOfType(content, packet.getCommand());
+                notifyListenersOfType(content, Command.GAME_CREATED);
             }
             case GAME_JOINED -> {
                 ClientGame clientGame = (ClientGame) packet.getContent();

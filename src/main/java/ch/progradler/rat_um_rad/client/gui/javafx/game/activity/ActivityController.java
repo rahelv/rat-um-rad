@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Controller for Activitieslist.fxml. Activities that happened in the game are displayed in a list.
+ * Controller for custom control Activitieslist.fxml. Activities that happened in the game are displayed in a list.
  */
 public class ActivityController extends AnchorPane {
     private ActivityModel activityModel;
@@ -33,7 +33,7 @@ public class ActivityController extends AnchorPane {
         this.activitiesListView.setItems(this.activityModel.getLatestActivities()); //bind ListView to latestActivities in the activityModel
     }
 
-    public void updateActitivites(List<String> activities) {
+    public void updateActivities(List<String> activities) {
         this.activityModel.updateLatestActivities(activities);
     }
 }

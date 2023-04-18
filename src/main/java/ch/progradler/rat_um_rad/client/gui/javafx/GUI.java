@@ -150,11 +150,10 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     @Override
     public void selectDestinationCards(ClientGame clientGame) {
         ChooseCardController controller = this.loadFXMLView("/views/game/ChooseCardView.fxml").getController();
-            this.chooseCardModel.setLongDestinationCard(clientGame.getOwnPlayer().getLongDestinationCard());
-            this.chooseCardModel.updateDestinationCardList(clientGame.getOwnPlayer().getShortDestinationCards());
-            controller.initData(this.chooseCardModel, this.window);
-            this.window.show();
-
+        this.chooseCardModel.setLongDestinationCard(clientGame.getOwnPlayer().getLongDestinationCard());
+        this.chooseCardModel.updateDestinationCardList(clientGame.getOwnPlayer().getShortDestinationCards());
+        controller.initData(this.chooseCardModel, this.window);
+        this.window.show();
     }
 
     @Override
