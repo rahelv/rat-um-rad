@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
 
 /**
  * Listens to incoming commands from a specific client via socket stream.
@@ -62,17 +63,15 @@ public class ClientInputListener implements Runnable {
             readUsername();
 
             while (true) {
-                String encoded = StreamUtils.readStringFromStream(inputStream);
-                //System.out.println("encoded packet " + encoded);
-                Packet packet = packetCoder.decode(encoded, 0);
-                inputPacketGateway.handleCommand(packet, ipAddress);
+                List<String> encodedPackets = StreamUtils.readStringsFromStream(inputStream);
+                for (String encodedPacket : encodedPackets) {
+                    Packet<ClientCommand> packet = packetCoder.decode(encodedPacket, 0);
+                    inputPacketGateway.handleCommand(packet, ipAddress);
+                }
                 // TODO: unittest
 
                 //TODO: implement QUIT scenario (with break)
                 //important to remove client from pool so server doesn't crash
-                //TODO: first, broadcast messages
-
-                //TODO: later, implement network protocol and chose action accordingly
             }
         } catch (SocketException e) {
             inputPacketGateway.handleCommand(new Packet.Client(ClientCommand.USER_SOCKET_DISCONNECTED,
@@ -88,8 +87,9 @@ public class ClientInputListener implements Runnable {
     }
 
     private void readUsername() throws IOException {
-        String usernamePacketEncoded = StreamUtils.readStringFromStream(inputStream);
-        Packet usernamePacket = packetCoder.decode(usernamePacketEncoded, 0);
+        List<String> usernamePacketEncoded = StreamUtils.readStringsFromStream(inputStream);
+
+        Packet<ClientCommand> usernamePacket = packetCoder.decode(usernamePacketEncoded.get(0), 0);
         String username = (String) usernamePacket.getContent();
         usernameReceivedListener.onUsernameReceived(username);
         inputPacketGateway.handleCommand(usernamePacket, ipAddress);

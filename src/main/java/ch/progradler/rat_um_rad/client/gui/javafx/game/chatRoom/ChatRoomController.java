@@ -26,7 +26,7 @@ public class ChatRoomController implements Initializable {
     private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
     public Button sendButton;
-    public ListView chatPaneListView;
+    public ListView<ChatMessage> chatPaneListView;
     private IUserService userService;
 
     /**
@@ -62,17 +62,8 @@ public class ChatRoomController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ChatMessage>() {
-            @Override
-            public void serverResponseReceived(ChatMessage content) {
-                chatMessageReceived(content);
-            }
-
-            @Override
-            public ServerCommand forCommand() {
-                return ServerCommand.GAME_INTERNAL_CHAT_SENT;
-            }
-        });
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(
+                getChatListener());
 
         this.chatRoomModel = new ChatRoomModel();
         chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty()); //bind TextField for Chat Input to model
@@ -85,14 +76,24 @@ public class ChatRoomController implements Initializable {
         }
     }
 
-    /**
-     * when a chatMessage is received on the ServerResponseHandler, adds the received message to the list.
-     *
-     * @param chatMessage
-     */
-    public void chatMessageReceived(ChatMessage chatMessage) {
-        Platform.runLater(() -> {
-            chatRoomModel.addChatMessageToList(chatMessage);
-        });
+    private ServerResponseListener<ChatMessage> getChatListener() {
+        return new ServerResponseListener<>() {
+            /**
+             * when a chatMessage is received on the ServerResponseHandler, adds the received message to the list.
+             *
+             * @param chatMessage
+             */
+            @Override
+            public void serverResponseReceived(ChatMessage chatMessage) {
+                Platform.runLater(() -> {
+                    chatRoomModel.addChatMessageToList(chatMessage);
+                });
+            }
+
+            @Override
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_INTERNAL_CHAT_SENT;
+            }
+        };
     }
 }
