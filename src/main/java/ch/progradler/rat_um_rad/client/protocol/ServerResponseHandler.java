@@ -37,7 +37,6 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
 
     @Override
     public void addListener(ServerResponseListener<?> listenerToAdd) {
-        System.out.println("adding listener" + listenerToAdd.getClass().getName());
         this.listeners.add(listenerToAdd);
     }
 
@@ -98,12 +97,11 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, ServerCommand.GAME_JOINED);
             }
-            case NEW_PLAYER -> {
+            case NEW_PLAYER, GAME_UPDATED, ROAD_BUILT -> { //TODO: what happens if game is updated the same time you're doing something (can this even happen?)
                 ClientGame clientGame = (ClientGame) packet.getContent();
-                notifyListenersOfType(clientGame, ServerCommand.NEW_PLAYER); //updated ClientGame is sent to Controller, so it can display the new state
+                notifyListenersOfType(clientGame, ServerCommand.GAME_UPDATED); //updated ClientGame is sent to Controller, so it can display the new state
             }
             case GAME_STARTED_SELECT_DESTINATION_CARDS -> { //TODO: soll auch benutzt werden um während dem Spiel karten zu ziehen
-                System.out.println("sendgames " + packet); // TODO: replace with logger
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType(content, packet.getCommand());

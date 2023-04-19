@@ -36,7 +36,6 @@ public class ChooseCardController {
     List<String> selectedRoadIdList = new ArrayList<>();
 
     public ChooseCardController() {
-        System.out.println("initialized");
         this.gameService = new GameService();
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
             @Override

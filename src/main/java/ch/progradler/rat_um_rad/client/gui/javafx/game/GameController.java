@@ -13,9 +13,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 public class GameController {
     private GameService gameService;
     Stage stage;
@@ -41,7 +38,7 @@ public class GameController {
 
             @Override
             public ServerCommand forCommand() {
-                return ServerCommand.NEW_PLAYER;
+                return ServerCommand.GAME_UPDATED;
             }
         });
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
@@ -70,17 +67,17 @@ public class GameController {
         this.gameModel.setClientGame(gameModel.getClientGame());
         this.gameMapController.initData(new GameMapModel(gameModel.getClientGame())); //TODO: maybe only call after game is started (in serverresponsehandler)
         //TODO: this.activityController.updateActitivites();
-        this.gameMapController.udpateGameMapModel(gameModel.getClientGame());
+        this.gameMapController.updateGameMapModel(gameModel.getClientGame());
         //TODO: activities should be implemented on server - this.activityController.updateActitivies(this.gameModel.getClientGame().getActivities());
     }
 
     public void gameUpdated(ClientGame content) {
-        System.out.println("game updated");
+        System.out.println("built roads: " + content.getRoadsBuilt().keySet());
         Platform.runLater(() -> {
             this.gameModel.setClientGame(content);
             this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
             //TODO: this.activityController.updateActitivites();
-            this.gameMapController.udpateGameMapModel(content);
+            this.gameMapController.updateGameMapModelWithMap(content);
             this.stage.show();
         });
         //TODO: if destinationcards received run chooseDestinationCards();

@@ -31,6 +31,7 @@ public class ClientOutput {
 
     public void sendPacketToClient(Packet<ServerCommand> packet) {
         String sendStr = packetCoder.encode(packet, 0);
+        //System.out.println("packet send: " +  sendStr);
         StreamUtils.writeStringToStream(sendStr, out);
     }
 

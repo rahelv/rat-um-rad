@@ -164,7 +164,6 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
      */
     @Override
     public void gameCreated(ClientGame content) {
-        System.out.println("game created");
         this.loadFXMLView("/views/game/GameView.fxml", this.gameController);
         this.gameModel = new GameModel(this, content); //TODO: gameController which is given to fxmlview also updated ??
         this.gameController.initData(this.gameModel, this.window);

@@ -237,10 +237,10 @@ public class GameService implements IGameService {
     @Override
     public void buildRoad(String ipAddress, String roadId) {
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
-        if (!GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
+       /* if (!GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
             LOGGER.info("User with Id "+ ipAddress+" couldn't build road with id "+roadId+" due to validateHAndleActionPrecondition");
             return;
-        }
+        }*/
 
         Map<String, String> roadsBuilt = game.getRoadsBuilt();
         if (roadsBuilt.containsKey(roadId)) {
@@ -258,15 +258,15 @@ public class GameService implements IGameService {
         Road road = roadOpt.get();
         Player player = game.getPlayers().get(ipAddress);
 
-        if (player.getWheelsRemaining() < road.getRequiredWheels()) {
+       /* if (player.getWheelsRemaining() < road.getRequiredWheels()) {
             sendInvalidActionResponse(ipAddress, NOT_ENOUGH_WHEELS_TO_BUILD_ROAD, outputPacketGateway);
             return;
-        }
+        }*/
 
-        if (!hasRequiredCardsToBuild(player, road)) {
+        /*if (!hasRequiredCardsToBuild(player, road)) {
             sendInvalidActionResponse(ipAddress, NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD, outputPacketGateway);
             return;
-        }
+        }*/
 
         handleBuildRoad(ipAddress, game, road);
     }
@@ -281,9 +281,9 @@ public class GameService implements IGameService {
                 .filter((c) -> c.getColor() == road.getColor())
                 .toList();
 
-        for (int i = 0; i < road.getRequiredWheels(); i++) {
+       /* for (int i = 0; i < road.getRequiredWheels(); i++) { //TODO: handle immutableCollectionsException
             player.getWheelCards().remove(playersCardsOfColor.get(i));
-        }
+        }*/
         player.setWheelsRemaining(player.getWheelsRemaining() - road.getRequiredWheels());
         player.setScore(player.getScore() + GameConfig.scoreForRoadBuild(road.getRequiredWheels()));
 

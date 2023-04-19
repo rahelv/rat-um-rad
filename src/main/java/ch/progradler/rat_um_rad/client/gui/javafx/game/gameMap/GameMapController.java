@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap;
 
+import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Road;
 import javafx.application.Platform;
@@ -9,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 
@@ -18,9 +20,12 @@ import java.io.IOException;
  * Shows the current Game Map
  */
 public class GameMapController extends GridPane {
+    private GameService gameService;
     private GameMapModel gameMapModel;
     @FXML
-    private ComboBox<Road> roadsToBuildList;
+    private ComboBox<Road> roadsToBuildListView;
+    @FXML
+    private ListView<String> roadsBuiltListView;
     @FXML
     private Label gameID;
     @FXML
@@ -30,6 +35,7 @@ public class GameMapController extends GridPane {
     @FXML
     private Label requiredPlayers;
     public GameMapController() {
+        this.gameService = new GameService();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/game/GameMapView.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -48,16 +54,22 @@ public class GameMapController extends GridPane {
             createdAt.setText(this.gameMapModel.getCreatedAt().toString());
             requiredPlayers.setText(String.valueOf(this.gameMapModel.getRequiredPlayers()));
         });
+        this.gameMapModel.updateFields();
 
         setRoadObservableList();
+        this.gameMapModel.setBuiltRoadObservableList();
+        roadsBuiltListView.setItems(this.gameMapModel.getBuiltRoadsObservableList());
     }
 
     private void setRoadObservableList() {
-        this.gameMapModel.setRoadObservableList();
-        roadsToBuildList.setItems(this.gameMapModel.getRoadObservableList());
-        roadsToBuildList.setConverter(new StringConverter<Road>() {
+        this.gameMapModel.setRoadsToBuildObservableList();
+        roadsToBuildListView.setItems(this.gameMapModel.getRoadsToBuildObservableList());
+        roadsToBuildListView.setConverter(new StringConverter<Road>() {
             @Override
             public String toString(Road object) {
+                if(object == null) {
+                    return "";
+                }
                 return object.getId();
             }
 
@@ -66,7 +78,7 @@ public class GameMapController extends GridPane {
                 return null;
             }
         });
-        roadsToBuildList.setCellFactory(
+        roadsToBuildListView.setCellFactory(
                 listview -> new ListCell<Road>() {
                     @Override
                     public void updateItem(Road road, boolean empty) {
@@ -82,14 +94,23 @@ public class GameMapController extends GridPane {
         );
     }
 
-    public void udpateGameMapModel(ClientGame clientGame) {
+    public void updateGameMapModel(ClientGame clientGame) {
         this.gameMapModel.updateClientGame(clientGame);
+    }
+
+    public void updateGameMapModelWithMap(ClientGame clientGame) {
+        this.gameMapModel.updateClientGameWithMap(clientGame);
+        this.gameMapModel.updateFields();
     }
 
 
     @FXML
     private void buildRoadAction(ActionEvent event) {
-        //TODO:  this.gameService.buildRoad(this.roadsToBuildList.getValue());
+        try {
+            this.gameService.buildRoad(this.roadsToBuildListView.getValue().getId());
+        } catch (IOException e) {
+           e.printStackTrace(); //TODO: signal failure to user an let him build the road again
+        }
     }
 
 }

@@ -198,10 +198,10 @@ public class GameServiceUtil {
             return false;
         }
 
-        if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) {
+       /* if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) { //TODO: uses this method when cards are selected but in the beginning it's nobodys turn!!!
             sendInvalidActionResponse(ipAddress, NOT_PLAYERS_TURN, outputPacketGateway);
             return false;
-        }
+        }*/
         return true;
     }
 
