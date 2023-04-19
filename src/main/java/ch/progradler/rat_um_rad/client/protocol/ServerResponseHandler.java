@@ -60,6 +60,8 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(change, packet.getCommand());
             }
             case INVALID_ACTION_FATAL -> {
+                String error = (String) packet.getContent();
+                System.out.println(error);
                 //TODO: differentiate further between fatal actions
                 //this.userService.chooseAndSendUsername(this.serverOutput);
                 switch ((String) packet.getContent()) {
