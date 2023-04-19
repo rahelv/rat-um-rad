@@ -5,6 +5,7 @@ import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -35,10 +36,12 @@ public class LobbyModel {
     }
 
     public void updateGameList(List<GameBase> gameList) {
-        this.gameInfoList.clear();
-        for (GameBase gameBase : gameList) {
-            this.gameInfoList.add(gameBase);
-        }
+        Platform.runLater(() -> {
+            gameInfoList.clear();
+            for (GameBase gameBase : gameList) {
+                gameInfoList.add(gameBase);
+            } // do your GUI stuff here
+        });
     }
 
     public ObservableList<GameBase> getGameInfoList() {
