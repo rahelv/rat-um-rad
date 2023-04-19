@@ -90,7 +90,7 @@ public class GameService implements IGameService {
             return;
         }
 
-        if (game.hasReachedRequiredPlayers()) {
+        if (game.hasReachedRequiredPlayers()) { //TODO: when player joins game and it has reached required players, not all get the updated command
             GameServiceUtil.startGame(game, gameRepository, outputPacketGateway);
 
             //send updated game list to all players

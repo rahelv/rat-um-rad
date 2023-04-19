@@ -10,7 +10,6 @@ import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -20,22 +19,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CreateGameController implements Initializable {
+public class CreateGameController {
    //public TextField groupNameTextField;
     private Stage stage;
-    public Spinner<Integer> playerNumSpinner;
+    @FXML
+    private Spinner<Integer> playerNumSpinner;
     public Button createGameButton;
     private CreateGameModel createGameModel;
     private IGameService gameService;
 
-    /** initializes the controller.
-     * @param location  The location used to resolve relative paths for the root object, or
-     *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
-     *                  the root object was not localized.
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public CreateGameController() {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
             @Override
             public void serverResponseReceived(ClientGame content) {
@@ -49,12 +42,6 @@ public class CreateGameController implements Initializable {
         });
 
         this.gameService = new GameService();
-
-        SpinnerValueFactory.IntegerSpinnerValueFactory spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(2, 5, 1);
-        playerNumSpinner.setValueFactory(spinnerValueFactory);
-        playerNumSpinner.setEditable(false);
-
-       //groupNameTextField.textProperty().bindBidirectional(createGameModel.getGroupNameInputProperty());
     }
 
     /** initializes the model which comes from the GUI class.
@@ -64,6 +51,11 @@ public class CreateGameController implements Initializable {
     public void initData(CreateGameModel createGameModel, Stage window) {
         this.createGameModel = createGameModel;
         this.stage = window;
+
+
+        SpinnerValueFactory.IntegerSpinnerValueFactory spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(2, 5, 1);
+        playerNumSpinner.setValueFactory(spinnerValueFactory);
+        playerNumSpinner.setEditable(false);
     }
 
     /** bound to createGameButton in View. sends request to server to create game through gameService.

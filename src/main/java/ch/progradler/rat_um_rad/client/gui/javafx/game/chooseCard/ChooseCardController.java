@@ -12,7 +12,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.stage.Stage;
@@ -25,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ChooseCardController implements Initializable {
+public class ChooseCardController {
 
     private Stage stage;
     @FXML
@@ -36,14 +35,8 @@ public class ChooseCardController implements Initializable {
     private IGameService gameService;
     List<String> selectedRoadIdList = new ArrayList<>();
 
-    /** initializes the controller.
-     * @param location  The location used to resolve relative paths for the root object, or
-     *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
-     *                  the root object was not localized.
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public ChooseCardController() {
+        System.out.println("initialized");
         this.gameService = new GameService();
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
             @Override

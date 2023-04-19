@@ -11,7 +11,6 @@ import ch.progradler.rat_um_rad.shared.protocol.Command;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -25,7 +24,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class GameOverviewController implements Initializable {
+public class GameOverviewController {
     @FXML
     private LobbyController lobbyController;
     @FXML
@@ -37,8 +36,8 @@ public class GameOverviewController implements Initializable {
 
     private IGameService gameService;
     private GameOverviewModel gameOverviewModel;
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+
+    public GameOverviewController() {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<List<GameBase>>() {
             @Override
             public void serverResponseReceived(List<GameBase> content) {

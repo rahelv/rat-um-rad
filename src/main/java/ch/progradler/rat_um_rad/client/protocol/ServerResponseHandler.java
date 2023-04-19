@@ -2,11 +2,8 @@ package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.server.Server;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
@@ -36,6 +33,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
 
     @Override
     public void addListener(ServerResponseListener<?> listenerToAdd) {
+        System.out.println("adding listener" + listenerToAdd.getClass().getName());
         this.listeners.add(listenerToAdd);
     }
 

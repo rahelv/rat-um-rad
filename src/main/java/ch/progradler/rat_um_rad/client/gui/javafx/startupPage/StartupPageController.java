@@ -11,7 +11,6 @@ import ch.progradler.rat_um_rad.shared.protocol.Command;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -22,7 +21,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class StartupPageController implements Initializable {
+public class StartupPageController {
     private UserService userService;
     public ServerResponseListener<List<String>> allPlayersListener;
 
@@ -44,8 +43,7 @@ public class StartupPageController implements Initializable {
         this.showUsernameChangeDialog();
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public StartupPageController() {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
             @Override
             public void serverResponseReceived(ClientGame content) {

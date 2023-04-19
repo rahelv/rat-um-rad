@@ -7,19 +7,22 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 public class StreamUtilsTest {
-
     @Test
-    public void testReadStringFromStream() throws IOException {
-        String expected = "hello/world![#|?!&&/$$£üäö";
+    public void testReadStringsFromStream() throws IOException {
+        String sent1 = "hello/world![#|?!&&/$$£üäö";
+        String sent2 = "/$$£üäöDifferent";
+        String expected = sent1 + StreamUtils.DELIMITER + sent2;
 
         byte[] dataBytes = expected.getBytes(StandardCharsets.UTF_8);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(dataBytes);
 
-        String result = StreamUtils.readStringFromStream(inputStream);
+        List<String> result = StreamUtils.readStringsFromStream(inputStream);
 
-        Assertions.assertEquals(expected, result);
+        Assertions.assertEquals(Arrays.asList(sent1, sent2), result);
     }
 
     @Test
@@ -28,6 +31,6 @@ public class StreamUtilsTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         StreamUtils.writeStringToStream(testSendStr, outputStream);
-        Assertions.assertEquals(testSendStr, outputStream.toString(StandardCharsets.UTF_8));
+        Assertions.assertEquals(testSendStr + StreamUtils.DELIMITER, outputStream.toString(StandardCharsets.UTF_8));
     }
 }

@@ -30,12 +30,18 @@ import java.util.List;
  */
 public class GUI extends Application implements ControllerChangeListener<UsernameChangeController> {
     private UsernameChangeModel usernameChangeModel;
+    private UsernameChangeController usernameChangeController;
     private StartupPageModel startupPageModel;
+    private StartupPageController startupPageController;
     private GameOverviewModel gameOverviewModel;
+    private GameOverviewController gameOverviewController;
     private CreateGameModel createGameModel;
+    private CreateGameController createGameController;
     private LobbyModel lobbyModel;
     private GameModel gameModel;
+    private GameController gameController;
     private ChooseCardModel chooseCardModel;
+    private ChooseCardController chooseCardController;
     Stage window;
     Scene mainScene;
 
@@ -80,19 +86,30 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         this.window = primaryStage;
 
         this.startupPageModel = new StartupPageModel(this);
+        loadControllers();
 
-        UsernameChangeController usernameChangeController = this.loadFXMLView("/views/ChangeUsernameView.fxml").getController();
-        usernameChangeController.initData(this.usernameChangeModel, this.window);
+        this.loadFXMLView("/views/ChangeUsernameView.fxml", this.usernameChangeController);
+        this.usernameChangeController.initData(this.usernameChangeModel, this.window);
         this.window.show();
+    }
+
+    private void loadControllers() {
+        this.usernameChangeController = new UsernameChangeController();
+        this.createGameController = new CreateGameController();
+        this.gameOverviewController = new GameOverviewController();
+        this.gameController = new GameController();
+        this.startupPageController = new StartupPageController();
+        this.chooseCardController = new ChooseCardController();
     }
 
     /** Takes a path to the corresponding FXML file and loads it.
      * @param path
      * @return
      */
-    private FXMLLoader loadFXMLView(String path) {
+    private FXMLLoader loadFXMLView(String path, Object controller) {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(path));
+        loader.setController(controller);
         try {
             Parent content = loader.load();
             this.mainScene = new Scene(content, 640, 480);
@@ -110,25 +127,23 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     public void controllerChanged(String command) {
         switch (command) {
             case "showStartupPage" -> {
-                StartupPageController startupPageController = this.loadFXMLView("/views/StartupPage.fxml").getController();
-                //TODO: handle initialization of included lobby controller https://stackoverflow.com/questions/47295128/javafx-include-fxml-with-an-event-in-it
-                startupPageController.initData(this.usernameChangeModel, this.startupPageModel, this.window, this.lobbyModel);
-
+                this.loadFXMLView("/views/StartupPage.fxml", this.startupPageController);
+                this.startupPageController.initData(this.usernameChangeModel, this.startupPageModel, this.window, this.lobbyModel);
                 this.window.show();
             }
             case "showUsernameChange" -> {
-                UsernameChangeController usernameChangeController = this.loadFXMLView("/views/ChangeUsernameView.fxml").getController();
+                this.loadFXMLView("/views/ChangeUsernameView.fxml", this.usernameChangeController);
                 usernameChangeController.initData(this.usernameChangeModel, this.window);
                 this.window.show();
             }
             case "showAllGamesView" -> {
-                GameOverviewController gameOverviewController = this.loadFXMLView("/views/GameOverview.fxml").getController();
+                this.loadFXMLView("/views/GameOverview.fxml", this.gameOverviewController);
                 gameOverviewController.initData(this.gameOverviewModel, this.lobbyModel);
                 this.window.show();
             }
             case "createGame" -> {
-                CreateGameController controller = this.loadFXMLView("/views/CreateGameView.fxml").getController();
-                controller.initData(this.createGameModel, this.window);
+                this.loadFXMLView("/views/CreateGameView.fxml", this.createGameController);
+                this.createGameController.initData(this.createGameModel, this.window);
                 this.window.show();
             }
         }
@@ -140,27 +155,28 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
      */
     @Override
     public void gameCreated(ClientGame content) {
-        this.gameModel = new GameModel(this, content);
+        System.out.println("game created");
+        this.loadFXMLView("/views/game/GameView.fxml", this.gameController);
+        this.gameModel = new GameModel(this, content); //TODO: gameController which is given to fxmlview also updated ??
+        this.gameController.initData(this.gameModel, this.window);
 
-        GameController controller = this.loadFXMLView("/views/game/GameView.fxml").getController();
-        controller.initData(this.gameModel, this.window);
         this.window.show();
     }
 
     @Override
     public void selectDestinationCards(ClientGame clientGame) {
-        ChooseCardController controller = this.loadFXMLView("/views/game/ChooseCardView.fxml").getController();
         this.chooseCardModel.setLongDestinationCard(clientGame.getOwnPlayer().getLongDestinationCard());
         this.chooseCardModel.updateDestinationCardList(clientGame.getOwnPlayer().getShortDestinationCards());
-        controller.initData(this.chooseCardModel, this.window);
+        this.loadFXMLView("/views/game/ChooseCardView.fxml", this.chooseCardController);
+        this.chooseCardController.initData(this.chooseCardModel, this.window);
         this.window.show();
     }
 
     @Override
     public void returnToGame(ClientGame clientGame) {
         this.gameModel.setClientGame(clientGame);
-        GameController controller = this.loadFXMLView("/views/game/GameView.fxml").getController();
-        controller.initData(this.gameModel, this.window);
+        this.loadFXMLView("/views/game/GameView.fxml", this.gameController);
+        gameController.initData(this.gameModel, this.window);
         this.window.show();
     }
 }

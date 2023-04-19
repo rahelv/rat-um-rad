@@ -2,8 +2,6 @@ package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
