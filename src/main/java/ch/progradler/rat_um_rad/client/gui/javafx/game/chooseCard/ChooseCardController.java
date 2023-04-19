@@ -5,7 +5,7 @@ import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -49,8 +49,8 @@ public class ChooseCardController {
             } //TODO: what is received and react to errors
 
             @Override
-            public Command forCommand() {
-                return Command.DESTINATION_CARDS_SELECTED;
+            public ServerCommand forCommand() {
+                return ServerCommand.DESTINATION_CARDS_SELECTED;
             }
         });
     }
