@@ -36,10 +36,12 @@ public class LobbyModel {
     }
 
     public void updateGameList(List<GameBase> gameList) {
-        this.gameInfoList.clear();
-        for (GameBase gameBase : gameList) {
-            this.gameInfoList.add(gameBase);
-        }
+        Platform.runLater(() -> {
+            gameInfoList.clear();
+            for (GameBase gameBase : gameList) {
+                gameInfoList.add(gameBase);
+            } // do your GUI stuff here
+        });
     }
 
     public ObservableList<GameBase> getGameInfoList() {
