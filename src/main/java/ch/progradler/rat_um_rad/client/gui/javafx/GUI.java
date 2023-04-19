@@ -21,6 +21,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.List;
  * This is the Rat um Rad JavaFX-Application.
  */
 public class GUI extends Application implements ControllerChangeListener<UsernameChangeController> {
+    public static final Logger LOGGER = LogManager.getLogger();
     private UsernameChangeModel usernameChangeModel;
     private StartupPageModel startupPageModel;
     private GameOverviewModel gameOverviewModel;
@@ -69,6 +72,9 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
                 this.usernameChangeModel = new UsernameChangeModel(new User(), this);
             }
         } catch (IndexOutOfBoundsException e) {
+            if(e instanceof  IndexOutOfBoundsException){
+                LOGGER.error("can't start stage correctly");
+            }
             this.usernameChangeModel = new UsernameChangeModel(new User(), this);
         }
 
@@ -99,6 +105,9 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
             this.window.setScene(mainScene);
         } catch (IOException e) {
             e.printStackTrace();
+            if(e instanceof IOException){
+                LOGGER.error("FXMLLoader can't load view correctly");
+            }
         }
         return loader;
     }

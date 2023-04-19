@@ -14,12 +14,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class CreateGameController implements Initializable {
+    public static final Logger LOGGER = LogManager.getLogger();
    //public TextField groupNameTextField;
     private Stage stage;
     public Spinner<Integer> playerNumSpinner;
@@ -74,6 +77,9 @@ public class CreateGameController implements Initializable {
         try {
             gameService.createGame(playerCount.intValue());
         } catch (IOException e) {
+            if(e instanceof IOException){
+                LOGGER.error("create game button action has error");
+            }
             e.printStackTrace();
         }
     }
