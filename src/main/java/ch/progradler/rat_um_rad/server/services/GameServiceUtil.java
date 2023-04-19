@@ -16,13 +16,14 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
@@ -32,6 +33,8 @@ import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
  * No methods are <code>public</code>.
  */
 public class GameServiceUtil {
+    public static final Logger LOGGER = LogManager.getLogger();
+
     static ClientGame toClientGame(Game game, String forPlayerIpAddress) {
         List<VisiblePlayer> otherPlayers = new ArrayList<>();
         game.getPlayers().forEach((key, player) -> {
@@ -81,6 +84,7 @@ public class GameServiceUtil {
     }
 
     public static void notifyPlayersOfGameUpdate(Game game, OutputPacketGateway outputPacketGateway, ServerCommand command) {
+        LOGGER.info("Notifying players of game update for game " + game.getId() + "and command " + command);
         Set<String> playerIps = game.getPlayerIpAddresses();
         for (String ipAddress : playerIps) {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
@@ -96,6 +100,8 @@ public class GameServiceUtil {
      * @param game    the game
      */
     public static void notifyPlayersOfGameAction(String actorIp, Game game, OutputPacketGateway outputPacketGateway, ServerCommand actionCommand) {
+        LOGGER.info("Notifying players of game action by " + actorIp +
+                " for game " + game.getId() + "and actionCommand " + actionCommand);
         for (String ipAddress : game.getPlayerIpAddresses()) {
             if (ipAddress.equals(actorIp)) continue;
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
@@ -107,6 +113,8 @@ public class GameServiceUtil {
     }
 
     public static void prepareGame(Game game, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
+        LOGGER.info("Preparing game " + game.getId());
+
         game.setStatus(PREPARATION);
 
         shuffleDecks(game);
@@ -127,10 +135,7 @@ public class GameServiceUtil {
             player.setPlayingOrder(playingOrders.get(i));
         }
         gameRepository.updateGame(game);
-        for (String ipAddress : game.getPlayerIpAddresses()) {
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            outputPacketGateway.sendPacket(ipAddress, new Packet.Server(GAME_STARTED_SELECT_DESTINATION_CARDS, clientGame, GAME));
-        }
+        notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_STARTED_SELECT_DESTINATION_CARDS);
     }
 
     private static void shuffleDecks(Game game) {

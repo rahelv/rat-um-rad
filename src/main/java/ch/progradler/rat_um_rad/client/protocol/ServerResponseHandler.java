@@ -11,6 +11,8 @@ import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,8 @@ import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_IN
  * Handles incoming responses from server.
  */
 public class ServerResponseHandler implements ServerInputPacketGateway {
+    public static final Logger LOGGER = LogManager.getLogger();
+
     private final List<ServerResponseListener<?>> listeners = new ArrayList<>();
     private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
@@ -44,6 +48,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
      */
     @Override
     public void handleResponse(Packet<ServerCommand> packet) {
+        LOGGER.info("Received server command:  " + packet.getCommand());
         //TODO: implement QUIT command and other commands
 
         switch (packet.getCommand()) {

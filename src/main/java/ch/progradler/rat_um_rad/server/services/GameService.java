@@ -14,13 +14,14 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.sendInvalidActionResponse;
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.validateAndHandleActionPrecondition;
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.WAITING_FOR_PLAYERS;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
@@ -30,6 +31,7 @@ import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRando
  * This is the implementation of {@link IGameService}.
  */
 public class GameService implements IGameService {
+    public static final Logger LOGGER = LogManager.getLogger();
     private final OutputPacketGateway outputPacketGateway;
     private final IGameRepository gameRepository;
     private final IUserRepository userRepository;
@@ -38,6 +40,7 @@ public class GameService implements IGameService {
         this.outputPacketGateway = outputPacketGateway;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
+        LOGGER.info("GameService created.");
     }
 
     @Override
@@ -72,6 +75,7 @@ public class GameService implements IGameService {
         //Send updated game list to all players
         Packet.Server packet = new Packet.Server(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
         outputPacketGateway.broadcast(packet);
+        LOGGER.info("Game with Id "+gameCreated.getId()+" created from user with Id "+gameCreated.getCreatorPlayerIpAddress());
     }
 
     @Override
@@ -85,13 +89,17 @@ public class GameService implements IGameService {
             outputPacketGateway.sendPacket(ipAddress, new Packet.Server(GAME_JOINED, clientGame, GAME));
 
             GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
+            LOGGER.info("User with Id "+ ipAddress+" joined Game with id "+gameId);
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet.Server(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
+            LOGGER.info("User with Id "+ ipAddress+" couldn't join game with id "+gameId);
             return;
         }
 
         if (game.hasReachedRequiredPlayers()) {
+            LOGGER.info("Enough players in game with id "+gameId);
             GameServiceUtil.prepareGame(game, gameRepository, outputPacketGateway);
+            LOGGER.info("Called prepareGame() for game with id "+ gameId);
 
             //send updated game list to all players
             Packet.Server packet = new Packet.Server(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
@@ -117,12 +125,14 @@ public class GameService implements IGameService {
         if (selectedCardIds.isEmpty()) {
             sendInvalidActionResponse(ipAddress,
                     ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID, outputPacketGateway);
+            LOGGER.info("User with Id "+ ipAddress+" coudln't select shortDestinationCards due to isempty()");
             return;
         }
 
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
         if (game == null) {
             sendInvalidActionResponse(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME, outputPacketGateway);
+            LOGGER.info("User with Id "+ ipAddress+" coudln't select shortDestinationCards due to game == null");
             return;
         }
 
@@ -131,9 +141,11 @@ public class GameService implements IGameService {
         switch (game.getStatus()) {
             case PREPARATION -> {
                 handleShortDestinationCardsSelectedInPreparation(ipAddress, selectedCardIds, game, player);
+                LOGGER.info("User with Id "+ ipAddress+" selected shortDestinaitonCards in status "+ PREPARATION.toString());
             }
             case STARTED -> {
                 handleShortDestinationCardsSelectedAsAction(ipAddress, selectedCardIds, game, player);
+                LOGGER.info("User with Id "+ ipAddress+" selected shortDestinaitonCards in status "+ STARTED.toString());
             }
         }
     }
@@ -226,6 +238,7 @@ public class GameService implements IGameService {
     public void buildRoad(String ipAddress, String roadId) {
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
         if (!GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
+            LOGGER.info("User with Id "+ ipAddress+" couldn't build road with id "+roadId+" due to validateHAndleActionPrecondition");
             return;
         }
 
