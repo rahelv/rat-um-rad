@@ -10,22 +10,10 @@ import ch.progradler.rat_um_rad.client.protocol.ServerInputListener;
 import ch.progradler.rat_um_rad.client.protocol.ServerOutput;
 import ch.progradler.rat_um_rad.client.protocol.ServerResponseHandler;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
-import ch.progradler.rat_um_rad.shared.models.ChatMessage;
-import ch.progradler.rat_um_rad.shared.models.UsernameChange;
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
-import ch.progradler.rat_um_rad.shared.protocol.coder.*;
-import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.DestinationCardCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.WheelCardCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.game.CityCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.game.GameMapCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.PacketCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketCoder;
 import javafx.application.Application;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,16 +35,15 @@ public class Client {
     public void start(String host, int port, String username) { //TODO: handle initial username
         System.out.format("Starting Client on %s %d\n", host, port);
 
-        Coder<Packet> packetCoder = PacketCoder.defaultPacketCoder();
         try {
             Socket socket = new Socket(host, port);
-            ServerOutput serverOutput = new ServerOutput(socket, packetCoder);
+            ServerOutput serverOutput = new ServerOutput(socket, PacketCoder.defaultClientPacketCoder());
 
             OutputPacketGatewaySingleton.setOutputPacketGateway(serverOutput);
 
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
             //startCommandHandler(userService, host, usernameHandler, username);
-            startServerListener(socket, packetCoder, clientPingPongRunner);
+            startServerListener(socket, PacketCoder.defaultServerPacketCoder(), clientPingPongRunner);
 
             Application.launch(GUI.class, username);
         } catch (Exception e) {
@@ -91,7 +78,7 @@ public class Client {
      * @param clientPingPongRunner
      */
     private void startServerListener(Socket socket,
-                                     Coder<Packet> packetCoder,
+                                     Coder<Packet<ServerCommand>> packetCoder,
                                      ClientPingPongRunner clientPingPongRunner) {
         PackagePresenter presenter = new CommandLinePresenter();
         ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner);

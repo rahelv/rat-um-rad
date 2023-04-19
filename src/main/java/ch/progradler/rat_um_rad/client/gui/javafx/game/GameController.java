@@ -8,14 +8,12 @@ import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class GameController {
@@ -35,7 +33,6 @@ public class GameController {
      * */
     public GameController() {
         this.gameService = new GameService();
-        System.out.println("init gameController");
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
             @Override
             public void serverResponseReceived(ClientGame content) {
@@ -43,8 +40,8 @@ public class GameController {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.NEW_PLAYER;
+            public ServerCommand forCommand() {
+                return ServerCommand.NEW_PLAYER;
             }
         });
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
@@ -54,13 +51,15 @@ public class GameController {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_STARTED_SELECT_DESTINATION_CARDS;
             }
         });
     }
 
-    /** initializes the game model and binds data to view.
+    /**
+     * initializes the game model and binds data to view.
+     *
      * @param gameModel
      * @param stage
      */

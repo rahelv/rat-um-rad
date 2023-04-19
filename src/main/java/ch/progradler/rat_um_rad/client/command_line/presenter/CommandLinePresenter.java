@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 
 /**
  * Presents packets via command line.
@@ -15,7 +16,7 @@ public class CommandLinePresenter implements PackagePresenter {
      * @param packet
      */
     @Override
-    public void display(Packet packet) {
+    public void display(Packet<ServerCommand> packet) {
         Object content = packet.getContent();
         ContentType contentType = packet.getContentType();
 
@@ -35,7 +36,7 @@ public class CommandLinePresenter implements PackagePresenter {
             case USER_DISCONNECTED -> {
                 displayUserDisconnected((String) content);
             }
-            case SEND_BROADCAST_CHAT -> {
+            case BROADCAST_CHAT_SENT -> {
                 if (contentType == ContentType.CHAT_MESSAGE) {
                     displayChatMessage((ChatMessage) content);
                 }

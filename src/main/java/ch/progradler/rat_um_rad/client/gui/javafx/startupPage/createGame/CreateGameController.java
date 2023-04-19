@@ -5,8 +5,7 @@ import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -36,8 +35,8 @@ public class CreateGameController {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.GAME_CREATED;
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_CREATED;
             }
         });
 

@@ -3,7 +3,7 @@ package ch.progradler.rat_um_rad.client.services;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ class GameServiceTest {
 
         gameService.createGame(requiredPlayerCount);
 
-        Packet expected = new Packet(Command.CREATE_GAME, requiredPlayerCount, ContentType.INTEGER);
+        Packet.Client expected = new Packet.Client(ClientCommand.CREATE_GAME, requiredPlayerCount, ContentType.INTEGER);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
 
@@ -45,7 +45,7 @@ class GameServiceTest {
 
         gameService.buildRoad(roadId);
 
-        Packet expected = new Packet(Command.BUILD_ROAD, roadId, ContentType.STRING);
+        Packet.Client expected = new Packet.Client(ClientCommand.BUILD_ROAD, roadId, ContentType.STRING);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
 
@@ -56,7 +56,7 @@ class GameServiceTest {
 
         gameService.buildGreyRoad(roadId, color);
 
-        Packet expected = new Packet(Command.BUILD_ROAD, new BuildRoadInfo(roadId, color), ContentType.BUILD_ROAD_INFO);
+        Packet.Client expected = new Packet.Client(ClientCommand.BUILD_ROAD, new BuildRoadInfo(roadId, color), ContentType.BUILD_ROAD_INFO);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
 }

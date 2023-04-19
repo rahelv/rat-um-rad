@@ -5,9 +5,9 @@ import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeC
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +37,7 @@ class ServerResponseHandlerTest {
         serverResponseHandler.addListener(mockListener);
 
         UsernameChange change = new UsernameChange("old", "new");
-        Packet packet = new Packet(Command.USERNAME_CONFIRMED, change, ContentType.USERNAME_CHANGE);
+        Packet.Server packet = new Packet.Server(ServerCommand.USERNAME_CONFIRMED, change, ContentType.USERNAME_CHANGE);
         serverResponseHandler.handleResponse(packet);
 
         // verify(mockController).usernameChangeReceived(change);

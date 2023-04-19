@@ -7,10 +7,11 @@ import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -45,8 +46,8 @@ public class GameOverviewController {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.SEND_STARTED_GAMES;
+            public ServerCommand forCommand() {
+                return ServerCommand.SEND_STARTED_GAMES;
             }
         });
 
@@ -57,8 +58,8 @@ public class GameOverviewController {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.SEND_FINISHED_GAMES;
+            public ServerCommand forCommand() {
+                return ServerCommand.SEND_FINISHED_GAMES;
             }
         });
 
@@ -106,19 +107,21 @@ public class GameOverviewController {
         HBox hbox = new HBox();
         Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
+
         public Cell() {
             super();
-            hbox.getChildren().addAll(nameLabel,pane,listPlayersButton);
+            hbox.getChildren().addAll(nameLabel, pane, listPlayersButton);
             hbox.setHgrow(pane, Priority.ALWAYS);
             listPlayersButton.setOnAction(event -> {
                 System.out.println("listing all players in this game");
             });
         }
-        protected void updateItem(GameBase item, boolean empty){
+
+        protected void updateItem(GameBase item, boolean empty) {
             super.updateItem(item, empty);
             setText(null);
             setGraphic(null);
-            if(item != null && !empty){
+            if (item != null && !empty) {
                 nameLabel.setText(item.getId());
                 setGraphic(hbox);
             }

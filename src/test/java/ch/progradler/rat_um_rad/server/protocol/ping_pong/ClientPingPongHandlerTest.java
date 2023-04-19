@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
-import static ch.progradler.rat_um_rad.shared.protocol.Command.PONG;
+import static ch.progradler.rat_um_rad.shared.protocol.ClientCommand.PONG;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.NONE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -35,7 +35,7 @@ public class ClientPingPongHandlerTest {
         int timeCounter = 5; // below TIME_FOR_DISCONNECT;
         clientPingPongHandler.handleTimeForDisconnectOver(1, timeCounter);
 
-        Packet pingPacket = new Packet(PONG, null, NONE);
+        Packet.Client pingPacket = new Packet.Client(PONG, null, NONE);
         verify(mockOutputPacketGateway).sendPacket(pingPacket);
     }
 

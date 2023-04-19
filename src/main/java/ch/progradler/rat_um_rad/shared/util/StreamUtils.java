@@ -1,7 +1,10 @@
 package ch.progradler.rat_um_rad.shared.util;
 
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +15,7 @@ import java.util.List;
  * and send String into {@link OutputStream}.
  */
 public class StreamUtils {
+
     public static final String DELIMITER = "#####";
 
     public static List<String> readStringsFromStream(InputStream stream) throws IOException {
@@ -27,7 +31,6 @@ public class StreamUtils {
             strings.remove(strings.size() - 1);
         }
         return strings;
-
     }
 
     public static void writeStringToStream(String sendStr, OutputStream outStream) {

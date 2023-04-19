@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.shared.util;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -40,5 +41,9 @@ public class RandomGenerator {
             result.insert(offset, "-");
         }
         return result.toString();
+    }
+
+    public static void shuffle(List<?> list){
+        Collections.shuffle(list);
     }
 }

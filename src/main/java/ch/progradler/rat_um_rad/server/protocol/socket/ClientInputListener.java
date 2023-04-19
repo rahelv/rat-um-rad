@@ -4,7 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.InputPacketGateway;
 import ch.progradler.rat_um_rad.server.protocol.ClientDisconnectedListener;
 import ch.progradler.rat_um_rad.server.protocol.UsernameReceivedListener;
 import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
@@ -25,7 +25,7 @@ public class ClientInputListener implements Runnable {
     public static final Logger LOGGER = LogManager.getLogger();
     private final InputPacketGateway inputPacketGateway;
     private InputStream inputStream;
-    private final Coder<Packet> packetCoder;
+    private final Coder<Packet<ClientCommand>> packetCoder;
     private String ipAddress;
     private final ClientDisconnectedListener clientDisconnectedListener;
     private UsernameReceivedListener usernameReceivedListener;
@@ -33,7 +33,7 @@ public class ClientInputListener implements Runnable {
 
     public ClientInputListener(Socket socket,
                                InputPacketGateway inputPacketGateway,
-                               Coder<Packet> packetCoder,
+                               Coder<Packet<ClientCommand>> packetCoder,
                                String ipAddress,
                                ClientDisconnectedListener clientDisconnectedListener,
                                ServerPingPongRunner serverPingPongRunner) {
@@ -65,8 +65,8 @@ public class ClientInputListener implements Runnable {
             while (true) {
                 List<String> encodedPackets = StreamUtils.readStringsFromStream(inputStream);
                 for (String encodedPacket : encodedPackets) {
-                    Packet packet = packetCoder.decode(encodedPacket, 0);
-                    inputPacketGateway.handleClientCommand(packet, ipAddress);
+                    Packet<ClientCommand> packet = packetCoder.decode(encodedPacket, 0);
+                    inputPacketGateway.handleCommand(packet, ipAddress);
                 }
                 // TODO: unittest
 
@@ -74,7 +74,7 @@ public class ClientInputListener implements Runnable {
                 //important to remove client from pool so server doesn't crash
             }
         } catch (SocketException e) {
-            inputPacketGateway.handleClientCommand(new Packet(Command.USER_DISCONNECTED,
+            inputPacketGateway.handleCommand(new Packet.Client(ClientCommand.USER_SOCKET_DISCONNECTED,
                     null,
                     ContentType.NONE), ipAddress);
             System.out.println("Client " + ipAddress +
@@ -88,10 +88,11 @@ public class ClientInputListener implements Runnable {
 
     private void readUsername() throws IOException {
         List<String> usernamePacketEncoded = StreamUtils.readStringsFromStream(inputStream);
-        Packet usernamePacket = packetCoder.decode(usernamePacketEncoded.get(0), 0);
+
+        Packet<ClientCommand> usernamePacket = packetCoder.decode(usernamePacketEncoded.get(0), 0);
         String username = (String) usernamePacket.getContent();
         usernameReceivedListener.onUsernameReceived(username);
-        inputPacketGateway.handleClientCommand(usernamePacket, ipAddress);
+        inputPacketGateway.handleCommand(usernamePacket, ipAddress);
     }
 
     /**

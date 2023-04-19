@@ -8,15 +8,15 @@ import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
-
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
 
 /**
  * Handles incoming responses from server.
@@ -44,7 +44,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
      * commands in the switch cases or the used methods in the code block for each case.
      */
     @Override
-    public void handleResponse(Packet packet) {
+    public void handleResponse(Packet<ServerCommand> packet) {
         //TODO: implement QUIT command and other commands
 
         switch (packet.getCommand()) {
@@ -58,7 +58,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case INVALID_ACTION_FATAL -> {
                 //TODO: differentiate further between fatal actions
                 //this.userService.chooseAndSendUsername(this.serverOutput);
-                switch((String) packet.getContent()) {
+                switch ((String) packet.getContent()) {
                     case JOINING_NOT_POSSIBLE -> {
                         //TODO: implement
                     }
@@ -68,10 +68,10 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 }
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
-                List<String> allOnlinePlayers = (List<String>)packet.getContent();
+                List<String> allOnlinePlayers = (List<String>) packet.getContent();
                 notifyListenersOfType(allOnlinePlayers, packet.getCommand()); //TODO check if interface works correctly
             }
-            case SEND_GAME_INTERNAL_CHAT -> {
+            case GAME_INTERNAL_CHAT_SENT -> {
                 //TODO: update chatRoomModel
                 ChatMessage message = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
@@ -93,7 +93,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, Command.GAME_JOINED);
             }
-            case NEW_PLAYER-> {
+            case NEW_PLAYER -> {
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, Command.NEW_PLAYER); //updated ClientGame is sent to Controller, so it can display the new state
             }
@@ -111,7 +111,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
         }
     }
 
-    private <T> void notifyListenersOfType(T event, Command command) {
+    private <T> void notifyListenersOfType(T event, ServerCommand command) {
         for (ServerResponseListener<?> listener : listeners) {
             if (listener.forCommand() == command) {
                 ((ServerResponseListener<T>) listener).serverResponseReceived(event);
