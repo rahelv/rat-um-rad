@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -585,10 +586,11 @@ class GameServiceTest {
         when(map.getRoads()).thenReturn(Collections.singletonList(toBuild));
 
         Map<String, String> roadsBuilt = new HashMap<>();
+        List<Activity> activities = new ArrayList<>();
 
         Game game = new Game("game1", GameStatus.STARTED, map, new Date(),
                 "creator", 3,
-                Map.of(ipAddress, player), 4, roadsBuilt);
+                Map.of(ipAddress, player), 4, roadsBuilt, activities);
 
 
         try (MockedStatic<GameServiceUtil> utilities = mockStatic(GameServiceUtil.class)) {
@@ -607,6 +609,8 @@ class GameServiceTest {
                     .map(WheelCard::getCardID).toList();
             assertFalse(playerRemainingWheelCardIds.contains(expectedTakenWheelCards.get(0)));
             assertFalse(playerRemainingWheelCardIds.contains(expectedTakenWheelCards.get(1)));
+
+            assertEquals(Collections.singletonList(new Activity(player.getName(), ROAD_BUILT)), activities);
 
             // more assertions
             assertEquals(wheelsRemaining - requiredWheels, player.getWheelsRemaining());

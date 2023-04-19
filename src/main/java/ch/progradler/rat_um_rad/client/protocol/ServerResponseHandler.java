@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
@@ -50,6 +51,16 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
     public void handleResponse(Packet<ServerCommand> packet) {
         LOGGER.info("Received server command:  " + packet.getCommand());
         //TODO: implement QUIT command and other commands
+
+        // TODO: implement properly:
+        if (packet.getContentType() == ContentType.GAME) {
+            System.out.println("Activities of game: ");
+            List<Activity> activities = ((ClientGame) packet.getContent()).getActivities();
+            List<String> formatted = activities.stream()
+                    .map((activity -> activity.getUsername() + " did " + activity.getCommand()))
+                    .toList();
+            System.out.println(String.join(", ", formatted));
+        }
 
         switch (packet.getCommand()) {
             case PING -> {

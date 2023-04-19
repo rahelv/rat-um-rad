@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder.packet;
 
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.*;
@@ -42,13 +43,14 @@ public class PacketContentCoder {
 
     public static PacketContentCoder defaultPacketContentCoder() {
         Coder<GameMap> gameMapCoder = new GameMapCoder(new CityCoder(new PointCoder()), new RoadCoder());
+        Coder<Activity> activityCoder = new ActivityCoder();
         ClientGameCoder clientGameCoder = new ClientGameCoder(gameMapCoder,
                 new VisiblePlayerCoder(),
                 new PlayerCoder(new WheelCardCoder(),
-                        new DestinationCardCoder(new CityCoder(new PointCoder()))));
+                        new DestinationCardCoder(new CityCoder(new PointCoder()))), activityCoder);
         return new PacketContentCoder(new ChatMessageCoder(),
                 new UsernameChangeCoder(),
-                new GameBaseCoder(gameMapCoder),
+                new GameBaseCoder(gameMapCoder, activityCoder),
                 clientGameCoder,
                 new BuildRoadInfoCoder());
     }
