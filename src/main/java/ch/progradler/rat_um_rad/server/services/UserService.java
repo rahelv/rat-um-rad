@@ -11,6 +11,8 @@ import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +22,8 @@ import java.util.List;
  * Implementation of {@link IUserService}
  */
 public class UserService implements IUserService {
+    public static final Logger LOGGER = LogManager.getLogger();
+
     private final OutputPacketGateway outputPacketGateway;
     private final IUserRepository userRepository;
     private final IGameRepository gameRepository;
@@ -42,6 +46,7 @@ public class UserService implements IUserService {
 
     @Override
     public void handleNewUser(String username, String ipAddress) {
+        LOGGER.info("Registering user " + ipAddress + ", " + username);
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
         if (!usernameValidator.isUsernameValid(chosenUsername)) {
             Packet.Server errorPacket = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL, ErrorResponse.USERNAME_INVALID, ContentType.STRING); //TODO: on client, user has to enter username again
@@ -62,6 +67,7 @@ public class UserService implements IUserService {
 
     @Override
     public void updateUsername(String username, String ipAddress) {
+        LOGGER.info("Updating username for ip" + ipAddress + ": " + username);
         String oldName = userRepository.getUsername(ipAddress);
         if (!usernameValidator.isUsernameValid(username)) {
             Packet.Server errorPacket = new Packet.Server(ServerCommand.INVALID_ACTION_WARNING, "The chosen username was invalid. Please try again", ContentType.STRING); //on client: user has to trigger usernamechange dialog again
@@ -80,7 +86,7 @@ public class UserService implements IUserService {
 
     String checkUsernameAndSuggestAlternative(String username) {
         String usernameToBeChecked = username;
-        Integer counter = 0;
+        int counter = 0;
         while (userRepository.hasDuplicate(usernameToBeChecked)) {
             counter++;
             usernameToBeChecked = username + counter;
@@ -90,6 +96,7 @@ public class UserService implements IUserService {
 
     @Override
     public void handleUserDisconnected(String ipAddress) {
+        LOGGER.info("handling user socket disconnect for ip" + ipAddress);
         String username = userRepository.removeUsername(ipAddress);
         if (username == null) username = ipAddress;
         Packet.Server packet = new Packet.Server(ServerCommand.USER_DISCONNECTED, username, ContentType.STRING);
@@ -102,6 +109,7 @@ public class UserService implements IUserService {
 
     @Override
     public void handleBroadCastMessageFromUser(String message, String ipAddress) {
+        LOGGER.info("Broadcasting message from" + ipAddress + ": " + message);
         String username = userRepository.getUsername(ipAddress);
         Packet.Server packet = new Packet.Server(ServerCommand.BROADCAST_CHAT_SENT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         broadcastExcludingUser(packet, ipAddress);
@@ -110,11 +118,15 @@ public class UserService implements IUserService {
     @Override
     public void handleGameInternalMessageFromUser(String message, String ipAddress) {
         Game currentPlayerGame = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
-        if (currentPlayerGame == null) return; // TODO: send error message to sender?
+        if (currentPlayerGame == null) {
+            LOGGER.info("Failed to send game internal message. User " + ipAddress + "is in no current game");
+            return;
+        }
 
         List<String> otherPlayers = new ArrayList<>(currentPlayerGame.getPlayerIpAddresses());
         otherPlayers.remove(ipAddress);
 
+        LOGGER.info("Broadcasting game internal message from" + ipAddress + ": " + message);
         String username = userRepository.getUsername(ipAddress);
         Packet.Server packet = new Packet.Server(ServerCommand.GAME_INTERNAL_CHAT_SENT, new ChatMessage(username, message), ContentType.CHAT_MESSAGE);
         outputPacketGateway.broadCastOnly(packet, otherPlayers);
@@ -122,6 +134,7 @@ public class UserService implements IUserService {
 
     @Override
     public void handleWhisperMessageFromUser(String message, String toUsername, String ipAddress) {
+        LOGGER.info("Broadcasting game internal message from" + ipAddress + ": " + message);
         String toIpAddress = userRepository.getIpAddress(toUsername);
         String senderName = userRepository.getUsername(ipAddress);
         Packet.Server packet = new Packet.Server(ServerCommand.WHISPER_CHAT_SENT, new ChatMessage(senderName, message), ContentType.CHAT_MESSAGE);
@@ -135,6 +148,7 @@ public class UserService implements IUserService {
 
     @Override
     public void requestOnlinePlayers(String ipAddress) {
+        LOGGER.info("Sending all online players to" + ipAddress);
         List<String> listOfUsernames = userRepository.getAllUsernames();
         outputPacketGateway.sendPacket(ipAddress, new Packet.Server(ServerCommand.SEND_ALL_CONNECTED_PLAYERS, listOfUsernames, ContentType.STRING_LIST));
     }

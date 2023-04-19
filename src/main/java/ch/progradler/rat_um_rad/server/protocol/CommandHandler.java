@@ -10,6 +10,8 @@ import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ import java.util.List;
  * Handles incoming commands by clients.
  */
 public class CommandHandler implements InputPacketGateway {
+    public static final Logger LOGGER = LogManager.getLogger();
 
     private final IUserService userService;
     private final IGameService gameService;
@@ -36,6 +39,8 @@ public class CommandHandler implements InputPacketGateway {
      */
     public void handleCommand(Packet<ClientCommand> packet, String ipAddress) {
         // TODO: unittest
+
+        LOGGER.info("Received client command " + packet.getCommand());
 
         switch (packet.getCommand()) {
             case SEND_WHISPER_CHAT -> {
