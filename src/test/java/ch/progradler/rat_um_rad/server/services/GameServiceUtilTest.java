@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
@@ -63,9 +64,9 @@ class GameServiceUtilTest {
                 otherPlayerIp, otherPlayer
         );
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
+        List<Activity> activities = new ArrayList<>();
 
-
-        Game game = new Game(gameId, status, map, createdAt, creatorIp, requiredPlayerCount, players, turn, roadsBuilt);
+        Game game = new Game(gameId, status, map, createdAt, creatorIp, requiredPlayerCount, players, turn, roadsBuilt, activities);
         String forPlayerIp = otherPlayerIp;
 
         ClientGame expected = new ClientGame(gameId,
@@ -77,7 +78,8 @@ class GameServiceUtilTest {
                 Collections.singletonList(GameServiceUtil.toVisiblePlayer(creator, creatorIp)),
                 otherPlayer,
                 turn,
-                roadsBuilt);
+                roadsBuilt,
+                activities);
 
         assertEquals(expected, GameServiceUtil.toClientGame(game, forPlayerIp));
     }
@@ -137,9 +139,10 @@ class GameServiceUtilTest {
         );
 
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
+        List<Activity> activities = new ArrayList<>();
 
-        Game game1 = new Game(gameId, null, null, null, "playerB", 4, players1, 0, roadsBuilt);
-        Game game2 = new Game(gameId, null, null, null, "playerD", 4, players2, 3, roadsBuilt);
+        Game game1 = new Game(gameId, null, null, null, "playerB", 4, players1, 0, roadsBuilt, activities);
+        Game game2 = new Game(gameId, null, null, null, "playerD", 4, players2, 3, roadsBuilt, activities);
 
         when(mockGameRepository.getAllGames()).thenReturn(Arrays.asList(game1, game2));
 

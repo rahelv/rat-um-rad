@@ -1,9 +1,6 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder;
 
-import ch.progradler.rat_um_rad.shared.models.ChatMessage;
-import ch.progradler.rat_um_rad.shared.models.Point;
-import ch.progradler.rat_um_rad.shared.models.UsernameChange;
-import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.*;
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
@@ -58,11 +55,12 @@ public class PacketCoderTest {
                 "longCard1", new City("city1", "City1", new Point(3, 4)),
                 new City("city2", "City2", new Point(1, 4)),
                 5), new ArrayList<>());
+        List<Activity> activities = Collections.singletonList(new Activity("John", ServerCommand.GAME_JOINED));
 
         ClientGame clientGame = new ClientGame("game1", GameStatus.STARTED, GameMap.defaultMap(),
                 new Date(2023, Calendar.MAY, 14, 4, 4, 4), "creator", 4, Arrays.asList(
                 new VisiblePlayer("Player1", WheelColor.GREEN, 4, 20, 0, "ip", 5, 3)
-        ), player, 30, new HashMap<>());
+        ), player, 30, new HashMap<>(), activities);
 
 
         ServerCommand command = ServerCommand.GAME_CREATED;
@@ -73,7 +71,7 @@ public class PacketCoderTest {
 
         // execute
         String encoded = serverPacketCoder.encode(packet, level);
-        Packet decoded = serverPacketCoder.decode(encoded, level);
+        Packet<ServerCommand> decoded = serverPacketCoder.decode(encoded, level);
 
         // assert
         assertEquals(packet, decoded);
@@ -311,8 +309,8 @@ public class PacketCoderTest {
         Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
 
         List<GameBase> content = Arrays.asList(
-                new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>()),
-                new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>())
+                new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>()),
+                new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>())
         );
 
         ServerCommand command = ServerCommand.SEND_STARTED_GAMES;
@@ -343,8 +341,8 @@ public class PacketCoderTest {
         Date createdAt1 = new Date(2022, Calendar.JUNE, 4, 9, 44, 50);
         Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
 
-        GameBase game1 = new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>());
-        GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>());
+        GameBase game1 = new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>());
+        GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>());
 
 
         ServerCommand command = ServerCommand.SEND_STARTED_GAMES;

@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.shared.models.game;
 
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 
 import java.util.Date;
@@ -23,8 +24,9 @@ public class ClientGame extends GameBase {
                       List<VisiblePlayer> otherPlayers,
                       Player ownPlayer,
                       int turn,
-                      Map<String, String> roadsBuilt) {
-        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt);
+                      Map<String, String> roadsBuilt,
+                      List<Activity> activities) {
+        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt, activities);
         this.otherPlayers = otherPlayers;
         this.ownPlayer = ownPlayer;
     }

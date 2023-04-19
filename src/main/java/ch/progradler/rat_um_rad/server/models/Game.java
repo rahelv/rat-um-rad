@@ -1,15 +1,13 @@
 package ch.progradler.rat_um_rad.server.models;
 
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Instance of the game kept in server. All data belonging to a game is collected here.
@@ -36,8 +34,9 @@ public class Game extends GameBase {
                 int requiredPlayerCount,
                 Map<String, Player> players,
                 int turn,
-                Map<String, String> roadsBuilt) {
-        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt);
+                Map<String, String> roadsBuilt,
+                List<Activity> activities) {
+        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt, activities);
         this.decksOfGame = DecksOfGame.startingDecks();
         this.players = players;
     }

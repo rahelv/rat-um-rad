@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
@@ -75,7 +76,7 @@ public class GameService implements IGameService {
         //Send updated game list to all players
         Packet.Server packet = new Packet.Server(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
         outputPacketGateway.broadcast(packet);
-        LOGGER.info("Game with Id "+gameCreated.getId()+" created from user with Id "+gameCreated.getCreatorPlayerIpAddress());
+        LOGGER.info("Game with Id " + gameCreated.getId() + " created from user with Id " + gameCreated.getCreatorPlayerIpAddress());
     }
 
     @Override
@@ -89,17 +90,17 @@ public class GameService implements IGameService {
             outputPacketGateway.sendPacket(ipAddress, new Packet.Server(GAME_JOINED, clientGame, GAME));
 
             GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, NEW_PLAYER);
-            LOGGER.info("User with Id "+ ipAddress+" joined Game with id "+gameId);
+            LOGGER.info("User with Id " + ipAddress + " joined Game with id " + gameId);
         } else {
             outputPacketGateway.sendPacket(ipAddress, new Packet.Server(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
-            LOGGER.info("User with Id "+ ipAddress+" couldn't join game with id "+gameId);
+            LOGGER.info("User with Id " + ipAddress + " couldn't join game with id " + gameId);
             return;
         }
 
         if (game.hasReachedRequiredPlayers()) {
-            LOGGER.info("Enough players in game with id "+gameId);
+            LOGGER.info("Enough players in game with id " + gameId);
             GameServiceUtil.prepareGame(game, gameRepository, outputPacketGateway);
-            LOGGER.info("Called prepareGame() for game with id "+ gameId);
+            LOGGER.info("Called prepareGame() for game with id " + gameId);
 
             //send updated game list to all players
             Packet.Server packet = new Packet.Server(SEND_WAITING_GAMES, gameRepository.getWaitingGames(), GAME_INFO_LIST);
@@ -125,14 +126,14 @@ public class GameService implements IGameService {
         if (selectedCardIds.isEmpty()) {
             sendInvalidActionResponse(ipAddress,
                     ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID, outputPacketGateway);
-            LOGGER.info("User with Id "+ ipAddress+" coudln't select shortDestinationCards due to isempty()");
+            LOGGER.info("User with Id " + ipAddress + " coudln't select shortDestinationCards due to isempty()");
             return;
         }
 
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
         if (game == null) {
             sendInvalidActionResponse(ipAddress, ErrorResponse.PLAYER_IN_NO_GAME, outputPacketGateway);
-            LOGGER.info("User with Id "+ ipAddress+" coudln't select shortDestinationCards due to game == null");
+            LOGGER.info("User with Id " + ipAddress + " coudln't select shortDestinationCards due to game == null");
             return;
         }
 
@@ -141,11 +142,11 @@ public class GameService implements IGameService {
         switch (game.getStatus()) {
             case PREPARATION -> {
                 handleShortDestinationCardsSelectedInPreparation(ipAddress, selectedCardIds, game, player);
-                LOGGER.info("User with Id "+ ipAddress+" selected shortDestinaitonCards in status "+ PREPARATION.toString());
+                LOGGER.info("User with Id " + ipAddress + " selected shortDestinaitonCards in status " + PREPARATION.toString());
             }
             case STARTED -> {
                 handleShortDestinationCardsSelectedAsAction(ipAddress, selectedCardIds, game, player);
-                LOGGER.info("User with Id "+ ipAddress+" selected shortDestinaitonCards in status "+ STARTED.toString());
+                LOGGER.info("User with Id " + ipAddress + " selected shortDestinaitonCards in status " + STARTED.toString());
             }
         }
     }
@@ -173,7 +174,7 @@ public class GameService implements IGameService {
         }
 
         handleShortDestCardsSelectionGeneral(selectedCardIds, game, player);
-
+        game.nextTurn();
         gameRepository.updateGame(game);
         GameServiceUtil.notifyPlayersOfGameAction(ipAddress, game, outputPacketGateway, DESTINATION_CARDS_SELECTED);
     }
@@ -186,6 +187,7 @@ public class GameService implements IGameService {
 
         player.setShortDestinationCards(selectedCards);
         shortDestCardDeck.removeAll(selectedCards);
+        game.getActivities().add(new Activity(player.getName(), DESTINATION_CARDS_SELECTED));
     }
 
     private boolean allPlayersSelectedShortDestCards(Game game) {
@@ -237,10 +239,10 @@ public class GameService implements IGameService {
     @Override
     public void buildRoad(String ipAddress, String roadId) {
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
-       /* if (!GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
-            LOGGER.info("User with Id "+ ipAddress+" couldn't build road with id "+roadId+" due to validateHAndleActionPrecondition");
+        if (!GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
+            LOGGER.info("User with Id " + ipAddress + " couldn't build road with id " + roadId + " due to validateHAndleActionPrecondition");
             return;
-        }*/
+        }
 
         Map<String, String> roadsBuilt = game.getRoadsBuilt();
         if (roadsBuilt.containsKey(roadId)) {
@@ -258,15 +260,15 @@ public class GameService implements IGameService {
         Road road = roadOpt.get();
         Player player = game.getPlayers().get(ipAddress);
 
-       /* if (player.getWheelsRemaining() < road.getRequiredWheels()) {
+        if (player.getWheelsRemaining() < road.getRequiredWheels()) {
             sendInvalidActionResponse(ipAddress, NOT_ENOUGH_WHEELS_TO_BUILD_ROAD, outputPacketGateway);
             return;
-        }*/
+        }
 
-        /*if (!hasRequiredCardsToBuild(player, road)) {
+        if (!hasRequiredCardsToBuild(player, road)) {
             sendInvalidActionResponse(ipAddress, NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD, outputPacketGateway);
             return;
-        }*/
+        }
 
         handleBuildRoad(ipAddress, game, road);
     }
@@ -277,17 +279,19 @@ public class GameService implements IGameService {
     private void handleBuildRoad(String ipAddress, Game game, Road road) {
         Player player = game.getPlayers().get(ipAddress);
 
-        List<WheelCard> playersCardsOfColor = player.getWheelCards().stream()
+        List<WheelCard> playersCardsOfColor = new ArrayList<>(player.getWheelCards().stream()
                 .filter((c) -> c.getColor() == road.getColor())
-                .toList();
+                .toList());
 
-       /* for (int i = 0; i < road.getRequiredWheels(); i++) { //TODO: handle immutableCollectionsException
+        for (int i = 0; i < road.getRequiredWheels(); i++) {
             player.getWheelCards().remove(playersCardsOfColor.get(i));
-        }*/
+        }
         player.setWheelsRemaining(player.getWheelsRemaining() - road.getRequiredWheels());
         player.setScore(player.getScore() + GameConfig.scoreForRoadBuild(road.getRequiredWheels()));
 
         game.getRoadsBuilt().put(road.getId(), ipAddress);
+        game.getActivities().add(new Activity(player.getName(), ROAD_BUILT));
+        game.nextTurn();
 
         // TODO: check if has very few wheels left -> send info that game will finish soon
 
