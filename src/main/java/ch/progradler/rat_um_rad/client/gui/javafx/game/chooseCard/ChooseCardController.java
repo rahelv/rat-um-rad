@@ -89,7 +89,7 @@ public class ChooseCardController {
         StringConverter stringConverter = new StringConverter() {
             @Override
             public String toString(Object destinationCard) {
-                return ((DestinationCard) destinationCard).getDestination1().getName() + " " + ((DestinationCard) destinationCard).getDestination2().getName();
+                return ((DestinationCard) destinationCard).getDestination1().getName() + " to " + ((DestinationCard) destinationCard).getDestination2().getName();
             }
 
             @Override
