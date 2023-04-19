@@ -2,8 +2,6 @@ package ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby;
 
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,7 +44,7 @@ public class LobbyController extends GridPane {
             e.printStackTrace();
         }
         this.openGamesListView.setItems(this.lobbyModel.getGameInfoList());
-        openGamesListView.setCellFactory(param -> new Cell(this.gameService)); //TODO: find a better way to handle buttonAction from Cell
+        openGamesListView.setCellFactory(param -> new Cell()); //TODO: find a better way to handle buttonAction from Cell
     }
 
     public void getOpenGamesFromServer() throws IOException {
@@ -56,23 +54,20 @@ public class LobbyController extends GridPane {
     /**
      * Cell Class to set the Cells in the List View. Add two Buttons to each cell (players and join) and sets the id as text.)
      */
-    static class Cell extends ListCell<GameBase> {
-        private IGameService gameService;
+    class Cell extends ListCell<GameBase> {
         Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
         Button enterGameButton = new Button("join");
 
-        public Cell(IGameService gameService) {
+        public Cell() {
             super();
-            this.gameService = gameService;
             hbox.getChildren().addAll(nameLabel, pane, listPlayersButton, enterGameButton);
             hbox.setHgrow(pane, Priority.ALWAYS);
             enterGameButton.setOnAction(event -> {
-                System.out.println("wanting to join game " + getItem().getId());
                 try {
-                    this.gameService.joinGame(getItem().getId());
+                    gameService.joinGame(getItem().getId());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

@@ -12,7 +12,7 @@ public interface ControllerChangeListener<T> {
     void controllerChanged(String command);
     void gameCreated(ClientGame content); //TODO: generalize type
 
-   // void selectDestinationCards(List<DestinationCard> list);
-
     void selectDestinationCards(ClientGame clientGame);
+
+    void returnToGame(ClientGame clientGame);
 }

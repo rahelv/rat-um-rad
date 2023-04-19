@@ -10,11 +10,12 @@ import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +26,7 @@ import java.util.ResourceBundle;
 /**
  * Controller for ChangeUsernameView.fxml (in resources/views)
  */
-public class UsernameChangeController implements Initializable {
+public class UsernameChangeController {
     public static final Logger LOGGER = LogManager.getLogger();
     private Stage stage;
     @FXML
@@ -35,20 +36,15 @@ public class UsernameChangeController implements Initializable {
 
     public TextField username;
     @FXML
+    private Button confirmUsernameButton;
+    @FXML
     private Button cancelButton;
 
     private UsernameChangeModel usernameChangeModel;
     private UsernameValidator usernameValidator = new UsernameValidator();
     private IUserService userService;
 
-    /**
-     * @param location  The location used to resolve relative paths for the root object, or
-     *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
-     *                  the root object was not localized.
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public UsernameChangeController() {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<UsernameChange>() {
             @Override
             public void serverResponseReceived(UsernameChange content) {

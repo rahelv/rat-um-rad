@@ -5,6 +5,7 @@ import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -46,6 +47,8 @@ public class LobbyModel {
     }
 
     public void waitingGamesReceived(List<GameBase> content) {
-        this.updateGameList(content);
+        Platform.runLater(() -> {
+            this.updateGameList(content);
+        });
     }
 }

@@ -31,7 +31,6 @@ public class DestinationCardCoder implements Coder<DestinationCard> {
 
     @Override
     public DestinationCard decode(String encoded, int level) {
-        System.out.println(encoded);
         if(encoded.equals("null")) {
             return null;
         }

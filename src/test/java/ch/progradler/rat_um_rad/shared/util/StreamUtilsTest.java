@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StreamUtilsTest {
-
     @Test
     public void testReadStringsFromStream() throws IOException {
         String sent1 = "hello/world![#|?!&&/$$£üäö";

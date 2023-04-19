@@ -36,8 +36,6 @@ public class GameMapModel {
         this.status = clientGame.getStatus().toString();
         this.createdAt = clientGame.getCreatedAt();
         this.requiredPlayers = clientGame.getRequiredPlayerCount();
-
-
     }
 
     public void updateClientGameWithMap(ClientGame clientGame) {
