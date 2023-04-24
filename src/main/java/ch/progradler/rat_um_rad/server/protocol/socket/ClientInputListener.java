@@ -12,10 +12,13 @@ import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -25,6 +28,7 @@ public class ClientInputListener implements Runnable {
     public static final Logger LOGGER = LogManager.getLogger();
     private final InputPacketGateway inputPacketGateway;
     private InputStream inputStream;
+    private BufferedReader bufferedReader;
     private final Coder<Packet<ClientCommand>> packetCoder;
     private String ipAddress;
     private final ClientDisconnectedListener clientDisconnectedListener;
@@ -44,6 +48,7 @@ public class ClientInputListener implements Runnable {
         this.serverPingPongRunner = serverPingPongRunner;
         try {
             inputStream = socket.getInputStream();
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace(); //TODO: error management
             LOGGER.warn("Failed to connect with client. Removing client...");
@@ -63,11 +68,9 @@ public class ClientInputListener implements Runnable {
             readUsername();
 
             while (true) {
-                List<String> encodedPackets = StreamUtils.readStringsFromStream(inputStream);
-                for (String encodedPacket : encodedPackets) {
-                    Packet<ClientCommand> packet = packetCoder.decode(encodedPacket, 0);
-                    inputPacketGateway.handleCommand(packet, ipAddress);
-                }
+                String encodedPacket = StreamUtils.readStringsFromStream(bufferedReader);
+                Packet<ClientCommand> packet = packetCoder.decode(encodedPacket, 0);
+                inputPacketGateway.handleCommand(packet, ipAddress);
                 // TODO: unittest
 
                 //TODO: implement QUIT scenario (with break)
@@ -87,9 +90,9 @@ public class ClientInputListener implements Runnable {
     }
 
     private void readUsername() throws IOException {
-        List<String> usernamePacketEncoded = StreamUtils.readStringsFromStream(inputStream);
+        String usernamePacketEncoded = StreamUtils.readStringsFromStream(bufferedReader);
 
-        Packet<ClientCommand> usernamePacket = packetCoder.decode(usernamePacketEncoded.get(0), 0);
+        Packet<ClientCommand> usernamePacket = packetCoder.decode(usernamePacketEncoded, 0);
         String username = (String) usernamePacket.getContent();
         usernameReceivedListener.onUsernameReceived(username);
         inputPacketGateway.handleCommand(usernamePacket, ipAddress);

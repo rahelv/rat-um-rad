@@ -7,7 +7,10 @@ import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Allows easy output to a client with certain {@link ClientOutput#ipAddress} via the {@link ClientOutput#out} stream.
@@ -15,6 +18,7 @@ import java.net.Socket;
 public class ClientOutput {
     private Socket socket;
     private OutputStream out; //TODO: implement using own serialization
+    private PrintWriter printWriter;
     private final String ipAddress;
     private final Coder<Packet<ServerCommand>> packetCoder;
 
@@ -24,6 +28,7 @@ public class ClientOutput {
         this.ipAddress = ipAddress;
         try {
             out = socket.getOutputStream();
+            printWriter = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace(); //TODO: error management
         }
@@ -32,7 +37,7 @@ public class ClientOutput {
     public void sendPacketToClient(Packet<ServerCommand> packet) {
         String sendStr = packetCoder.encode(packet, 0);
         System.out.println("packet send: " +  sendStr);
-        StreamUtils.writeStringToStream(sendStr, out);
+        StreamUtils.writeStringToStream(sendStr, printWriter);
     }
 
     public String getIpAddress() {

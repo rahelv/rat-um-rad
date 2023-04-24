@@ -322,11 +322,6 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void takeDestinationCard(String ipAdress) {
-        //TODO: implement
-    }
-
-    @Override
     public void handleConnectionLoss(String ipAddress) {
         //TODO: implement
     }

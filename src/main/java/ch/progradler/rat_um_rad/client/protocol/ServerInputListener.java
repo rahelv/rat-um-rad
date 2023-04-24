@@ -6,9 +6,12 @@ import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -16,6 +19,7 @@ import java.util.List;
  */
 public class ServerInputListener implements Runnable {
     private InputStream inputStream;
+    private BufferedReader bufferedReader;
     private final ServerInputPacketGateway inputPacketGateway;
     private final Coder<Packet<ServerCommand>> packetCoder;
 
@@ -24,6 +28,7 @@ public class ServerInputListener implements Runnable {
         this.packetCoder = packetCoder;
         try {
             inputStream = socket.getInputStream();
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         } catch (IOException e) {
             // TODO: handle?
             e.printStackTrace();
@@ -36,18 +41,16 @@ public class ServerInputListener implements Runnable {
     @Override
     public void run() {
         while (true) { //so it keeps listening
-            List<String> encodedPackets;
+            String encodedPacket;
             try {
-                encodedPackets = StreamUtils.readStringsFromStream(inputStream);
+                encodedPacket = StreamUtils.readStringsFromStream(bufferedReader);
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
                 // TODO: display error to user?
             }
-            for (String encodedPacket : encodedPackets) {
-                Packet<ServerCommand> packet = packetCoder.decode(encodedPacket, 0);
+            Packet<ServerCommand> packet = packetCoder.decode(encodedPacket, 0);
                 inputPacketGateway.handleResponse(packet);
-            }
         }
     }
 }

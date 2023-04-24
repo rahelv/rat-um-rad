@@ -93,9 +93,9 @@ class GameServiceTest {
 
         doThrow(IGameRepository.DuplicateIdException.class)
                 .when(mockGameRepository).addGame(argThat((g) -> {
-            mockIndex[0]++;
-            return repoShouldThrow[mockIndex[0] - 1];
-        }));
+                    mockIndex[0]++;
+                    return repoShouldThrow[mockIndex[0] - 1];
+                }));
         gameService.createGame(creator, requiredPlayers);
 
         verify(mockGameRepository, times(3)).addGame(isA(Game.class));
