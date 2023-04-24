@@ -8,7 +8,10 @@ import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Responsible for sending packets to server via socket stream.
@@ -16,6 +19,7 @@ import java.net.Socket;
 public class ServerOutput implements OutputPacketGateway {
     private final Socket socket;
     private final OutputStream outStream;
+    private final PrintWriter printWriter;
     private final Coder<Packet<ClientCommand>> packetCoder;
 
 
@@ -24,6 +28,7 @@ public class ServerOutput implements OutputPacketGateway {
         this.packetCoder = packetCoder;
         try {
             outStream = socket.getOutputStream();
+            printWriter = new PrintWriter(new OutputStreamWriter(outStream, StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
             throw new Exception("Failed to init OutputSocket");
@@ -41,6 +46,6 @@ public class ServerOutput implements OutputPacketGateway {
         // TODO: unittest
 
         String sendStr = packetCoder.encode(packet, 0);
-        StreamUtils.writeStringToStream(sendStr, outStream);
+        StreamUtils.writeStringToStream(sendStr, printWriter);
     }
 }

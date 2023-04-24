@@ -3,7 +3,9 @@ package ch.progradler.rat_um_rad.shared.util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class UsernameValidatorTest {
 
     private UsernameValidator usernameValidator;
