@@ -160,9 +160,10 @@ public class GameService implements IGameService {
         handleShortDestCardsSelectionGeneral(selectedCardIds, game, player);
         game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, true);
 
+        GameServiceUtil.notifyPlayersOfGameAction(ipAddress, game, outputPacketGateway, DESTINATION_CARDS_SELECTED);
+
         if (allPlayersSelectedShortDestCards(game)) {
             game.setStatus(STARTED);
-            GameServiceUtil.notifyPlayersOfGameAction(ipAddress, game, outputPacketGateway, DESTINATION_CARDS_SELECTED);
         }
 
         gameRepository.updateGame(game);
