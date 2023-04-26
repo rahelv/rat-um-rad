@@ -1,5 +1,7 @@
 package ch.progradler.rat_um_rad.shared.models.game.cards_and_decks;
 
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
+
 /**
  * This is a collection of all card decks in the game that don't belong to a player.
  */
@@ -16,12 +18,12 @@ public class DecksOfGame {
         this.shortDestinationCardDeck = shortDestinationCardDeck;
     }
 
-    public static DecksOfGame startingDecks() {
+    public static DecksOfGame startingDecks(GameMap map) {
         return new DecksOfGame(
                 WheelCardDeck.full(),
                 WheelCardDeck.empty(),
-                DestinationCardDeck.longDestinations(),
-                DestinationCardDeck.shortDestinations()
+                DestinationCardDeck.longDestinations(map),
+                DestinationCardDeck.shortDestinations(map)
         );
     }
 

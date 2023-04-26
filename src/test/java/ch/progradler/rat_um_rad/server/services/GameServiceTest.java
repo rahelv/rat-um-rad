@@ -71,15 +71,17 @@ class GameServiceTest {
         assertEquals(requiredPlayers, game.getRequiredPlayerCount());
         assertSame(game.getStatus(), GameStatus.WAITING_FOR_PLAYERS);
         assertTrue(decks.getDiscardDeck().getDeckOfCards().isEmpty());
+
+        GameMap map = GameMap.defaultMap();
         assertArrayEquals(
                 decks.getWheelCardDeck().getDeckOfCards().toArray(),
                 WheelCardDeck.full().getDeckOfCards().toArray());
         assertArrayEquals(
-                decks.getLongDestinationCardDeck().getCardDeck().toArray(),
-                DestinationCardDeck.longDestinations().getCardDeck().toArray());
+                DestinationCardDeck.longDestinations(map).getCardDeck().toArray(),
+                decks.getLongDestinationCardDeck().getCardDeck().toArray());
         assertArrayEquals(
-                decks.getShortDestinationCardDeck().getCardDeck().toArray(),
-                DestinationCardDeck.shortDestinations().getCardDeck().toArray());
+                DestinationCardDeck.shortDestinations(map).getCardDeck().toArray(),
+                decks.getShortDestinationCardDeck().getCardDeck().toArray());
     }
 
     @Test
@@ -143,7 +145,7 @@ class GameServiceTest {
     void requestToJoinAlreadyStartedGameFails() {
         String gameId = "idA";
         String ipAddress = "ipAddressA";
-        Game game = new Game(gameId, PREPARATION, null, null, 5, new HashMap<>());
+        Game game = new Game(gameId, PREPARATION, GameMap.defaultMap(), null, 5, new HashMap<>());
         when(mockGameRepository.getGame(gameId)).thenReturn(game);
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
@@ -216,7 +218,7 @@ class GameServiceTest {
 
         Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(ipAddressB, playerB);
-        Game game = new Game(gameId, WAITING_FOR_PLAYERS, null, null, requiredPlayerCount, playerMap);
+        Game game = new Game(gameId, WAITING_FOR_PLAYERS, GameMap.defaultMap(), null, requiredPlayerCount, playerMap);
 
         when(mockGameRepository.getGame(gameId)).thenReturn(game);
 
@@ -249,7 +251,7 @@ class GameServiceTest {
     @Test
     void selectShortDestinationCardSendsErrorPacketIfSelectedCardIdsAreNotAllInOptionalCards() {
         String ipAddress = "clientA";
-        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations(GameMap.defaultMap()).getCardDeck();
 
         List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
                 allShortDestCards.get(5),
@@ -295,7 +297,7 @@ class GameServiceTest {
     @Test
     void selectShortDestinationCardSetsThemForThatPlayerAndRemovesFromDeckAndSetsSelectedAsTrueAndUpdatesGameIfStatusPrep() {
         String ipAddress = "clientA";
-        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations(GameMap.defaultMap()).getCardDeck();
 
         List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
                 allShortDestCards.get(5),
@@ -340,7 +342,7 @@ class GameServiceTest {
     @Test
     void selectShortDestinationCardSetsStatusToStartedAndNotifiesEveryoneIfAllPlayersHaveSelectedAndStatusWasPrep() {
         String ipAddress = "clientA";
-        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations(GameMap.defaultMap()).getCardDeck();
 
         List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
                 allShortDestCards.get(5),
@@ -371,7 +373,7 @@ class GameServiceTest {
     @Test
     void selectShortDestinationCardSetsDoesNotSetStatusToStartedIfNotAllPlayersHaveSelected() {
         String ipAddress = "clientA";
-        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations().getCardDeck();
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations(GameMap.defaultMap()).getCardDeck();
 
         List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
                 allShortDestCards.get(5),

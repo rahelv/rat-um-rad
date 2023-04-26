@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -281,7 +282,7 @@ public class UserServiceTest {
                 ipAddressPlayerC, playerC
         );
 
-        Game game1 = new Game("gameA", null, null, null, "playerB", 4, players, 0, new HashMap<>(), new ArrayList<>());
+        Game game1 = new Game("gameA", null, GameMap.defaultMap(), null, "playerB", 4, players, 0, new HashMap<>(), new ArrayList<>());
 
         when(gameRepositoryMock.getAllGames()).thenReturn(Collections.singletonList(game1));
 
@@ -310,7 +311,7 @@ public class UserServiceTest {
         String ipAddress = "clientJ";
 
         Map<String, Player> players = Map.of();
-        Game game1 = new Game("gameA", null, null, null, "playerB", 4, players, 0, new HashMap<>(), new ArrayList<>());
+        Game game1 = new Game("gameA", null, GameMap.defaultMap(), null, "playerB", 4, players, 0, new HashMap<>(), new ArrayList<>());
 
         when(gameRepositoryMock.getAllGames()).thenReturn(Collections.singletonList(game1));
 
