@@ -78,6 +78,7 @@ public class GameController {
             this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
             //TODO: this.activityController.updateActitivites();
             this.gameMapController.updateGameMapModelWithMap(content);
+            this.activityController.updateActivities(content.getActivities());
             this.stage.show();
         });
         //TODO: if destinationcards received run chooseDestinationCards();

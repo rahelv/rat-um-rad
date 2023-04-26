@@ -86,7 +86,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
                 List<String> allOnlinePlayers = (List<String>) packet.getContent();
-                notifyListenersOfType(allOnlinePlayers, packet.getCommand()); //TODO check if interface works correctly
+                notifyListenersOfType(allOnlinePlayers, packet.getCommand());
             }
             case GAME_INTERNAL_CHAT_SENT -> {
                 //TODO: update chatRoomModel

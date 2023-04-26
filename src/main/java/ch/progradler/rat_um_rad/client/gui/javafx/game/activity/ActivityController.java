@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.activity;
 
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
@@ -33,7 +34,7 @@ public class ActivityController extends AnchorPane {
         this.activitiesListView.setItems(this.activityModel.getLatestActivities()); //bind ListView to latestActivities in the activityModel
     }
 
-    public void updateActivities(List<String> activities) {
+    public void updateActivities(List<Activity> activities) {
         this.activityModel.updateLatestActivities(activities);
     }
 }

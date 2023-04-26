@@ -103,7 +103,6 @@ public class GameMapController extends GridPane {
         this.gameMapModel.updateFields();
     }
 
-
     @FXML
     private void buildRoadAction(ActionEvent event) {
         try {
