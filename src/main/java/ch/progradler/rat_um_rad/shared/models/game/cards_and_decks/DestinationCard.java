@@ -15,6 +15,8 @@ public class DestinationCard {
 
     public DestinationCard(String cardID, City destination1, City destination2, int points) {
         this.cardID = cardID;
+        assert destination1 != null;
+        assert destination2 != null;
         this.destination1 = destination1;
         this.destination2 = destination2;
         this.points = points;

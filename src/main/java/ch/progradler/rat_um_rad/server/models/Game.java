@@ -22,7 +22,7 @@ public class Game extends GameBase {
 
     public Game(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount, Map<String, Player> players) {
         super(id, status, map, creatorPlayerIpAddress, requiredPlayerCount);
-        this.decksOfGame = DecksOfGame.startingDecks();
+        this.decksOfGame = DecksOfGame.startingDecks(map);
         this.players = players;
     }
 
@@ -37,7 +37,7 @@ public class Game extends GameBase {
                 Map<String, String> roadsBuilt,
                 List<Activity> activities) {
         super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt, activities);
-        this.decksOfGame = DecksOfGame.startingDecks();
+        this.decksOfGame = DecksOfGame.startingDecks(map);
         this.players = players;
     }
 

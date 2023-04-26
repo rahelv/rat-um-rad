@@ -141,8 +141,8 @@ class GameServiceUtilTest {
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
         List<Activity> activities = new ArrayList<>();
 
-        Game game1 = new Game(gameId, null, null, null, "playerB", 4, players1, 0, roadsBuilt, activities);
-        Game game2 = new Game(gameId, null, null, null, "playerD", 4, players2, 3, roadsBuilt, activities);
+        Game game1 = new Game(gameId, null, GameMap.defaultMap(), null, "playerB", 4, players1, 0, roadsBuilt, activities);
+        Game game2 = new Game(gameId, null, GameMap.defaultMap(), null, "playerD", 4, players2, 3, roadsBuilt, activities);
 
         when(mockGameRepository.getAllGames()).thenReturn(Arrays.asList(game1, game2));
 
@@ -165,8 +165,7 @@ class GameServiceUtilTest {
         playerMap.put(ip1, player1);
         playerMap.put(ip2, player2);
 
-        GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
 
         GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, NEW_PLAYER);
         verify(mockOutputPacketGateway).sendPacket(ip1, new Packet.Server(NEW_PLAYER, GameServiceUtil.toClientGame(game, ip1), ContentType.GAME));
@@ -191,8 +190,7 @@ class GameServiceUtilTest {
         playerMap.put(ip2, player2);
         playerMap.put(ip3, player3);
 
-        GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
 
         ServerCommand actionCommand = ROAD_BUILT;
 
@@ -220,8 +218,7 @@ class GameServiceUtilTest {
         playerMap.put(ip1, player1);
         playerMap.put(ip2, player2);
 
-        GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
 
         // act
         GameServiceUtil.prepareGame(game, mockGameRepository, mockOutputPacketGateway);
@@ -303,8 +300,7 @@ class GameServiceUtilTest {
         playerMap.put(ip1, player1);
         playerMap.put(ip2, player2);
 
-        GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
 
         //testing
         int sizeInGameBeforeCalling = game.getDecksOfGame().getLongDestinationCardDeck().getCardDeck().size();
@@ -340,8 +336,7 @@ class GameServiceUtilTest {
         playerMap.put(ip1, player1);
         playerMap.put(ip2, player2);
 
-        GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
 
         //testing
         int sizeInGameBeforeCalling = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck().size();
