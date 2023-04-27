@@ -9,6 +9,7 @@ import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
@@ -51,16 +52,6 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
     public void handleResponse(Packet<ServerCommand> packet) {
         LOGGER.info("Received server command:  " + packet.getCommand());
         //TODO: implement QUIT command and other commands
-
-        // TODO: implement properly:
-        if (packet.getContentType() == ContentType.GAME) {
-            System.out.println("Activities of game: ");
-            List<Activity> activities = ((ClientGame) packet.getContent()).getActivities();
-            List<String> formatted = activities.stream()
-                    .map((activity -> activity.getUsername() + " did " + activity.getCommand()))
-                    .toList();
-            System.out.println(String.join(", ", formatted));
-        }
 
         switch (packet.getCommand()) {
             case PING -> {
@@ -110,14 +101,19 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, ServerCommand.GAME_JOINED);
             }
-            case NEW_PLAYER, GAME_UPDATED, ROAD_BUILT -> { //TODO: what happens if game is updated the same time you're doing something (can this even happen?)
+            case NEW_PLAYER, GAME_UPDATED, ROAD_BUILT, WHEEL_CARDS_CHOSEN -> { //TODO: what happens if game is updated the same time you're doing something (can this even happen?)
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, ServerCommand.GAME_UPDATED); //updated ClientGame is sent to Controller, so it can display the new state
             }
             case GAME_STARTED_SELECT_DESTINATION_CARDS -> { //TODO: soll auch benutzt werden um während dem Spiel karten zu ziehen
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
-                notifyListenersOfType(content, packet.getCommand());
+                notifyListenersOfType(content, ServerCommand.GAME_STARTED_SELECT_DESTINATION_CARDS);
+            }
+            case REQUEST_SHORT_DESTINATION_CARDS_RESULT -> {
+                Object content = packet.getContent();
+                ContentType contentType = packet.getContentType();
+                notifyListenersOfType(content, ServerCommand.REQUEST_SHORT_DESTINATION_CARDS_RESULT);
             }
             case DESTINATION_CARDS_SELECTED -> {
                 ClientGame clientGame = (ClientGame) packet.getContent();

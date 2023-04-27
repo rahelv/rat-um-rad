@@ -188,7 +188,7 @@ public class GameService implements IGameService {
         List<DestinationCard> selectedCards = shortDestCardDeck.stream()
                 .filter(c -> selectedCardIds.contains(c.getCardID())).toList();
 
-        player.setShortDestinationCards(selectedCards);
+        player.addShortDestinationCards(selectedCards);
         shortDestCardDeck.removeAll(selectedCards);
         game.getActivities().add(new Activity(player.getName(), DESTINATION_CARDS_SELECTED));
     }

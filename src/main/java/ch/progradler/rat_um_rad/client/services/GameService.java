@@ -77,8 +77,19 @@ public class GameService implements IGameService {
         }
         System.out.println(selectedCardsString);
 
-        Client packet = new Client(ClientCommand.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedItems, ContentType.STRING_LIST);
+        Client packet = new Client(ClientCommand.SHORT_DESTINATION_CARDS_SELECTED, selectedItems, ContentType.STRING_LIST);
         outputPacketGateway.sendPacket(packet);
     }
 
+    @Override
+    public void requestWheelCards() throws IOException {
+        Client packet = new Client(ClientCommand.REQUEST_WHEEL_CARDS, null, ContentType.NONE);
+        outputPacketGateway.sendPacket(packet);
+    }
+
+    @Override
+    public void requestShortDestinationCards() throws IOException {
+        Client packet = new Client(ClientCommand.REQUEST_SHORT_DESTINATION_CARDS, null, ContentType.NONE);
+        outputPacketGateway.sendPacket(packet);
+    }
 }

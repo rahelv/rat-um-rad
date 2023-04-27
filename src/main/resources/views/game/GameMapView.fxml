@@ -15,8 +15,9 @@
     <ComboBox fx:id="roadsToBuildListView"></ComboBox>
     <Button fx:id="buildRoad" text="Build Road" onAction="#buildRoadAction"></Button>
 </HBox>
-<HBox GridPane.rowIndex="5"></HBox>
+<ListView GridPane.rowIndex="5" fx:id="roadsBuiltListView"></ListView>
 <HBox GridPane.rowIndex="6">
-    <ListView fx:id="roadsBuiltListView"></ListView>
+    <Button text="Request WheelCards" onAction="#requestWheelCards"></Button>
+    <Button text="Select Destination Cards" onAction="#selectDestinationCards"></Button>
 </HBox>
 </fx:root>

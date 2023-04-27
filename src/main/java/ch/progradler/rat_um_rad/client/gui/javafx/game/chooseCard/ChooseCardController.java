@@ -78,6 +78,7 @@ public class ChooseCardController {
         List<String> selectedCards = this.selectedRoadIdList;
         try {
             this.gameService.selectCards(selectedCards);
+            this.selectedRoadIdList.clear();
         } catch (IOException e) {
             e.printStackTrace();
         }
