@@ -236,11 +236,11 @@ class GameServiceUtilTest {
         // check short dest cards too choose handed out:
         List<DestinationCard> shorts1 = player1.getShortDestinationCardsToChooseFrom();
         List<DestinationCard> shorts2 = player2.getShortDestinationCardsToChooseFrom();
-        assertEquals(3, shorts1.size());
-        assertEquals(3, shorts2.size());
-        assertFalse(shorts1.contains(shorts2.get(0)));
-        assertFalse(shorts1.contains(shorts2.get(1)));
-        assertFalse(shorts1.contains(shorts2.get(2)));
+        assertEquals(SHORT_DEST_CARDS_AT_START_COUNT, shorts1.size());
+        assertEquals(SHORT_DEST_CARDS_AT_START_COUNT, shorts2.size());
+        for (DestinationCard shortPlayer1 : shorts1) {
+            assertFalse(shorts2.contains(shortPlayer1));
+        }
 
         // check order was assigned:
         int order1 = player1.getPlayingOrder();
