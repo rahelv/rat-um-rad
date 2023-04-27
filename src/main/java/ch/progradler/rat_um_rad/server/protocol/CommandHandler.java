@@ -71,10 +71,12 @@ public class CommandHandler implements InputPacketGateway {
                 }
             }
             case WANT_JOIN_GAME -> gameService.joinGame(ipAddress, (String) packet.getContent());
-            case SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION -> {
+            case SHORT_DESTINATION_CARDS_SELECTED -> {
                 gameService.selectShortDestinationCards(ipAddress, (List<String>) packet.getContent());
             }
             case BUILD_ROAD -> handleBuildRoadPacket(packet, ipAddress);
+            case REQUEST_WHEEL_CARDS -> System.out.println("TODO");//TODO: implement method to give 2 new wheelcards to user
+            case REQUEST_SHORT_DESTINATION_CARDS -> gameService.requestShortDestinationCards(ipAddress);
             default -> throw new IllegalStateException("Unexpected value: " + packet.getCommand());
         }
     }

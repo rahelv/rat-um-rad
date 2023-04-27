@@ -70,8 +70,8 @@ public class Player extends PlayerBase {
         return shortDestinationCards;
     }
 
-    public void setShortDestinationCards(List<DestinationCard> shortDestinationCards) {
-        this.shortDestinationCards = shortDestinationCards;
+    public void addShortDestinationCards(List<DestinationCard> shortDestinationCards) {
+        this.shortDestinationCards.addAll(shortDestinationCards);
     }
 
     public List<DestinationCard> getShortDestinationCardsToChooseFrom() {
