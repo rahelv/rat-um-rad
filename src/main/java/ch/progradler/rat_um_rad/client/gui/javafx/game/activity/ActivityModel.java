@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.activity;
 
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -10,16 +11,12 @@ import java.util.List;
  * TODO: wo werden Activities generiert ?
  */
 public class ActivityModel {
-    ObservableList<String> latestActivities;
+    ObservableList<String> latestActivities = FXCollections.observableArrayList();
 
-    public void ActivityModel() {
-        this.latestActivities = FXCollections.observableArrayList();
-    }
-
-    public void updateLatestActivities(List<String> activitiesList) {
+    public void updateLatestActivities(List<Activity> activitiesList) {
         this.latestActivities.clear();
-        for (String activity : activitiesList) {
-            this.latestActivities.add(activity);
+        for (Activity activity : activitiesList) {
+            this.latestActivities.add(activity.getUsername() + " did " + activity.getCommand());
         }
     }
 

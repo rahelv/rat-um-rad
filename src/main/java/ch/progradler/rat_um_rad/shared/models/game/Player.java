@@ -58,7 +58,6 @@ public class Player extends PlayerBase {
     public List<WheelCard> getWheelCards() {
         return wheelCards;
     }
-
     public DestinationCard getLongDestinationCard() {
         return longDestinationCard;
     }

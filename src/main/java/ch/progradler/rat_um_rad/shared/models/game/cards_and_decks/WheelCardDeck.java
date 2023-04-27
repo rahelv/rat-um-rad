@@ -9,7 +9,7 @@ import java.util.List;
 public class WheelCardDeck implements CardDeck {
     private final List<WheelCard> deckOfCards;
 
-    private WheelCardDeck(List<WheelCard> deckOfCards) {
+    public WheelCardDeck(List<WheelCard> deckOfCards) {
         this.deckOfCards = deckOfCards;
     }
 

@@ -2,7 +2,7 @@ package ch.progradler.rat_um_rad.client.services;
 
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class UserServiceTest {
 
         userService.sendUsername(username);
 
-        Packet expected = new Packet(Command.NEW_USER, username, ContentType.STRING);
+        Packet.Client expected = new Packet.Client(ClientCommand.REGISTER_USER, username, ContentType.STRING);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
 
@@ -44,7 +44,7 @@ class UserServiceTest {
 
         userService.changeUsername(newUsername);
 
-        Packet expected = new Packet(Command.SET_USERNAME, newUsername, ContentType.STRING);
+        Packet.Client expected = new Packet.Client(ClientCommand.SET_USERNAME, newUsername, ContentType.STRING);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
 
@@ -54,7 +54,7 @@ class UserServiceTest {
 
         userService.sendBroadCastMessage(message);
 
-        Packet expected = new Packet(Command.SEND_BROADCAST_CHAT, message, ContentType.STRING);
+        Packet.Client expected = new Packet.Client(ClientCommand.SEND_BROADCAST_CHAT, message, ContentType.STRING);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
 
@@ -64,7 +64,7 @@ class UserServiceTest {
 
         userService.sendGameInternalMessage(message);
 
-        Packet expected = new Packet(Command.SEND_GAME_INTERNAL_CHAT, message, ContentType.STRING);
+        Packet.Client expected = new Packet.Client(ClientCommand.SEND_GAME_INTERNAL_CHAT, message, ContentType.STRING);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
 
@@ -75,7 +75,7 @@ class UserServiceTest {
 
         userService.sendWhisperMessage(message, username);
 
-        Packet expected = new Packet(Command.SEND_WHISPER_CHAT,
+        Packet.Client expected = new Packet.Client(ClientCommand.SEND_WHISPER_CHAT,
                 new ChatMessage(username, message),
                 ContentType.CHAT_MESSAGE);
         verify(mockOutputPacketGateway).sendPacket(expected);
@@ -84,7 +84,7 @@ class UserServiceTest {
     @Test
     void requestOnlinePlayers() throws IOException {
         userService.requestOnlinePlayers();
-        Packet expected = new Packet(Command.REQUEST_ALL_CONNECTED_PLAYERS, null, ContentType.NONE);
+        Packet.Client expected = new Packet.Client(ClientCommand.REQUEST_ALL_CONNECTED_PLAYERS, null, ContentType.NONE);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
 }

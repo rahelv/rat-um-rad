@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.activity;
 
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
@@ -9,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Controller for Activitieslist.fxml. Activities that happened in the game are displayed in a list.
+ * Controller for custom control Activitieslist.fxml. Activities that happened in the game are displayed in a list.
  */
 public class ActivityController extends AnchorPane {
     private ActivityModel activityModel;
@@ -33,7 +34,7 @@ public class ActivityController extends AnchorPane {
         this.activitiesListView.setItems(this.activityModel.getLatestActivities()); //bind ListView to latestActivities in the activityModel
     }
 
-    public void updateActitivites(List<String> activities) {
+    public void updateActivities(List<Activity> activities) {
         this.activityModel.updateLatestActivities(activities);
     }
 }

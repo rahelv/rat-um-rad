@@ -2,37 +2,39 @@ package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
-import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.INVALID_ACTION_FATAL;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
 
 /**
  * Util class for {@link GameService} with complex methods that are used multiple times.
  * No methods are <code>public</code>.
  */
 public class GameServiceUtil {
+    public static final Logger LOGGER = LogManager.getLogger();
+
     static ClientGame toClientGame(Game game, String forPlayerIpAddress) {
         List<VisiblePlayer> otherPlayers = new ArrayList<>();
         game.getPlayers().forEach((key, player) -> {
@@ -49,7 +51,8 @@ public class GameServiceUtil {
                 otherPlayers,
                 game.getPlayers().get(forPlayerIpAddress),
                 game.getTurn(),
-                game.getRoadsBuilt());
+                game.getRoadsBuilt(),
+                game.getActivities());
     }
 
     static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<WheelColor> takenColors) {
@@ -81,16 +84,41 @@ public class GameServiceUtil {
         return null;
     }
 
-    public static void notifyPlayersOfGameUpdate(Game game, OutputPacketGateway outputPacketGateway, Command command) {
+    public static void notifyPlayersOfGameUpdate(Game game, OutputPacketGateway outputPacketGateway, ServerCommand command) {
+        LOGGER.info("Notifying players of game update for game " + game.getId() + "and command " + command);
         Set<String> playerIps = game.getPlayerIpAddresses();
         for (String ipAddress : playerIps) {
             ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            outputPacketGateway.sendPacket(ipAddress, new Packet(command, clientGame, ContentType.GAME));
+            outputPacketGateway.sendPacket(ipAddress, new Packet.Server(command, clientGame, ContentType.GAME));
         }
     }
 
-    public static void startGame(Game game, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
+    /**
+     * Sends a packet to all players accept the actor with the game update
+     * and sends a packet with the command of the action to the actor.
+     *
+     * @param actorIp ip address of actor.
+     * @param game    the game
+     */
+    public static void notifyPlayersOfGameAction(String actorIp, Game game, OutputPacketGateway outputPacketGateway, ServerCommand actionCommand) {
+        LOGGER.info("Notifying players of game action by " + actorIp +
+                " for game " + game.getId() + "and actionCommand " + actionCommand);
+        for (String ipAddress : game.getPlayerIpAddresses()) {
+            if (ipAddress.equals(actorIp)) continue;
+            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            outputPacketGateway.sendPacket(ipAddress, new Packet.Server(GAME_UPDATED, clientGame, ContentType.GAME));
+        }
+
+        ClientGame actorClientGame = GameServiceUtil.toClientGame(game, actorIp);
+        outputPacketGateway.sendPacket(actorIp, new Packet.Server(actionCommand, actorClientGame, ContentType.GAME));
+    }
+
+    public static void prepareGame(Game game, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
+        LOGGER.info("Preparing game " + game.getId());
+
         game.setStatus(PREPARATION);
+
+        shuffleDecks(game);
 
         Map<String, Player> players = game.getPlayers();
         List<String> playerIpAddresses = game.getPlayerIpAddresses().stream().toList();
@@ -108,10 +136,14 @@ public class GameServiceUtil {
             player.setPlayingOrder(playingOrders.get(i));
         }
         gameRepository.updateGame(game);
-        for (String ipAddress : game.getPlayerIpAddresses()) {
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
-            outputPacketGateway.sendPacket(ipAddress, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, clientGame, GAME));
-        }
+        notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_STARTED_SELECT_DESTINATION_CARDS);
+    }
+
+    private static void shuffleDecks(Game game) {
+        DecksOfGame decksOfGame = game.getDecksOfGame();
+        RandomGenerator.shuffle(decksOfGame.getWheelCardDeck().getDeckOfCards());
+        RandomGenerator.shuffle(decksOfGame.getLongDestinationCardDeck().getCardDeck());
+        RandomGenerator.shuffle(decksOfGame.getShortDestinationCardDeck().getCardDeck());
     }
 
     private static List<Integer> generateShuffledPlayingOrders(int playerCount) {
@@ -141,14 +173,6 @@ public class GameServiceUtil {
         player.setShortDestinationCardsToChooseFrom(cardsToChooseFrom);
     }
 
-    public static void startGameRounds(Game game, IGameRepository gameRepository, OutputPacketGateway outputPacketGateway) {
-        // TODO: implement
-        // set status to Started
-        // shuffle card deck
-        // save game
-        // send update to all
-    }
-
     /**
      * @return Whether or not it is the player's turn in the game.
      */
@@ -175,15 +199,15 @@ public class GameServiceUtil {
             return false;
         }
 
-        if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) {
+       /* if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) { //TODO: uses this method when cards are selected but in the beginning it's nobodys turn!!!
             sendInvalidActionResponse(ipAddress, NOT_PLAYERS_TURN, outputPacketGateway);
             return false;
-        }
+        }*/
         return true;
     }
 
     public static void sendInvalidActionResponse(String ipAddress, String errorMessage, OutputPacketGateway outputPacketGateway) {
-        Packet errorResponse = new Packet(INVALID_ACTION_FATAL,
+        Packet.Server errorResponse = new Packet.Server(INVALID_ACTION_FATAL,
                 errorMessage,
                 STRING);
         outputPacketGateway.sendPacket(ipAddress, errorResponse);

@@ -7,11 +7,10 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.services.UserService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -22,7 +21,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class StartupPageController implements Initializable {
+public class StartupPageController {
     private UserService userService;
     public ServerResponseListener<List<String>> allPlayersListener;
 
@@ -44,8 +43,7 @@ public class StartupPageController implements Initializable {
         this.showUsernameChangeDialog();
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public StartupPageController() {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
             @Override
             public void serverResponseReceived(ClientGame content) {
@@ -53,8 +51,8 @@ public class StartupPageController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.GAME_JOINED;
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_JOINED;
             }
         });
 
@@ -65,8 +63,8 @@ public class StartupPageController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.SEND_ALL_CONNECTED_PLAYERS;
+            public ServerCommand forCommand() {
+                return ServerCommand.SEND_ALL_CONNECTED_PLAYERS;
             }
         });
         this.userService = new UserService();
@@ -95,7 +93,7 @@ public class StartupPageController implements Initializable {
     }
 
     @FXML
-    public void showAllGamesAction(ActionEvent event){
+    public void showAllGamesAction(ActionEvent event) {
         Platform.runLater(() -> {
             startupPageModel.getListener().controllerChanged("showAllGamesView");
         });

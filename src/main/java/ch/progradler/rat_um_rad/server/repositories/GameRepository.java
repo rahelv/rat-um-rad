@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.server.repositories;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,9 +58,9 @@ public class GameRepository implements IGameRepository {
      * {@link GameStatus#STARTED}, this method returns a list with both.
      */
     public List<Game> getStartedGames() {
-        List<Game> preparingGames = getGamesWithStatus(PREPARATION);
-        List<Game> startedGames = getGamesWithStatus(STARTED);
-        preparingGames.addAll(startedGames);
+        List<Game> preparingGames = new ArrayList<>();
+        preparingGames.addAll(getGamesWithStatus(PREPARATION));
+        preparingGames.addAll(getGamesWithStatus(STARTED));
         return preparingGames;
     }
 

@@ -1,14 +1,17 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.chooseCard;
+import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.shared.models.game.Road;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.stage.Stage;
@@ -21,7 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ChooseCardController implements Initializable {
+public class ChooseCardController {
+
     private Stage stage;
     @FXML
     private Button chooseCardsButton;
@@ -31,15 +35,23 @@ public class ChooseCardController implements Initializable {
     private IGameService gameService;
     List<String> selectedRoadIdList = new ArrayList<>();
 
-    /** initializes the controller.
-     * @param location  The location used to resolve relative paths for the root object, or
-     *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
-     *                  the root object was not localized.
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public ChooseCardController() {
         this.gameService = new GameService();
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
+            @Override
+            public void serverResponseReceived(ClientGame content) {
+                try {
+                    destinationCardsSelectedReturnToGame(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } //TODO: what is received and react to errors
+
+            @Override
+            public ServerCommand forCommand() {
+                return ServerCommand.DESTINATION_CARDS_SELECTED;
+            }
+        });
     }
 
     /** initializes the model which comes from the GUI class.
@@ -50,43 +62,7 @@ public class ChooseCardController implements Initializable {
         //TODO: multiple types of cards to chose from
         this.chooseCardModel = chooseCardModel;
         this.cardsListView.setItems(this.chooseCardModel.getDestinationCardList());
-        this.cardsListView.setCellFactory(CheckBoxListCell.forListView(new Callback<DestinationCard, ObservableValue<Boolean>>() {
-            @Override
-            public ObservableValue<Boolean> call(DestinationCard item) {
-                CheckBoxListCell<DestinationCard> cell = new CheckBoxListCell<DestinationCard>() {
-                    @Override
-                    public void updateItem(DestinationCard item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setText(null);
-                        setGraphic(null);
-                        if (item != null && !empty) {
-                            //TODO: text is never displayed correctly
-                            setText(item.getDestination1().getName() + " to " + item.getDestination2().getName());
-                        }
-                    }
-                };
-                cell.setConverter(new StringConverter() {
-                    @Override
-                    public String toString(Object destinationCard) {
-                        return ((DestinationCard)destinationCard).getDestination1().getName() + " " + ((DestinationCard)destinationCard).getDestination2().getName();
-                    }
-                    @Override
-                    public Object fromString(String string) {
-                        return string;
-                    }
-                });
-
-                BooleanProperty observable = new SimpleBooleanProperty();
-                observable.addListener((obs, wasSelected, isNowSelected) -> {
-                    if (isNowSelected) {
-                        selectedRoadIdList.add(item.getCardID());
-                    } else {
-                        selectedRoadIdList.remove(item.getCardID());
-                    }
-                });
-                return observable;
-            }
-        }));
+        this.cardsListView.setCellFactory(param -> new DestinationCardCell());
         this.stage = window;
     }
 
@@ -100,6 +76,44 @@ public class ChooseCardController implements Initializable {
             this.gameService.selectCards(selectedCards);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void destinationCardsSelectedReturnToGame(ClientGame clientGame) throws IOException {
+        Platform.runLater(() -> {
+            chooseCardModel.getListener().returnToGame(clientGame);
+        });
+    }
+
+    private class DestinationCardCell extends CheckBoxListCell<DestinationCard> {
+        StringConverter stringConverter = new StringConverter() {
+            @Override
+            public String toString(Object destinationCard) {
+                return ((DestinationCard) destinationCard).getDestination1().getName() + " to " + ((DestinationCard) destinationCard).getDestination2().getName();
+            }
+
+            @Override
+            public Object fromString(String string) {
+                return string;
+            }
+        };
+
+        Callback<DestinationCard, ObservableValue<Boolean>> callback = item -> {
+            BooleanProperty observable = new SimpleBooleanProperty();
+            observable.addListener((obs, wasSelected, isNowSelected) -> {
+                if (isNowSelected) {
+                    selectedRoadIdList.add(item.getCardID());
+                } else {
+                    selectedRoadIdList.remove(item.getCardID());
+                }
+            });
+            return observable;
+        };
+
+        public DestinationCardCell() {
+            super();
+            setConverter(stringConverter);
+            setSelectedStateCallback(callback);
         }
     }
 }

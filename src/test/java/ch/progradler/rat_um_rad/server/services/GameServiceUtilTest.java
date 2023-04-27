@@ -1,38 +1,36 @@
 package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
-import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
+import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
 import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor.*;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
-import static ch.progradler.rat_um_rad.shared.protocol.Command.NEW_PLAYER;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -66,9 +64,9 @@ class GameServiceUtilTest {
                 otherPlayerIp, otherPlayer
         );
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
+        List<Activity> activities = new ArrayList<>();
 
-
-        Game game = new Game(gameId, status, map, createdAt, creatorIp, requiredPlayerCount, players, turn, roadsBuilt);
+        Game game = new Game(gameId, status, map, createdAt, creatorIp, requiredPlayerCount, players, turn, roadsBuilt, activities);
         String forPlayerIp = otherPlayerIp;
 
         ClientGame expected = new ClientGame(gameId,
@@ -80,7 +78,8 @@ class GameServiceUtilTest {
                 Collections.singletonList(GameServiceUtil.toVisiblePlayer(creator, creatorIp)),
                 otherPlayer,
                 turn,
-                roadsBuilt);
+                roadsBuilt,
+                activities);
 
         assertEquals(expected, GameServiceUtil.toClientGame(game, forPlayerIp));
     }
@@ -140,9 +139,10 @@ class GameServiceUtilTest {
         );
 
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
+        List<Activity> activities = new ArrayList<>();
 
-        Game game1 = new Game(gameId, null, null, null, "playerB", 4, players1, 0, roadsBuilt);
-        Game game2 = new Game(gameId, null, null, null, "playerD", 4, players2, 3, roadsBuilt);
+        Game game1 = new Game(gameId, null, GameMap.defaultMap(), null, "playerB", 4, players1, 0, roadsBuilt, activities);
+        Game game2 = new Game(gameId, null, GameMap.defaultMap(), null, "playerD", 4, players2, 3, roadsBuilt, activities);
 
         when(mockGameRepository.getAllGames()).thenReturn(Arrays.asList(game1, game2));
 
@@ -165,16 +165,44 @@ class GameServiceUtilTest {
         playerMap.put(ip1, player1);
         playerMap.put(ip2, player2);
 
-        GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
 
         GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, NEW_PLAYER);
-        verify(mockOutputPacketGateway).sendPacket(ip1, new Packet(NEW_PLAYER, GameServiceUtil.toClientGame(game, ip1), ContentType.GAME));
-        verify(mockOutputPacketGateway).sendPacket(ip2, new Packet(NEW_PLAYER, GameServiceUtil.toClientGame(game, ip2), ContentType.GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip1, new Packet.Server(NEW_PLAYER, GameServiceUtil.toClientGame(game, ip1), ContentType.GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip2, new Packet.Server(NEW_PLAYER, GameServiceUtil.toClientGame(game, ip2), ContentType.GAME));
     }
 
     @Test
-    void startGameTest() {
+    void notifyPlayersOfGameActionTest() {
+        String actorIp = "actor";
+        String ip2 = "ip2";
+        String ip3 = "ip3";
+
+        when(mockUserRepository.getUsername(actorIp)).thenReturn("actor");
+        when(mockUserRepository.getUsername(ip2)).thenReturn("name2");
+        when(mockUserRepository.getUsername(ip3)).thenReturn("name3");
+        Player actor = GameServiceUtil.createNewPlayer(actorIp, mockUserRepository, new ArrayList<>());
+        Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, new ArrayList<>());
+        Player player3 = GameServiceUtil.createNewPlayer(ip3, mockUserRepository, new ArrayList<>());
+
+        Map<String, Player> playerMap = new HashMap<>();
+        playerMap.put(actorIp, actor);
+        playerMap.put(ip2, player2);
+        playerMap.put(ip3, player3);
+
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
+
+        ServerCommand actionCommand = ROAD_BUILT;
+
+        GameServiceUtil.notifyPlayersOfGameAction(actorIp, game, mockOutputPacketGateway, actionCommand);
+
+        verify(mockOutputPacketGateway).sendPacket(actorIp, new Packet.Server(actionCommand, GameServiceUtil.toClientGame(game, actorIp), ContentType.GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip2, new Packet.Server(GAME_UPDATED, GameServiceUtil.toClientGame(game, ip2), ContentType.GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip3, new Packet.Server(GAME_UPDATED, GameServiceUtil.toClientGame(game, ip3), ContentType.GAME));
+    }
+
+    @Test
+    void prepareGameTest() {
         String ip1 = "ip1";
         String ip2 = "ip2";
         String name1 = "name1";
@@ -190,11 +218,10 @@ class GameServiceUtilTest {
         playerMap.put(ip1, player1);
         playerMap.put(ip2, player2);
 
-        GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
 
         // act
-        GameServiceUtil.startGame(game, mockGameRepository, mockOutputPacketGateway);
+        GameServiceUtil.prepareGame(game, mockGameRepository, mockOutputPacketGateway);
 
         // assert
         assertEquals(PREPARATION, game.getStatus());
@@ -224,8 +251,36 @@ class GameServiceUtilTest {
 
         verify(mockGameRepository, times(1)).updateGame(game);
 
-        verify(mockOutputPacketGateway).sendPacket(ip1, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip1), GAME));
-        verify(mockOutputPacketGateway).sendPacket(ip2, new Packet(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip2), GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip1, new Packet.Server(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip1), GAME));
+        verify(mockOutputPacketGateway).sendPacket(ip2, new Packet.Server(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip2), GAME));
+    }
+
+    @Test
+    void prepareGameShufflesDecks() {
+        Game game = mock(Game.class);
+        doNothing().when(game).setStatus(PREPARATION);
+        List<WheelCard> wheelCards = mock(List.class);
+        List<DestinationCard> longDestinationCards = mock(List.class);
+        List<DestinationCard> shortDestinationCards = mock(List.class);
+
+        DecksOfGame decksOfGame = new DecksOfGame(
+                new WheelCardDeck(wheelCards),
+                WheelCardDeck.empty(),
+                new DestinationCardDeck(longDestinationCards),
+                new DestinationCardDeck(shortDestinationCards)
+        );
+        when(game.getDecksOfGame()).thenReturn(decksOfGame);
+
+
+        try (MockedStatic<RandomGenerator> utilities = Mockito.mockStatic(RandomGenerator.class)) {
+            utilities.when(() -> RandomGenerator.shuffle(any())).then(invocation -> null);
+
+            GameServiceUtil.prepareGame(game, mockGameRepository, mockOutputPacketGateway);
+
+            utilities.verify(() -> RandomGenerator.shuffle(wheelCards));
+            utilities.verify(() -> RandomGenerator.shuffle(longDestinationCards));
+            utilities.verify(() -> RandomGenerator.shuffle(shortDestinationCards));
+        }
     }
 
     @Test
@@ -245,8 +300,7 @@ class GameServiceUtilTest {
         playerMap.put(ip1, player1);
         playerMap.put(ip2, player2);
 
-        GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
 
         //testing
         int sizeInGameBeforeCalling = game.getDecksOfGame().getLongDestinationCardDeck().getCardDeck().size();
@@ -282,8 +336,7 @@ class GameServiceUtilTest {
         playerMap.put(ip1, player1);
         playerMap.put(ip2, player2);
 
-        GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, playerMap);
+        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
 
         //testing
         int sizeInGameBeforeCalling = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck().size();
@@ -352,7 +405,7 @@ class GameServiceUtilTest {
         String ipAddress = "clientA";
         boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, null, mockOutputPacketGateway);
         assertFalse(result);
-        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
+        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
                 ErrorResponse.PLAYER_IN_NO_GAME,
                 STRING);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
@@ -370,7 +423,7 @@ class GameServiceUtilTest {
         }
 
         verify(mockGameRepository, never()).updateGame(any());
-        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
+        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
                 ErrorResponse.GAME_NOT_STARTED,
                 STRING);
         verify(mockOutputPacketGateway, times(3)).sendPacket(ipAddress, errorResponse);
@@ -390,7 +443,7 @@ class GameServiceUtilTest {
         boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
         assertFalse(result);
 
-        Packet errorResponse = new Packet(Command.INVALID_ACTION_FATAL,
+        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
                 ErrorResponse.NOT_PLAYERS_TURN,
                 STRING);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);

@@ -2,29 +2,31 @@ package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewController;
-import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.server.Server;
+import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
-
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
 
 /**
  * Handles incoming responses from server.
  */
 public class ServerResponseHandler implements ServerInputPacketGateway {
+    public static final Logger LOGGER = LogManager.getLogger();
+
     private final List<ServerResponseListener<?>> listeners = new ArrayList<>();
     private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
@@ -46,8 +48,19 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
      * commands in the switch cases or the used methods in the code block for each case.
      */
     @Override
-    public void handleResponse(Packet packet) {
+    public void handleResponse(Packet<ServerCommand> packet) {
+        LOGGER.info("Received server command:  " + packet.getCommand());
         //TODO: implement QUIT command and other commands
+
+        // TODO: implement properly:
+        if (packet.getContentType() == ContentType.GAME) {
+            System.out.println("Activities of game: ");
+            List<Activity> activities = ((ClientGame) packet.getContent()).getActivities();
+            List<String> formatted = activities.stream()
+                    .map((activity -> activity.getUsername() + " did " + activity.getCommand()))
+                    .toList();
+            System.out.println(String.join(", ", formatted));
+        }
 
         switch (packet.getCommand()) {
             case PING -> {
@@ -58,9 +71,11 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(change, packet.getCommand());
             }
             case INVALID_ACTION_FATAL -> {
+                String error = (String) packet.getContent();
+                System.out.println(error);
                 //TODO: differentiate further between fatal actions
                 //this.userService.chooseAndSendUsername(this.serverOutput);
-                switch((String) packet.getContent()) {
+                switch ((String) packet.getContent()) {
                     case JOINING_NOT_POSSIBLE -> {
                         //TODO: implement
                     }
@@ -70,10 +85,10 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 }
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
-                List<String> allOnlinePlayers = (List<String>)packet.getContent();
-                notifyListenersOfType(allOnlinePlayers, packet.getCommand()); //TODO check if interface works correctly
+                List<String> allOnlinePlayers = (List<String>) packet.getContent();
+                notifyListenersOfType(allOnlinePlayers, packet.getCommand());
             }
-            case SEND_GAME_INTERNAL_CHAT -> {
+            case GAME_INTERNAL_CHAT_SENT -> {
                 //TODO: update chatRoomModel
                 ChatMessage message = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
@@ -89,27 +104,30 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case GAME_CREATED -> {
                 ClientGame content = (ClientGame) packet.getContent();
-                notifyListenersOfType(content, packet.getCommand());
+                notifyListenersOfType(content, ServerCommand.GAME_CREATED);
             }
             case GAME_JOINED -> {
                 ClientGame clientGame = (ClientGame) packet.getContent();
-                notifyListenersOfType(clientGame, packet.getCommand());
+                notifyListenersOfType(clientGame, ServerCommand.GAME_JOINED);
             }
-            case NEW_PLAYER-> {
+            case NEW_PLAYER, GAME_UPDATED, ROAD_BUILT -> { //TODO: what happens if game is updated the same time you're doing something (can this even happen?)
                 ClientGame clientGame = (ClientGame) packet.getContent();
-                notifyListenersOfType(clientGame, packet.getCommand()); //updated ClientGame is sent to Controller, so it can display the new state
+                notifyListenersOfType(clientGame, ServerCommand.GAME_UPDATED); //updated ClientGame is sent to Controller, so it can display the new state
             }
-            case GAME_STARTED_SELECT_DESTINATION_CARDS -> {
-                System.out.println("sendgames " + packet); // TODO: replace with logger
+            case GAME_STARTED_SELECT_DESTINATION_CARDS -> { //TODO: soll auch benutzt werden um während dem Spiel karten zu ziehen
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType(content, packet.getCommand());
+            }
+            case DESTINATION_CARDS_SELECTED -> {
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, ServerCommand.DESTINATION_CARDS_SELECTED);
             }
             default -> presenter.display(packet);
         }
     }
 
-    private <T> void notifyListenersOfType(T event, Command command) {
+    private <T> void notifyListenersOfType(T event, ServerCommand command) {
         for (ServerResponseListener<?> listener : listeners) {
             if (listener.forCommand() == command) {
                 ((ServerResponseListener<T>) listener).serverResponseReceived(event);

@@ -46,8 +46,6 @@ public interface IGameService {
 
     void takeOpenWheelCard(String ipAddress, WheelCard wheelCard);
 
-    void takeDestinationCard(String ipAddress);
-
     /**
      * TODO: explain what this method does.
      */

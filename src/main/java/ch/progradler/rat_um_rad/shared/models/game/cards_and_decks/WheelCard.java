@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.shared.models.game.cards_and_decks;
 
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -37,9 +38,12 @@ public class WheelCard {
         return WheelColor.values()[colorIndicator()];
     }
 
+    /**
+     * @return Mutable list of all wheel cards
+     */
     public static List<WheelCard> all() {
-        return Stream.iterate(0, n -> n + 1)
-                .limit(GameConfig.TOTAL_WHEEL_CARD_COUNT).map(WheelCard::new).toList();
+        return new ArrayList<>(Stream.iterate(0, n -> n + 1)
+                .limit(GameConfig.TOTAL_WHEEL_CARD_COUNT).map(WheelCard::new).toList());
     }
 
     @Override

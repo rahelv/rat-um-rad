@@ -2,7 +2,10 @@ package ch.progradler.rat_um_rad.shared.util;
 
 
 import java.io.*;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Helper to:
@@ -10,21 +13,15 @@ import java.nio.charset.StandardCharsets;
  * and send String into {@link OutputStream}.
  */
 public class StreamUtils {
-    public static String readStringFromStream(InputStream stream) throws IOException {
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[50000]; // expects no string with bigger size
-        int length = stream.read(buffer);
-        result.write(buffer, 0, length);
-        return result.toString(StandardCharsets.UTF_8);
+
+    //public static final String DELIMITER = "#####";
+
+    public static String readStringsFromStream(BufferedReader bufferedReader) throws IOException {
+        return bufferedReader.readLine();
     }
 
-    public static void writeStringToStream(String sendStr, OutputStream outStream) {
-        sendStr += "_/_";
-        byte[] bytes = sendStr.getBytes(StandardCharsets.UTF_8);
-        try {
-            outStream.write(bytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void writeStringToStream(String sendStr, PrintWriter printWriter) {
+        printWriter.println(sendStr);
+        printWriter.flush();
     }
 }

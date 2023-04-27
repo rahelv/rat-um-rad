@@ -1,28 +1,34 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
-import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.util.StreamUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * Listens to messages from server
  */
 public class ServerInputListener implements Runnable {
     private InputStream inputStream;
+    private BufferedReader bufferedReader;
     private final ServerInputPacketGateway inputPacketGateway;
-    private final Coder<Packet> packetCoder;
+    private final Coder<Packet<ServerCommand>> packetCoder;
 
-    public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway, Coder<Packet> packetCoder) {
+    public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway, Coder<Packet<ServerCommand>> packetCoder) {
         this.inputPacketGateway = inputPacketGateway;
         this.packetCoder = packetCoder;
         try {
             inputStream = socket.getInputStream();
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         } catch (IOException e) {
             // TODO: handle?
             e.printStackTrace();
@@ -37,14 +43,16 @@ public class ServerInputListener implements Runnable {
         while (true) { //so it keeps listening
             String encodedPacket;
             try {
-                encodedPacket = StreamUtils.readStringFromStream(inputStream);
+                encodedPacket = StreamUtils.readStringsFromStream(bufferedReader);
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
                 // TODO: display error to user?
             }
-            Packet packet = packetCoder.decode(encodedPacket, 0);
-            inputPacketGateway.handleResponse(packet);
+            if(encodedPacket !=null ) {
+                Packet<ServerCommand> packet = packetCoder.decode(encodedPacket, 0);
+                inputPacketGateway.handleResponse(packet);
+            }
         }
     }
 }

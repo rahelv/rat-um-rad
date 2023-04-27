@@ -8,25 +8,19 @@ import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-
-public class GameController implements Initializable {
+public class GameController {
     private GameService gameService;
     Stage stage;
     GameModel gameModel;
     @FXML
-    private ActivityController activityController;
+    private ActivityController activityController = new ActivityController();
     @FXML
-    private GameMapController gameMapController;
+    private GameMapController gameMapController = new GameMapController();
     /**
      * 1. Warten auf Spieler in Lobby
      * 2. Game Startet
@@ -34,8 +28,7 @@ public class GameController implements Initializable {
      * 4. --> Farbe zugewiesen, Radkarten bekommen etc.
      * 5. Karte anzeigen
      * */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public GameController() {
         this.gameService = new GameService();
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
             @Override
@@ -44,8 +37,8 @@ public class GameController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.NEW_PLAYER;
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_UPDATED;
             }
         });
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
@@ -55,13 +48,15 @@ public class GameController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.GAME_STARTED_SELECT_DESTINATION_CARDS;
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_STARTED_SELECT_DESTINATION_CARDS;
             }
         });
     }
 
-    /** initializes the game model and binds data to view.
+    /**
+     * initializes the game model and binds data to view.
+     *
      * @param gameModel
      * @param stage
      */
@@ -72,22 +67,26 @@ public class GameController implements Initializable {
         this.gameModel.setClientGame(gameModel.getClientGame());
         this.gameMapController.initData(new GameMapModel(gameModel.getClientGame())); //TODO: maybe only call after game is started (in serverresponsehandler)
         //TODO: this.activityController.updateActitivites();
-        this.gameMapController.udpateGameMapModel(gameModel.getClientGame());
+        this.gameMapController.updateGameMapModel(gameModel.getClientGame());
         //TODO: activities should be implemented on server - this.activityController.updateActitivies(this.gameModel.getClientGame().getActivities());
     }
 
     public void gameUpdated(ClientGame content) {
-        this.gameModel.setClientGame(content);
-        this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
-        //TODO: this.activityController.updateActitivites();
-        this.gameMapController.udpateGameMapModel(content);
-
+        System.out.println("built roads: " + content.getRoadsBuilt().keySet());
+        Platform.runLater(() -> {
+            this.gameModel.setClientGame(content);
+            this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
+            //TODO: this.activityController.updateActitivites();
+            this.gameMapController.updateGameMapModelWithMap(content);
+            this.activityController.updateActivities(content.getActivities());
+            this.stage.show();
+        });
         //TODO: if destinationcards received run chooseDestinationCards();
     }
 
     private void startGameChooseDestinationCards(ClientGame clientGame) {
         Platform.runLater(() -> {
-            gameModel.getListener().selectDestinationCards(clientGame);
+            gameModel.getListener().selectDestinationCards(clientGame); //TODO: when game joined, this listener is never called
         });
     }
 

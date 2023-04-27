@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ch.progradler.rat_um_rad.shared.protocol.Command.PING;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.PING;
 
 /**
  * Handler for Server Ping Pong Logic
@@ -55,7 +55,7 @@ public class ServerPingPongHandler {
         for (String ipAddress : clientsWithPongReceived) {
             LOGGER.log(Level.forName("PINGPONG", 700), "{}. PONG arrived from {}", pingSentCount, ipAddress);
             pongArrived.put(ipAddress, false);
-            connectionPool.sendPacket(ipAddress, new Packet(PING, null, ContentType.NONE));
+            connectionPool.sendPacket(ipAddress, new Packet.Server(PING, null, ContentType.NONE));
             LOGGER.log(Level.forName("PINGPONG", 700), "{}. PING sent to {}", pingSentCount, ipAddress);
         }
     }

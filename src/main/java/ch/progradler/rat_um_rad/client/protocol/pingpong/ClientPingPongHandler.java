@@ -1,7 +1,7 @@
 package ch.progradler.rat_um_rad.client.protocol.pingpong;
 
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGateway;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
+import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.apache.logging.log4j.Level;
@@ -47,7 +47,7 @@ public class ClientPingPongHandler {
         }
         LOGGER.log(Level.forName("PINGPONG", 700), arrivedPingCounter + ". PING arrived");
         try {
-            outputPacketGateway.sendPacket(new Packet(Command.PONG, null, ContentType.NONE));
+            outputPacketGateway.sendPacket(new Packet.Client(ClientCommand.PONG, null, ContentType.NONE));
             LOGGER.log(Level.forName("PINGPONG", 700), arrivedPingCounter + ". PONG sent");
         } catch (IOException e) {
             e.printStackTrace();

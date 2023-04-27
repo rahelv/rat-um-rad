@@ -10,8 +10,8 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static ch.progradler.rat_um_rad.shared.protocol.Command.PING;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.NONE;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.PING;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +40,7 @@ public class ServerPingPongHandlerTest {
         verify(mockConnectionPool, never()).removeConnection(ipAddress1);
         verify(mockConnectionPool, never()).removeConnection(ipAddress2);
 
-        Packet pingPacket = new Packet(PING, null, NONE);
+        Packet.Server pingPacket = new Packet.Server(PING, null, NONE);
         verify(mockConnectionPool).sendPacket(ipAddress1, pingPacket);
         verify(mockConnectionPool).sendPacket(ipAddress2, pingPacket);
     }
@@ -60,7 +60,7 @@ public class ServerPingPongHandlerTest {
         verify(mockConnectionPool, never()).removeConnection(ipAddress2);
         verify(mockConnectionPool, never()).removeConnection(ipAddress3);
 
-        Packet pingPacket = new Packet(PING, null, NONE);
+        Packet.Server pingPacket = new Packet.Server(PING, null, NONE);
 
         // all are removed because setPongArrived never called
         serverPingPongHandler.setPongArrived(ipAddress2);

@@ -12,7 +12,11 @@
 <Label  GridPane.rowIndex="2" GridPane.columnIndex="0" fx:id="createdAt"></Label>
 <Label  GridPane.rowIndex="3" GridPane.columnIndex="0" fx:id="requiredPlayers"></Label>
 <HBox GridPane.rowIndex="4">
-    <ComboBox fx:id="roadsToBuildList"></ComboBox>
+    <ComboBox fx:id="roadsToBuildListView"></ComboBox>
     <Button fx:id="buildRoad" text="Build Road" onAction="#buildRoadAction"></Button>
+</HBox>
+<HBox GridPane.rowIndex="5"></HBox>
+<HBox GridPane.rowIndex="6">
+    <ListView fx:id="roadsBuiltListView"></ListView>
 </HBox>
 </fx:root>

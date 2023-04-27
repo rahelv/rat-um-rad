@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CoderHelperTest {
 
@@ -73,7 +74,10 @@ class CoderHelperTest {
         int level = 4;
         Map<String, String> map = Map.of("a", "b", "c", "d");
         String encoded = CoderHelper.encodeStringMap(level, map);
-        assertEquals(CoderHelper.encodeFields(level, "a", "b", "c", "d"), encoded);
+
+        // check if values are followed by keys
+        assertTrue(encoded.equals(CoderHelper.encodeFields(level, "a", "b", "c", "d"))
+                || encoded.equals(CoderHelper.encodeFields(level, "c", "d", "a", "b")));
     }
 
     @Test

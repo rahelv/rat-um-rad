@@ -6,10 +6,8 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.protocol.Command;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,7 +25,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class GameOverviewController implements Initializable {
+public class GameOverviewController {
     @FXML
     private LobbyController lobbyController;
     @FXML
@@ -39,8 +37,8 @@ public class GameOverviewController implements Initializable {
 
     private IGameService gameService;
     private GameOverviewModel gameOverviewModel;
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+
+    public GameOverviewController() {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<List<GameBase>>() {
             @Override
             public void serverResponseReceived(List<GameBase> content) {
@@ -48,8 +46,8 @@ public class GameOverviewController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.SEND_STARTED_GAMES;
+            public ServerCommand forCommand() {
+                return ServerCommand.SEND_STARTED_GAMES;
             }
         });
 
@@ -60,8 +58,8 @@ public class GameOverviewController implements Initializable {
             }
 
             @Override
-            public Command forCommand() {
-                return Command.SEND_FINISHED_GAMES;
+            public ServerCommand forCommand() {
+                return ServerCommand.SEND_FINISHED_GAMES;
             }
         });
 
@@ -104,53 +102,26 @@ public class GameOverviewController implements Initializable {
         finishedGamesListView.setCellFactory(param -> new GameOverviewController.Cell());
     }
 
-
-    static class OpenGameCell extends ListCell<GameBase> {
-        Pane pane = new Pane();
-        HBox hbox = new HBox();
-        Label nameLabel = new Label();
-        Button listPlayersButton = new Button("players");
-        Button enterGameButton = new Button("join");
-        public OpenGameCell() {
-            super();
-            hbox.getChildren().addAll(nameLabel,pane,listPlayersButton, enterGameButton);
-            hbox.setHgrow(pane, Priority.ALWAYS);
-            enterGameButton.setOnAction(event -> {
-                System.out.println("wanting to join game " + getItem().getId());
-                //TODO: send anfrage to server: OutputPacketGatewaySingleton.;
-            });
-            listPlayersButton.setOnAction(event -> {
-                System.out.println("listing all players in this game");
-            });
-        }
-        protected void updateItem(GameBase item, boolean empty){
-            super.updateItem(item, empty);
-            setText(null);
-            setGraphic(null);
-            if(item != null && !empty){
-                nameLabel.setText(item.getId());
-                setGraphic(hbox);
-            }
-        }
-    }
     static class Cell extends ListCell<GameBase>{
         Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
+
         public Cell() {
             super();
-            hbox.getChildren().addAll(nameLabel,pane,listPlayersButton);
+            hbox.getChildren().addAll(nameLabel, pane, listPlayersButton);
             hbox.setHgrow(pane, Priority.ALWAYS);
             listPlayersButton.setOnAction(event -> {
                 System.out.println("listing all players in this game");
             });
         }
-        protected void updateItem(GameBase item, boolean empty){
+
+        protected void updateItem(GameBase item, boolean empty) {
             super.updateItem(item, empty);
             setText(null);
             setGraphic(null);
-            if(item != null && !empty){
+            if (item != null && !empty) {
                 nameLabel.setText(item.getId());
                 setGraphic(hbox);
             }
