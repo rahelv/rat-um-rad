@@ -29,8 +29,8 @@ public class DestinationCardDeck implements CardDeck {
 
         List<DestinationCard> destinationCards = new ArrayList<>();
         //needed for Testing
-        destinationCards.add(new DestinationCard("FromBaselToZürich", cities.get(CityId.BASEL), cities.get(CityId.ZURICH), 5));
-        destinationCards.add(new DestinationCard("FromZürichToLuzern", cities.get(CityId.ZURICH), cities.get(CityId.LUZERN), 4));
+        destinationCards.add(new DestinationCard("FromBaselToZuerich", cities.get(CityId.BASEL), cities.get(CityId.ZURICH), 5));
+        destinationCards.add(new DestinationCard("FromZuerichToLuzern", cities.get(CityId.ZURICH), cities.get(CityId.LUZERN), 4));
         destinationCards.add(new DestinationCard("FromLuzernToBern", cities.get(CityId.LUZERN), cities.get(CityId.BERN), 6));
         destinationCards.add(new DestinationCard("FromBernToBasel", cities.get(CityId.BERN), cities.get(CityId.BASEL), 4));
         destinationCards.add(new DestinationCard("FromBaselToLuzern", cities.get(CityId.BASEL), cities.get(CityId.LUZERN), 5 ));
@@ -38,10 +38,10 @@ public class DestinationCardDeck implements CardDeck {
         destinationCards.add(new DestinationCard("FromGenfToNeuchatel", cities.get(CityId.GENF), cities.get(CityId.NEUCHATEL), 3));
         destinationCards.add(new DestinationCard("FromNeuchatelToBasel", cities.get(CityId.NEUCHATEL), cities.get(CityId.BASEL), 3));
         destinationCards.add(new DestinationCard("FromNeuchatelToBern", cities.get(CityId.NEUCHATEL), cities.get(CityId.BERN), 3));
-        destinationCards.add(new DestinationCard("FromZürichToChur", cities.get(CityId.ZURICH), cities.get(CityId.CHUR), 3));
+        destinationCards.add(new DestinationCard("FromZuerichToChur", cities.get(CityId.ZURICH), cities.get(CityId.CHUR), 3));
         destinationCards.add(new DestinationCard("FromChurToLugano", cities.get(CityId.CHUR), cities.get(CityId.LUGANO), 3));
         destinationCards.add(new DestinationCard("FromLuganoToLuzern", cities.get(CityId.LUGANO), cities.get(CityId.LUZERN), 3));
-        destinationCards.add(new DestinationCard("FromZurichToLugano", cities.get(CityId.ZURICH), cities.get(CityId.LUGANO), 3));
+        destinationCards.add(new DestinationCard("FromZuerichToLugano", cities.get(CityId.ZURICH), cities.get(CityId.LUGANO), 3));
         destinationCards.add(new DestinationCard("FromChurToNeuchatel", cities.get(CityId.CHUR), cities.get(CityId.NEUCHATEL), 3));
         destinationCards.add(new DestinationCard("FromChurToBasel", cities.get(CityId.CHUR), cities.get(CityId.BASEL), 3));
         destinationCards.add(new DestinationCard("FromGenfToLuzern", cities.get(CityId.GENF), cities.get(CityId.LUZERN), 3));
@@ -61,8 +61,8 @@ public class DestinationCardDeck implements CardDeck {
 
         List<DestinationCard> destinationCards = new ArrayList<>();
         //needed for Testing
-        destinationCards.add(new DestinationCard("FromBaselToZürich", cities.get(CityId.BASEL), cities.get(CityId.ZURICH), 5));
-        destinationCards.add(new DestinationCard("FromZürichToLuzern", cities.get(CityId.ZURICH), cities.get(CityId.LUZERN), 4));
+        destinationCards.add(new DestinationCard("FromBaselToZuerich", cities.get(CityId.BASEL), cities.get(CityId.ZURICH), 5));
+        destinationCards.add(new DestinationCard("FromZuerichToLuzern", cities.get(CityId.ZURICH), cities.get(CityId.LUZERN), 4));
         destinationCards.add(new DestinationCard("FromLuzernToBern", cities.get(CityId.LUZERN), cities.get(CityId.BERN), 6));
         destinationCards.add(new DestinationCard("FromBernToBasel", cities.get(CityId.BERN), cities.get(CityId.BASEL), 4));
         destinationCards.add(new DestinationCard("FromBaselToLuzern", cities.get(CityId.BASEL), cities.get(CityId.LUZERN), 5 ));
