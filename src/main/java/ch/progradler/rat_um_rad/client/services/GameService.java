@@ -71,12 +71,6 @@ public class GameService implements IGameService {
 
     @Override
     public void selectCards(List<String> selectedItems) throws IOException {
-        String selectedCardsString = "selected cards: ";
-        for (String card : selectedItems) { //TODO: comment out as soon as playerOverview is implemented
-            selectedCardsString += card + ", ";
-        }
-        System.out.println(selectedCardsString);
-
         Client packet = new Client(ClientCommand.SHORT_DESTINATION_CARDS_SELECTED, selectedItems, ContentType.STRING_LIST);
         outputPacketGateway.sendPacket(packet);
     }

@@ -8,6 +8,7 @@
 <?import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController?>
 <?import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapController?>
 <?import ch.progradler.rat_um_rad.client.gui.javafx.game.playerOverview.PlayerOverviewController?>
+<?import ch.progradler.rat_um_rad.client.gui.javafx.game.ownPlayerOverview.OwnPlayerOverviewController?>
 <AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <fx:include source="../MainMenu.fxml" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
         <Label prefHeight="75.0" prefWidth="315.0" text="Rat um Rad" textAlignment="CENTER" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30">
@@ -15,7 +16,10 @@
                 <Font name="Arial Black" size="36.0"/>
             </font>
         </Label>
-        <GameMapController fx:id="gameMapController" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="105"></GameMapController>
+        <VBox AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="105">
+            <GameMapController fx:id="gameMapController" ></GameMapController>
+            <OwnPlayerOverviewController fx:id="ownPlayerOverviewController"></OwnPlayerOverviewController>
+        </VBox>
         <VBox AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50" prefWidth="260">
             <fx:include prefHeight="200.0" source="ChatRoomView.fxml" />
             <ActivityController prefHeight="200.0" fx:id="activityController"></ActivityController>

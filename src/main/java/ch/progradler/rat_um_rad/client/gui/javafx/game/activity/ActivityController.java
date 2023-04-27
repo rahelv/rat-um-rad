@@ -16,7 +16,7 @@ import java.util.List;
 public class ActivityController extends VBox {
     private ActivityModel activityModel;
     @FXML
-    private ListView activitiesListView;
+    private ListView<String> activitiesListView;
 
     public ActivityController() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/game/ActivitiesList.fxml"));

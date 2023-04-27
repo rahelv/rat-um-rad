@@ -5,6 +5,8 @@ import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityControll
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.ownPlayerOverview.OwnPlayerOverviewController;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.ownPlayerOverview.OwnPlayerOverviewModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.playerOverview.PlayerOverviewController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.playerOverview.PlayerOverviewModel;
 import ch.progradler.rat_um_rad.client.services.GameService;
@@ -23,6 +25,8 @@ public class GameController {
     private ActivityController activityController = new ActivityController();
     @FXML
     private PlayerOverviewController playerOverviewController = new PlayerOverviewController();
+    @FXML
+    private OwnPlayerOverviewController ownPlayerOverviewController = new OwnPlayerOverviewController();
     @FXML
     private GameMapController gameMapController = new GameMapController();
     /**
@@ -81,6 +85,8 @@ public class GameController {
         this.activityController.initData(new ActivityModel());
         this.playerOverviewController.initData(new PlayerOverviewModel());
         this.playerOverviewController.updatePlayerOverview(gameModel.getClientGame().getOtherPlayers());
+        this.ownPlayerOverviewController.initData(new OwnPlayerOverviewModel());
+        this.ownPlayerOverviewController.updatePlayer(gameModel.getClientGame().getOwnPlayer());
         this.gameModel.setClientGame(gameModel.getClientGame());
         this.gameMapController.initData(new GameMapModel(gameModel.getClientGame())); //TODO: maybe only call after game is started (in serverresponsehandler)
         this.gameMapController.updateGameMapModel(gameModel.getClientGame());
@@ -95,6 +101,7 @@ public class GameController {
             this.gameMapController.updateGameMapModelWithMap(content);
             this.activityController.updateActivities(content.getActivities());
             this.playerOverviewController.updatePlayerOverview(content.getOtherPlayers());
+            this.ownPlayerOverviewController.updatePlayer(content.getOwnPlayer());
             this.stage.show();
         });
         //TODO: if destinationcards received run chooseDestinationCards();

@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -11,13 +8,11 @@
 <Label  GridPane.rowIndex="1" GridPane.columnIndex="0" fx:id="status"></Label>
 <Label  GridPane.rowIndex="2" GridPane.columnIndex="0" fx:id="createdAt"></Label>
 <Label  GridPane.rowIndex="3" GridPane.columnIndex="0" fx:id="requiredPlayers"></Label>
-<HBox GridPane.rowIndex="4">
-    <ComboBox fx:id="roadsToBuildListView"></ComboBox>
+<HBox GridPane.rowIndex="4" spacing="5">
+    <ComboBox fx:id="roadsToBuildListView" ></ComboBox>
     <Button fx:id="buildRoad" text="Build Road" onAction="#buildRoadAction"></Button>
-</HBox>
-<ListView GridPane.rowIndex="5" fx:id="roadsBuiltListView"></ListView>
-<HBox GridPane.rowIndex="6">
     <Button text="Request WheelCards" onAction="#requestWheelCards"></Button>
     <Button text="Select Destination Cards" onAction="#selectDestinationCards"></Button>
 </HBox>
+<ListView GridPane.rowIndex="5" prefHeight="200.0" fx:id="roadsBuiltListView"></ListView>
 </fx:root>

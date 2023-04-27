@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Controller for custom control Activitieslist.fxml. Activities that happened in the game are displayed in a list.
+ * Controller for custom control PlayerOverview.fxml. Activities that happened in the game are displayed in a list.
  */
 public class PlayerOverviewController extends VBox {
     private PlayerOverviewModel playerOverviewModel;
