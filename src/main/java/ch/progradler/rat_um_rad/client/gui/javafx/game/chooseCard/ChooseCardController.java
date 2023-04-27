@@ -1,4 +1,5 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.chooseCard;
+
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
@@ -12,17 +13,16 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class ChooseCardController {
 
@@ -54,7 +54,9 @@ public class ChooseCardController {
         });
     }
 
-    /** initializes the model which comes from the GUI class.
+    /**
+     * initializes the model which comes from the GUI class.
+     *
      * @param chooseCardModel
      * @param window
      */
@@ -66,7 +68,9 @@ public class ChooseCardController {
         this.stage = window;
     }
 
-    /** bound to chooseCardButton in View. sends request to server to create game through gameService.
+    /**
+     * bound to chooseCardButton in View. sends request to server to create game through gameService.
+     *
      * @param actionEvent
      */
     @FXML
@@ -86,15 +90,16 @@ public class ChooseCardController {
     }
 
     private class DestinationCardCell extends CheckBoxListCell<DestinationCard> {
-        StringConverter stringConverter = new StringConverter() {
+        StringConverter<DestinationCard> stringConverter = new StringConverter<>() {
             @Override
-            public String toString(Object destinationCard) {
-                return ((DestinationCard) destinationCard).getDestination1().getName() + " to " + ((DestinationCard) destinationCard).getDestination2().getName();
+            public String toString(DestinationCard destinationCard) {
+                return destinationCard.getDestination1().getName() + " to " + destinationCard.getDestination2().getName();
             }
 
             @Override
-            public Object fromString(String string) {
-                return string;
+            public DestinationCard fromString(String string) {
+                // returns null because never used
+                return null;
             }
         };
 
