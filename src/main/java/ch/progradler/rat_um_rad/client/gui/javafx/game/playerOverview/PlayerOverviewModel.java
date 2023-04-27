@@ -8,13 +8,13 @@ import java.util.List;
 
 public class PlayerOverviewModel {
     //TODO: implement "Stapel"
-    ObservableList<VisiblePlayer> visiblePlayers;
-    public void PlayerOverviewModel() {
-        this.visiblePlayers = FXCollections.observableArrayList();
-    }
-
+    private final ObservableList<VisiblePlayer> visiblePlayers = FXCollections.observableArrayList();
     public void updatePlayers(List<VisiblePlayer> players) {
         this.visiblePlayers.clear();
         this.visiblePlayers.addAll(players);
+    }
+
+    public ObservableList<VisiblePlayer> getVisiblePlayers() {
+        return visiblePlayers;
     }
 }

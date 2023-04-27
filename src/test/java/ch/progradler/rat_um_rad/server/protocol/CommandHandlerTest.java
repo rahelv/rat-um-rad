@@ -165,7 +165,7 @@ class CommandHandlerTest {
     void requestOnSelectingDestinationCardsInPrepIsHandledCorrectly() {
         String ipAddress = "clientA";
         List<String> selectedCards = Arrays.asList("card1", "card2");
-        Packet.Client packet = new Packet.Client(ClientCommand.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedCards, ContentType.STRING_LIST);
+        Packet.Client packet = new Packet.Client(ClientCommand.SHORT_DESTINATION_CARDS_SELECTED, selectedCards, ContentType.STRING_LIST);
 
         commandHandler.handleCommand(packet, ipAddress);
 

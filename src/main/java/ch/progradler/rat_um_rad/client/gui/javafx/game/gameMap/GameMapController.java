@@ -112,4 +112,21 @@ public class GameMapController extends GridPane {
         }
     }
 
+    @FXML
+    private void requestWheelCards(ActionEvent event) {
+        try {
+            this.gameService.requestWheelCards();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void selectDestinationCards(ActionEvent event) {
+        try {
+          this.gameService.requestShortDestinationCards();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

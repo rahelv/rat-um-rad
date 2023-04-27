@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Controller for custom control Activitieslist.fxml. Activities that happened in the game are displayed in a list.
  */
-public class ActivityController extends AnchorPane {
+public class ActivityController extends VBox {
     private ActivityModel activityModel;
     @FXML
     private ListView activitiesListView;
