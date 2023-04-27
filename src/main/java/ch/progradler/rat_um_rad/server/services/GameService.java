@@ -24,8 +24,10 @@ import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.sendInval
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.validateAndHandleActionPrecondition;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.ROAD_ALREADY_BUILT_ON;
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.ROAD_DOES_NOT_EXIST;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
+import static ch.progradler.rat_um_rad.shared.util.GameConfig.SHORT_DEST_CARDS_AT_START_COUNT;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
 
 /**
@@ -210,10 +212,9 @@ public class GameService implements IGameService {
 
         List<DestinationCard> available = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck();
         List<DestinationCard> tooChoseFrom = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < SHORT_DEST_CARDS_AT_START_COUNT; i++) {
             if (available.size() > 0) {
                 DestinationCard picked = RandomGenerator.randomFromList(available);
-                available.remove(picked);
                 tooChoseFrom.add(picked);
             }
         }
