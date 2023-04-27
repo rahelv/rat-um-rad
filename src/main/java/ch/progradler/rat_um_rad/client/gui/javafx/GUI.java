@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx;
 
+import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.GameController;
@@ -15,11 +16,17 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameO
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
+import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
+import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,6 +71,28 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
      */
     @Override
     public void start(Stage primaryStage) {
+        /**
+         * Listener for INVALID_ACTION_FATAL. creates a popup with the error message when an error is thrown.
+         */
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<String>() {
+            @Override
+            public void serverResponseReceived(String error) {
+                //TODO: call popup and display error message
+                Platform.runLater(() -> {
+                    Alert errorAlert = new Alert(Alert.AlertType.WARNING);
+                    errorAlert.setTitle("An Error Occured");
+                    errorAlert.setHeaderText(error);
+                    errorAlert.setContentText("Please try again"); //TODO: display different text according to error thrown
+                    errorAlert.initModality(Modality.APPLICATION_MODAL);
+                    errorAlert.showAndWait();
+                });
+            }
+
+            @Override
+            public ServerCommand forCommand() {
+                return ServerCommand.INVALID_ACTION_FATAL;
+            }
+        });
         Parameters parameters = getParameters();
         List<String> paramlist = parameters.getRaw();
 

@@ -64,16 +64,8 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case INVALID_ACTION_FATAL -> {
                 String error = (String) packet.getContent();
                 System.out.println(error);
-                //TODO: differentiate further between fatal actions
-                //this.userService.chooseAndSendUsername(this.serverOutput);
-                switch ((String) packet.getContent()) {
-                    case JOINING_NOT_POSSIBLE -> {
-                        //TODO: implement
-                    }
-                    case USERNAME_INVALID -> {
-                        //this.usernameHandler.chooseAndSendUsername(userService);
-                    }
-                }
+                //TODO: send error to GUI so it calls a popup there
+                notifyListenersOfType(error, ServerCommand.INVALID_ACTION_FATAL);
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
                 List<String> allOnlinePlayers = (List<String>) packet.getContent();
