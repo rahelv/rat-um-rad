@@ -31,6 +31,7 @@ import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelC
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
+import static ch.progradler.rat_um_rad.shared.util.GameConfig.SHORT_DEST_CARDS_AT_START_COUNT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -259,9 +260,9 @@ class GameServiceUtilTest {
     void prepareGameShufflesDecks() {
         Game game = mock(Game.class);
         doNothing().when(game).setStatus(PREPARATION);
-        List<WheelCard> wheelCards = mock(List.class);
-        List<DestinationCard> longDestinationCards = mock(List.class);
-        List<DestinationCard> shortDestinationCards = mock(List.class);
+        List<WheelCard> wheelCards = Collections.singletonList(new WheelCard(0));
+        List<DestinationCard> longDestinationCards = Collections.singletonList(mock(DestinationCard.class));
+        List<DestinationCard> shortDestinationCards = Collections.singletonList(mock(DestinationCard.class));
 
         DecksOfGame decksOfGame = new DecksOfGame(
                 new WheelCardDeck(wheelCards),
@@ -322,41 +323,26 @@ class GameServiceUtilTest {
     @Test
     void handoutShortDestinationCardsTest() {
         //preparation
-        String ip1 = "ip1";
-        String ip2 = "ip2";
-        String name1 = "name1";
-        String name2 = "name2";
-        when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
-        when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
-        Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
+        Player player1 = GameServiceUtil.createNewPlayer("clientA", mockUserRepository, new ArrayList<>());
+        Player player2 = GameServiceUtil.createNewPlayer("clientB", mockUserRepository, new ArrayList<>());
 
-        Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
-        Map<String, Player> playerMap = new HashMap<>();
-        playerMap.put(ip1, player1);
-        playerMap.put(ip2, player2);
+        List<DestinationCard> availableCards = DestinationCardDeck.shortDestinations(GameMap.defaultMap()).getCardDeck();
 
-        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
+        // act
+        int sizOfAvailableBeforeCalling = availableCards.size();
+        GameServiceUtil.handOutShortDestinationCardsTooChoose(player1, availableCards);
+        GameServiceUtil.handOutShortDestinationCardsTooChoose(player2, availableCards);
 
-        //testing
-        int sizeInGameBeforeCalling = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck().size();
-        GameServiceUtil.handOutShortDestinationCardsTooChoose(game, ip1);
-        GameServiceUtil.handOutShortDestinationCardsTooChoose(game, ip2);
+        //assert
+        List<DestinationCard> destinationCards1 = player1.getShortDestinationCardsToChooseFrom();
+        List<DestinationCard> destinationCards2 = player2.getShortDestinationCardsToChooseFrom();
 
-        List<DestinationCard> destinationCards1 = game.getPlayers().get(ip1).getShortDestinationCards();
-        List<DestinationCard> destinationCards2 = game.getPlayers().get(ip2).getShortDestinationCards();
-        List<DestinationCard> longDestinationCards = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck();
-
-        assertEquals(sizeInGameBeforeCalling - 6, longDestinationCards.size());
-        assertEquals(3, destinationCards1.size());
-        assertEquals(3, destinationCards2.size());
-        for (DestinationCard card : destinationCards1) {
-            assertFalse(longDestinationCards.contains(card));
+        assertEquals(sizOfAvailableBeforeCalling - SHORT_DEST_CARDS_AT_START_COUNT * 2, availableCards.size());
+        assertEquals(SHORT_DEST_CARDS_AT_START_COUNT, destinationCards1.size());
+        assertEquals(SHORT_DEST_CARDS_AT_START_COUNT, destinationCards2.size());
+        for (DestinationCard player1Card : destinationCards1) {
+            assertFalse(destinationCards2.contains(player1Card));
         }
-        for (DestinationCard card : destinationCards2) {
-            assertFalse(longDestinationCards.contains(card));
-        }
-        assertNotEquals(destinationCards1, destinationCards2);
     }
 
     @Test

@@ -27,6 +27,7 @@ import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
+import static ch.progradler.rat_um_rad.shared.util.GameConfig.SHORT_DEST_CARDS_AT_START_COUNT;
 
 /**
  * Util class for {@link GameService} with complex methods that are used multiple times.
@@ -126,13 +127,20 @@ public class GameServiceUtil {
 
         List<Integer> playingOrders = generateShuffledPlayingOrders(playerCount);
 
+        // the randomly picked cards are removed from this list after each handout availableShortDestCards
+        // this is to make sure no players get the same destination cards as options.
+        // that's why it is important that this list is a new list, so the actual deck is not altered.
+        // these are shuffled because the decks were shuffled before
+        List<DestinationCard> availableShortDestCards = new ArrayList<>(game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck());
+
         for (int i = 0; i < playerCount; i++) {
             String ipAddress = playerIpAddresses.get(i);
+            Player player = players.get(ipAddress);
+
             GameServiceUtil.handOutLongDestinationCard(game, ipAddress);
-            GameServiceUtil.handOutShortDestinationCardsTooChoose(game, ipAddress);
+            GameServiceUtil.handOutShortDestinationCardsTooChoose(player, availableShortDestCards);
             game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, false);
 
-            Player player = players.get(ipAddress);
             player.setPlayingOrder(playingOrders.get(i));
         }
         gameRepository.updateGame(game);
@@ -160,14 +168,11 @@ public class GameServiceUtil {
         player.setLongDestinationCard(longDestinationCard);
     }
 
-    static void handOutShortDestinationCardsTooChoose(Game game, String ipAddress) {
-        Player player = game.getPlayers().get(ipAddress);
-        DestinationCardDeck shortDestinationCardDeck = game.getDecksOfGame().getShortDestinationCardDeck();
-
-        List<DestinationCard> cardsToChooseFrom = player.getShortDestinationCards();
-        for (int i = 0; i < 3; i++) {
-            DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(shortDestinationCardDeck.getCardDeck().toArray(new DestinationCard[0]));
-            shortDestinationCardDeck.getCardDeck().remove(shortDestinationCard);
+    static void handOutShortDestinationCardsTooChoose(Player player, List<DestinationCard> availableCards) {
+        List<DestinationCard> cardsToChooseFrom = new ArrayList<>();
+        for (int i = 0; i < SHORT_DEST_CARDS_AT_START_COUNT; i++) {
+            DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(availableCards.toArray(new DestinationCard[0]));
+            availableCards.remove(shortDestinationCard);
             cardsToChooseFrom.add(shortDestinationCard);
         }
         player.setShortDestinationCardsToChooseFrom(cardsToChooseFrom);
@@ -199,10 +204,10 @@ public class GameServiceUtil {
             return false;
         }
 
-       /* if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) { //TODO: uses this method when cards are selected but in the beginning it's nobodys turn!!!
+        if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) { //TODO: uses this method when cards are selected but in the beginning it's nobodys turn!!!
             sendInvalidActionResponse(ipAddress, NOT_PLAYERS_TURN, outputPacketGateway);
             return false;
-        }*/
+        }
         return true;
     }
 

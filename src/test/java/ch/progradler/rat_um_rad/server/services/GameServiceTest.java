@@ -95,9 +95,9 @@ class GameServiceTest {
 
         doThrow(IGameRepository.DuplicateIdException.class)
                 .when(mockGameRepository).addGame(argThat((g) -> {
-                    mockIndex[0]++;
-                    return repoShouldThrow[mockIndex[0] - 1];
-                }));
+            mockIndex[0]++;
+            return repoShouldThrow[mockIndex[0] - 1];
+        }));
         gameService.createGame(creator, requiredPlayers);
 
         verify(mockGameRepository, times(3)).addGame(isA(Game.class));
@@ -397,10 +397,13 @@ class GameServiceTest {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
                     .thenReturn(game);
 
+            // act
             gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
 
+            // assert
+            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameAction(ipAddress, game,
+                    mockOutputPacketGateway, DESTINATION_CARDS_SELECTED));
             assertEquals(PREPARATION, game.getStatus());
-            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameAction(any(), any(), any(), any()), never());
         }
     }
 
