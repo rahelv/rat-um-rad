@@ -9,16 +9,17 @@ import ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper;
 import java.util.List;
 
 public class GameMapCoder implements Coder<GameMap> {
-    private Coder<City> cityCoder;
-    private Coder<Road> roadCoder;
+    private final Coder<City> cityCoder;
+    private final Coder<Road> roadCoder;
 
-     public GameMapCoder(Coder<City> cityCoder, Coder<Road> roadCoder) {
-         this.cityCoder = cityCoder;
-         this.roadCoder = roadCoder;
-     }
+    public GameMapCoder(Coder<City> cityCoder, Coder<Road> roadCoder) {
+        this.cityCoder = cityCoder;
+        this.roadCoder = roadCoder;
+    }
+
     @Override
     public String encode(GameMap map, int level) {
-        if(map == null) {
+        if (map == null) {
             return "null";
         }
         List<String> citiesList = map.getCities().stream()
@@ -38,7 +39,7 @@ public class GameMapCoder implements Coder<GameMap> {
 
     @Override
     public GameMap decode(String encoded, int level) {
-        if(encoded.equals("null")) {
+        if (encoded.equals("null")) {
             return null;
         }
         List<String> fields = CoderHelper.decodeFields(level, encoded);

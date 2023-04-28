@@ -106,6 +106,6 @@ public class CoderHelper {
         if (encoded.equals("null")) {
             return null;
         }
-        return new String("");
+        return "";
     }
 }

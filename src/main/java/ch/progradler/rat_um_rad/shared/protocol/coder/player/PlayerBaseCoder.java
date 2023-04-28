@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder.player;
 
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
@@ -11,7 +10,7 @@ import java.util.List;
 public class PlayerBaseCoder implements Coder<PlayerBase> {
     @Override
     public String encode(PlayerBase player, int level) {
-        if(player == null) {
+        if (player == null) {
             return "null";
         }
         return CoderHelper.encodeFields(level,
@@ -24,7 +23,7 @@ public class PlayerBaseCoder implements Coder<PlayerBase> {
 
     @Override
     public PlayerBase decode(String encoded, int level) {
-        if(encoded.equals("null")) {
+        if (encoded.equals("null")) {
             return null;
         }
         List<String> fields = CoderHelper.decodeFields(level, encoded);

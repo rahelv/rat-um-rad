@@ -12,6 +12,7 @@ import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ClientPacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ServerPacketCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.WheelCardCoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

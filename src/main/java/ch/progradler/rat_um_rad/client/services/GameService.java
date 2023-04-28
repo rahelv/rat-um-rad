@@ -51,6 +51,10 @@ public class GameService implements IGameService {
         outputPacketGateway.sendPacket(packet);
     }
 
+    public void takeWheelCards() throws IOException {
+        Client packet = new Client(ClientCommand.REQUEST_WHEEL_CARDS, null, ContentType.NONE);
+    }
+
     @Override
     public void requestWaitingGames() throws IOException {
         Client packet = new Client(ClientCommand.REQUEST_GAMES, GameStatus.WAITING_FOR_PLAYERS, ContentType.GAME_STATUS);
