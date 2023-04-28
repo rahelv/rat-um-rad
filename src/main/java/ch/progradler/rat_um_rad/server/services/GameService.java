@@ -4,8 +4,12 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandlerFactory;
 import ch.progradler.rat_um_rad.shared.models.Activity;
-import ch.progradler.rat_um_rad.shared.models.game.*;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
+import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
@@ -13,12 +17,14 @@ import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
-import ch.progradler.rat_um_rad.shared.util.GameConfig;
 import ch.progradler.rat_um_rad.shared.util.RandomGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.sendInvalidActionResponse;
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.validateAndHandleActionPrecondition;
@@ -38,12 +44,18 @@ public class GameService implements IGameService {
     private final OutputPacketGateway outputPacketGateway;
     private final IGameRepository gameRepository;
     private final IUserRepository userRepository;
+    private final ActionHandlerFactory actionHandlerFactory;
 
-    public GameService(OutputPacketGateway outputPacketGateway, IGameRepository gameRepository, IUserRepository userRepository) {
+
+    public GameService(OutputPacketGateway outputPacketGateway, IGameRepository gameRepository, IUserRepository userRepository, ActionHandlerFactory actionHandlerFactory) {
         this.outputPacketGateway = outputPacketGateway;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
-        LOGGER.info("GameService created.");
+        this.actionHandlerFactory = actionHandlerFactory;
+    }
+
+    public GameService(OutputPacketGateway outputPacketGateway, IGameRepository gameRepository, IUserRepository userRepository) {
+        this(outputPacketGateway, gameRepository, userRepository, new ActionHandlerFactory(gameRepository, userRepository, outputPacketGateway));
     }
 
     @Override
@@ -240,72 +252,8 @@ public class GameService implements IGameService {
 
     @Override
     public void buildRoad(String ipAddress, String roadId) {
-        Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
-     /*   if (!GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
-            LOGGER.info("User with Id " + ipAddress + " couldn't build road with id " + roadId + " due to validateHAndleActionPrecondition");
-            return;
-        }*/
-
-        Map<String, String> roadsBuilt = game.getRoadsBuilt();
-        if (roadsBuilt.containsKey(roadId)) {
-            sendInvalidActionResponse(ipAddress, ROAD_ALREADY_BUILT_ON, outputPacketGateway);
-            return;
-        }
-
-        List<Road> roads = game.getMap().getRoads();
-        Optional<Road> roadOpt = roads.stream().filter((r) -> r.getId().equals(roadId)).findFirst();
-        if (roadOpt.isEmpty()) {
-            sendInvalidActionResponse(ipAddress, ROAD_DOES_NOT_EXIST, outputPacketGateway);
-            return;
-        }
-
-        Road road = roadOpt.get();
-        Player player = game.getPlayers().get(ipAddress);
-/*
-        if (player.getWheelsRemaining() < road.getRequiredWheels()) {
-            sendInvalidActionResponse(ipAddress, NOT_ENOUGH_WHEELS_TO_BUILD_ROAD, outputPacketGateway);
-            return;
-        }
-
-        if (!hasRequiredCardsToBuild(player, road)) {
-            sendInvalidActionResponse(ipAddress, NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD, outputPacketGateway);
-            return;
-        }*/
-
-        handleBuildRoad(ipAddress, game, road);
-    }
-
-    /**
-     * This method assumes, all input is already checked.
-     */
-    private void handleBuildRoad(String ipAddress, Game game, Road road) {
-        Player player = game.getPlayers().get(ipAddress);
-
-        List<WheelCard> playersCardsOfColor = new ArrayList<>(player.getWheelCards().stream()
-                .filter((c) -> c.getColor() == road.getColor())
-                .toList());
-
-       /* for (int i = 0; i < road.getRequiredWheels(); i++) {
-            player.getWheelCards().remove(playersCardsOfColor.get(i));
-        }*/
-        player.setWheelsRemaining(player.getWheelsRemaining() - road.getRequiredWheels());
-        player.setScore(player.getScore() + GameConfig.scoreForRoadBuild(road.getRequiredWheels()));
-
-        game.getRoadsBuilt().put(road.getId(), ipAddress);
-        game.getActivities().add(new Activity(player.getName(), ROAD_BUILT));
-        game.nextTurn();
-
-        // TODO: check if has very few wheels left -> send info that game will finish soon
-
-        gameRepository.updateGame(game);
-        GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, ROAD_BUILT);
-    }
-
-    private boolean hasRequiredCardsToBuild(Player player, Road road) {
-        List<WheelCard> playersCardsOfColor = player.getWheelCards().stream()
-                .filter((c) -> c.getColor() == road.getColor())
-                .toList();
-        return playersCardsOfColor.size() >= road.getRequiredWheels();
+        LOGGER.info("Player " + ipAddress + " attempting to build road " + roadId);
+        actionHandlerFactory.createRoadActionHandler().handle(ipAddress, roadId);
     }
 
     @Override

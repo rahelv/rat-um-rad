@@ -15,9 +15,7 @@ public class Player extends PlayerBase {
     private final List<WheelCard> wheelCards;
     private DestinationCard longDestinationCard;
     private List<DestinationCard> shortDestinationCards;
-    private List<DestinationCard> shortDestinationCardsToChooseFrom = new ArrayList<>();
-
-    //TODO List of roads built by player?
+    private List<DestinationCard> shortDestinationCardsToChooseFrom;
 
     public Player(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder) {
         this(name, color, score, wheelsRemaining, playingOrder, new ArrayList<>(), null, new ArrayList<>());
@@ -58,6 +56,7 @@ public class Player extends PlayerBase {
     public List<WheelCard> getWheelCards() {
         return wheelCards;
     }
+
     public DestinationCard getLongDestinationCard() {
         return longDestinationCard;
     }

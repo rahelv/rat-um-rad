@@ -40,7 +40,8 @@ public class CommandHandler implements InputPacketGateway {
     public void handleCommand(Packet<ClientCommand> packet, String ipAddress) {
         // TODO: unittest
 
-        LOGGER.info("Received client command " + packet.getCommand() + " from " + ipAddress);
+        if (packet.getCommand() != ClientCommand.PONG)
+            LOGGER.info("Received client command " + packet.getCommand() + " from " + ipAddress);
 
         switch (packet.getCommand()) {
             case SEND_WHISPER_CHAT -> {

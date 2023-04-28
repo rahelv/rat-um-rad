@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.shared.models.game.cards_and_decks;
 
-import ch.progradler.rat_um_rad.shared.models.Point;
 import ch.progradler.rat_um_rad.shared.models.game.City;
 import ch.progradler.rat_um_rad.shared.models.game.CityId;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
@@ -22,6 +21,7 @@ public class DestinationCardDeck implements CardDeck {
 
     /**
      * Factory Method to create deck with only short destination cards
+     * @param map must be the {@link GameMap#defaultMap()}
      */
     public static DestinationCardDeck shortDestinations(GameMap map) {
         Map<String, City> cities = new HashMap<>();
@@ -54,6 +54,7 @@ public class DestinationCardDeck implements CardDeck {
 
     /**
      * Factory Method to create deck with only short destination cards
+     * @param map must be the {@link GameMap#defaultMap()}
      */
     public static DestinationCardDeck longDestinations(GameMap map) {
         Map<String, City> cities = new HashMap<>();

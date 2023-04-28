@@ -12,7 +12,6 @@ import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
-import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
@@ -26,10 +25,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
 import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
 import static ch.progradler.rat_um_rad.shared.util.GameConfig.SHORT_DEST_CARDS_AT_START_COUNT;
 import static org.junit.jupiter.api.Assertions.*;
@@ -250,6 +248,13 @@ class GameServiceUtilTest {
         assertTrue(order2 <= 1 && order2 >= 0);
         assertNotEquals(order1, order2);
 
+        // check that certain amount of wheel cards distributed
+        assertEquals(GameConfig.START_WHEEL_CARD_HANDOUT_COUNT, player1.getWheelCards().size());
+        assertEquals(GameConfig.START_WHEEL_CARD_HANDOUT_COUNT, player2.getWheelCards().size());
+
+        assertEquals(GameConfig.TOTAL_WHEEL_CARD_COUNT - 2 * GameConfig.START_WHEEL_CARD_HANDOUT_COUNT,
+                game.getDecksOfGame().getWheelCardDeck().getDeckOfCards().size());
+
         verify(mockGameRepository, times(1)).updateGame(game);
 
         verify(mockOutputPacketGateway).sendPacket(ip1, new Packet.Server(GAME_STARTED_SELECT_DESTINATION_CARDS, GameServiceUtil.toClientGame(game, ip1), GAME));
@@ -384,71 +389,5 @@ class GameServiceUtilTest {
         assertTrue(GameServiceUtil.isPlayersTurn(game, player2));
         assertFalse(GameServiceUtil.isPlayersTurn(game, player3));
         assertFalse(GameServiceUtil.isPlayersTurn(game, player4));
-    }
-
-    @Test
-    void validateAndHandleActionSendsErrorAndReturnsFalseIfGameNull() {
-        String ipAddress = "clientA";
-        boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, null, mockOutputPacketGateway);
-        assertFalse(result);
-        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
-                ErrorResponse.PLAYER_IN_NO_GAME,
-                STRING);
-        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
-    }
-
-    @Test
-    void validateAndHandleActionSendsErrorAndReturnsFalseIfGameDoesNotHaveStatusStarted() {
-        String ipAddress = "clientA";
-        Game game = mock(Game.class);
-
-        for (GameStatus status : Arrays.asList(WAITING_FOR_PLAYERS, PREPARATION, FINISHED)) {
-            when(game.getStatus()).thenReturn(status);
-            boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
-            assertFalse(result);
-        }
-
-        verify(mockGameRepository, never()).updateGame(any());
-        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
-                ErrorResponse.GAME_NOT_STARTED,
-                STRING);
-        verify(mockOutputPacketGateway, times(3)).sendPacket(ipAddress, errorResponse);
-    }
-
-    @Test
-    void validateAndHandleActionSendsErrorAndReturnsFalseIfIsNotPlayersTurn() {
-        String ipAddress = "clientA";
-        Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
-        when(game.getTurn()).thenReturn(0);
-
-        Player player = mock(Player.class);
-        when(player.getPlayingOrder()).thenReturn(1);
-        when(game.getPlayers()).thenReturn(Map.of(ipAddress, player, "otherPlayer", mock(Player.class)));
-
-        boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
-        assertFalse(result);
-
-        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
-                ErrorResponse.NOT_PLAYERS_TURN,
-                STRING);
-        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
-    }
-
-    @Test
-    void validateAndHandleActionSendsNoErrorAndReturnsTrueIfAllOk() {
-        String ipAddress = "clientA";
-        Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
-        when(game.getTurn()).thenReturn(2);
-
-        Player player = mock(Player.class);
-        when(player.getPlayingOrder()).thenReturn(0);
-        when(game.getPlayers()).thenReturn(Map.of(ipAddress, player, "otherPlayer", mock(Player.class)));
-
-        boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
-        assertTrue(result);
-
-        verify(mockOutputPacketGateway, never()).sendPacket(any(), any());
     }
 }

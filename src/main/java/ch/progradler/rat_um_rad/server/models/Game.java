@@ -20,10 +20,33 @@ public class Game extends GameBase {
     private final DecksOfGame decksOfGame;
     private final Map<String, Boolean> playersHaveChosenShortDestinationCards = new HashMap<String, Boolean>();
 
-    public Game(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount, Map<String, Player> players) {
-        super(id, status, map, creatorPlayerIpAddress, requiredPlayerCount);
-        this.decksOfGame = DecksOfGame.startingDecks(map);
+    public Game(String id,
+                GameStatus status,
+                GameMap map,
+                Date createdAt,
+                String creatorPlayerIpAddress,
+                int requiredPlayerCount,
+                Map<String, Player> players,
+                int turn,
+                Map<String, String> roadsBuilt,
+                List<Activity> activities,
+                DecksOfGame decksOfGame) {
+        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt, activities);
+        this.decksOfGame = decksOfGame;
         this.players = players;
+    }
+
+    public Game(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount, Map<String, Player> players, DecksOfGame decksOfGame) {
+        super(id, status, map, creatorPlayerIpAddress, requiredPlayerCount);
+        this.decksOfGame = decksOfGame;
+        this.players = players;
+    }
+
+    /**
+     * @param map must be the {@link GameMap#defaultMap()}
+     */
+    public Game(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount, Map<String, Player> players) {
+        this(id, status, map, creatorPlayerIpAddress, requiredPlayerCount, players, DecksOfGame.startingDecks(map));
     }
 
     public Game(String id,
@@ -36,9 +59,17 @@ public class Game extends GameBase {
                 int turn,
                 Map<String, String> roadsBuilt,
                 List<Activity> activities) {
-        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt, activities);
-        this.decksOfGame = DecksOfGame.startingDecks(map);
-        this.players = players;
+        this(id,
+                status,
+                map,
+                createdAt,
+                creatorPlayerIpAddress,
+                requiredPlayerCount,
+                players,
+                turn,
+                roadsBuilt,
+                activities,
+                DecksOfGame.startingDecks(map));
     }
 
     public DecksOfGame getDecksOfGame() {
