@@ -10,6 +10,7 @@ import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
+import net.bytebuddy.build.ToStringPlugin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -159,6 +160,16 @@ class CommandHandlerTest {
         commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).joinGame(ipAddress, gameId);
+    }
+
+    @Test
+    void requestTakingWheelCardsIsHandledProperly() {
+        String ipAddress = "clientA";
+        Packet.Client packet = new Packet.Client(ClientCommand.REQUEST_WHEEL_CARDS, null, ContentType.NONE);
+
+        commandHandler.handleCommand(packet, ipAddress);
+
+        verify(mockGameService).takeWheelCardFromDeck(ipAddress);
     }
 
     @Test

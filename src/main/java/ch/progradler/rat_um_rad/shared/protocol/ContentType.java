@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 
 import java.util.List;
 
@@ -49,6 +50,10 @@ public enum ContentType {
      * Type of {@link BuildRoadInfo}
      */
     BUILD_ROAD_INFO,
+    /**
+     * Type of {@link WheelCard}
+     */
+    WHEEL_CARD,
     /**
      * Type of {@code null}
      */

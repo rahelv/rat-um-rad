@@ -263,6 +263,11 @@ public class GameService implements IGameService {
 
     @Override
     public void takeWheelCardFromDeck(String ipAddress) {
+        LOGGER.info("Player " + ipAddress + " attempting to take wheelCards.");
+        actionHandlerFactory.createTakeWheelCardsActionHandler().handle(ipAddress, "");
+    }
+
+    private void handleNotEnoughWheelcards() {
         //TODO: implement
     }
 

@@ -22,4 +22,8 @@ public class ActionHandlerFactory {
     public RoadActionHandler createRoadActionHandler() {
         return new RoadActionHandler(gameRepository, userRepository, outputPacketGateway, new GameEndUtil());
     }
+
+    public TakeWheelCardsActionHandler createTakeWheelCardsActionHandler() {
+        return new TakeWheelCardsActionHandler(gameRepository, userRepository, outputPacketGateway, new GameEndUtil());
+    }
 }

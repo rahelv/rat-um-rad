@@ -10,7 +10,7 @@ import java.util.List;
 public class VisiblePlayerCoder implements Coder<VisiblePlayer> {
     @Override
     public String encode(VisiblePlayer player, int level) {
-        if(player == null) {
+        if (player == null) {
             return "null";
         }
         return CoderHelper.encodeFields(level,
@@ -26,7 +26,7 @@ public class VisiblePlayerCoder implements Coder<VisiblePlayer> {
 
     @Override
     public VisiblePlayer decode(String encoded, int level) {
-        if(encoded.equals("null")) {
+        if (encoded.equals("null")) {
             return null;
         }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
