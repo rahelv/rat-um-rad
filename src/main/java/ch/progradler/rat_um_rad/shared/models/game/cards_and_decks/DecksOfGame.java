@@ -18,6 +18,9 @@ public class DecksOfGame {
         this.shortDestinationCardDeck = shortDestinationCardDeck;
     }
 
+    /**
+     * @param map must be the {@link GameMap#defaultMap()}
+     */
     public static DecksOfGame startingDecks(GameMap map) {
         return new DecksOfGame(
                 WheelCardDeck.full(),

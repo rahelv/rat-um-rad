@@ -7,10 +7,7 @@ import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
@@ -89,7 +86,7 @@ public class GameServiceUtil {
         LOGGER.info("Notifying players of game update for game " + game.getId() + "and command " + command);
         Set<String> playerIps = game.getPlayerIpAddresses();
         for (String ipAddress : playerIps) {
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            ClientGame clientGame = toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet.Server(command, clientGame, ContentType.GAME));
         }
     }
@@ -106,11 +103,11 @@ public class GameServiceUtil {
                 " for game " + game.getId() + "and actionCommand " + actionCommand);
         for (String ipAddress : game.getPlayerIpAddresses()) {
             if (ipAddress.equals(actorIp)) continue;
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            ClientGame clientGame = toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet.Server(GAME_UPDATED, clientGame, ContentType.GAME));
         }
 
-        ClientGame actorClientGame = GameServiceUtil.toClientGame(game, actorIp);
+        ClientGame actorClientGame = toClientGame(game, actorIp);
         outputPacketGateway.sendPacket(actorIp, new Packet.Server(actionCommand, actorClientGame, ContentType.GAME));
     }
 
@@ -126,6 +123,7 @@ public class GameServiceUtil {
         int playerCount = playerIpAddresses.size();
 
         List<Integer> playingOrders = generateShuffledPlayingOrders(playerCount);
+        List<WheelCard> allWheelCards = game.getDecksOfGame().getWheelCardDeck().getDeckOfCards();
 
         // the randomly picked cards are removed from this list after each handout availableShortDestCards
         // this is to make sure no players get the same destination cards as options.
@@ -137,14 +135,25 @@ public class GameServiceUtil {
             String ipAddress = playerIpAddresses.get(i);
             Player player = players.get(ipAddress);
 
-            GameServiceUtil.handOutLongDestinationCard(game, ipAddress);
-            GameServiceUtil.handOutShortDestinationCardsTooChoose(player, availableShortDestCards);
+            handOutLongDestinationCard(game, ipAddress);
+            handOutShortDestinationCardsTooChoose(player, availableShortDestCards);
             game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, false);
 
             player.setPlayingOrder(playingOrders.get(i));
+
+            distributeStartingWheelCards(allWheelCards, player);
         }
         gameRepository.updateGame(game);
         notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_STARTED_SELECT_DESTINATION_CARDS);
+    }
+
+    private static void distributeStartingWheelCards(List<WheelCard> allWheelCards, Player player) {
+        List<WheelCard> startingWheelCards = new ArrayList<>();
+        for (int j = 0; j < GameConfig.START_WHEEL_CARD_HANDOUT_COUNT; j++) {
+            startingWheelCards.add(allWheelCards.get(0)); // basically random, because was shuffled before
+            allWheelCards.remove(0);
+        }
+        player.getWheelCards().addAll(startingWheelCards);
     }
 
     private static void shuffleDecks(Game game) {

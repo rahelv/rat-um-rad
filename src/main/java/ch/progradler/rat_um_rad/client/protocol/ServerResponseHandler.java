@@ -21,6 +21,7 @@ import java.util.List;
 
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.PING;
 
 /**
  * Handles incoming responses from server.
@@ -50,7 +51,8 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
      */
     @Override
     public void handleResponse(Packet<ServerCommand> packet) {
-        LOGGER.info("Received server command:  " + packet.getCommand());
+        if (packet.getCommand() != PING)
+            LOGGER.info("Received server command:  " + packet.getCommand());
         //TODO: implement QUIT command and other commands
 
         switch (packet.getCommand()) {
