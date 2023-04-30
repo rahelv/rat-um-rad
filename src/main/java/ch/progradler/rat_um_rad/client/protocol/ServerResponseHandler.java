@@ -113,6 +113,10 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, ServerCommand.DESTINATION_CARDS_SELECTED);
             }
+            case GAME_ENDED -> {
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, ServerCommand.GAME_ENDED);
+            }
             default -> presenter.display(packet);
         }
     }

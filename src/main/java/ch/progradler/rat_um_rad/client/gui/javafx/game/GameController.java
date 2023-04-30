@@ -71,6 +71,17 @@ public class GameController {
                 return ServerCommand.REQUEST_SHORT_DESTINATION_CARDS_RESULT;
             }
         });
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
+            @Override
+            public void serverResponseReceived(ClientGame content) {
+                showWinner(content);
+            }
+
+            @Override
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_ENDED;
+            }
+        });
     }
 
     /**
@@ -112,5 +123,9 @@ public class GameController {
         });
     }
 
-    //TODO: method for chooseDestinationCards during game
+    private void showWinner(ClientGame game) {
+        Platform.runLater(() -> {
+            gameModel.getListener().showWinner(game); //TODO: when game joined, this listener is never called
+        });
+    }
 }
