@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.server.services.HighscoreManager;
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
@@ -36,12 +37,14 @@ class RoadActionHandlerTest {
     IUserRepository mockUserRepository;
     @Mock
     OutputPacketGateway mockOutputPacketGateway;
+    @Mock
+    HighscoreManager mockHighscoreManager;
 
     private RoadActionHandler roadActionHandler;
 
     @BeforeEach
     void setUp() {
-        roadActionHandler = new RoadActionHandler(mockGameRepository, mockUserRepository, mockOutputPacketGateway, new GameEndUtil());
+        roadActionHandler = new RoadActionHandler(mockGameRepository, mockUserRepository, mockOutputPacketGateway, new GameEndUtil(), mockHighscoreManager);
     }
 
     @Test

@@ -106,8 +106,8 @@ public class CoderHelper {
         return decodeNonNull.apply(encoded);
     }
 
-    public static <T> String encodeList(Coder<T> coder, List<T> destinationCards, int level) {
-        List<String> listOfEncoded = destinationCards.stream()
+    public static <T> String encodeList(Coder<T> coder, List<T> list, int level) {
+        List<String> listOfEncoded = list.stream()
                 .map((destinationCard) -> coder.encode(destinationCard, level + 1))
                 .toList();
         return encodeStringList(level, listOfEncoded);

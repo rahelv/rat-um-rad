@@ -7,6 +7,7 @@ import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
+import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.Packet.Client;
 
 import java.io.IOException;
@@ -84,6 +85,12 @@ public class GameService implements IGameService {
     @Override
     public void requestShortDestinationCards() throws IOException {
         Client packet = new Client(ClientCommand.REQUEST_SHORT_DESTINATION_CARDS, null, ContentType.NONE);
+        outputPacketGateway.sendPacket(packet);
+    }
+
+    @Override
+    public void requestHighscores() throws IOException {
+        Packet.Client packet = new Packet.Client(ClientCommand.REQUEST_HIGHSCORES, null, ContentType.NONE);
         outputPacketGateway.sendPacket(packet);
     }
 }

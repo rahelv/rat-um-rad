@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.server.services.HighscoreManager;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.Road;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
@@ -29,8 +30,8 @@ public class RoadActionHandler extends ActionHandler<String> {
      */
     private Road road;
 
-    public RoadActionHandler(IGameRepository gameRepository, IUserRepository userRepository, OutputPacketGateway outputPacketGateway, GameEndUtil gameEndUtil) {
-        super(gameRepository, userRepository, outputPacketGateway, gameEndUtil);
+    public RoadActionHandler(IGameRepository gameRepository, IUserRepository userRepository, OutputPacketGateway outputPacketGateway, GameEndUtil gameEndUtil, HighscoreManager highscoreManager) {
+        super(gameRepository, userRepository, outputPacketGateway, gameEndUtil, highscoreManager);
     }
 
     @Override

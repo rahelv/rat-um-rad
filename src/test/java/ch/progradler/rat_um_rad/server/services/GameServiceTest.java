@@ -3,8 +3,10 @@ package ch.progradler.rat_um_rad.server.services;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
+import ch.progradler.rat_um_rad.server.repositories.IHighscoreRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandlerFactory;
+import ch.progradler.rat_um_rad.shared.models.Highscore;
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -24,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
+import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.PLAYER_IN_NO_GAME;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.SELECTED_SHORT_DESTINATION_CARDS_INVALID;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
@@ -41,13 +43,15 @@ class GameServiceTest {
     @Mock
     IUserRepository mockUserRepository;
     @Mock
+    IHighscoreRepository mockHighscoreRepository;
+    @Mock
     ActionHandlerFactory mockActionHandlerFactory;
 
     GameService gameService;
 
     @BeforeEach
     void setUp() {
-        gameService = new GameService(mockOutputPacketGateway, mockGameRepository, mockUserRepository, mockActionHandlerFactory);
+        gameService = new GameService(mockOutputPacketGateway, mockGameRepository, mockUserRepository, mockHighscoreRepository, mockActionHandlerFactory);
     }
 
     @Test
@@ -462,6 +466,19 @@ class GameServiceTest {
 
         List<Game> finishedGames = verify(mockGameRepository).getFinishedGames();
         Packet.Server packet = new Packet.Server(ServerCommand.SEND_FINISHED_GAMES, finishedGames, ContentType.GAME_INFO_LIST);
+        verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
+    }
+
+    @Test
+    void requestHighscores() {
+        String ipAddress = "ipAddressA";
+        List<Highscore> highscores = Collections.singletonList(new Highscore("user1", 55, new Date()));
+
+        when(mockHighscoreRepository.getHighscores()).thenReturn(highscores);
+
+        gameService.requestHighscores(ipAddress);
+
+        Packet.Server packet = new Packet.Server(SEND_HIGHSCORES, highscores, HIGHSCORE_LIST);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
     }
 }

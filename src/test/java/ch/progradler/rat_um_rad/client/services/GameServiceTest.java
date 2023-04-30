@@ -59,4 +59,12 @@ class GameServiceTest {
         Packet.Client expected = new Packet.Client(ClientCommand.BUILD_ROAD, new BuildRoadInfo(roadId, color), ContentType.BUILD_ROAD_INFO);
         verify(mockOutputPacketGateway).sendPacket(expected);
     }
+
+    @Test
+    void requestHighscores() throws IOException {
+        gameService.requestHighscores();
+
+        Packet.Client expected = new Packet.Client(ClientCommand.REQUEST_HIGHSCORES, null, ContentType.NONE);
+        verify(mockOutputPacketGateway).sendPacket(expected);
+    }
 }

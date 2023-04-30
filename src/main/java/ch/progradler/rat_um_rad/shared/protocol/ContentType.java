@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.shared.protocol;
 
+import ch.progradler.rat_um_rad.shared.models.Highscore;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
@@ -54,6 +55,10 @@ public enum ContentType {
      * Type of {@link WheelCard}
      */
     WHEEL_CARD,
+    /**
+     * Type of {@link List< Highscore>}
+     */
+    HIGHSCORE_LIST,
     /**
      * Type of {@code null}
      */
