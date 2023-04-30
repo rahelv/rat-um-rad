@@ -7,6 +7,7 @@ import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerColor;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -53,12 +54,12 @@ public class GameServiceUtil {
                 game.getActivities());
     }
 
-    static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<WheelColor> takenColors) {
+    static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<PlayerColor> takenColors) {
         String name = userRepository.getUsername(ipAddress);
-        List<WheelColor> availableColors = new ArrayList<>(Arrays.stream(WheelColor.values()).toList());
+        List<PlayerColor> availableColors = new ArrayList<>(Arrays.stream(PlayerColor.values()).toList());
         availableColors.removeAll(takenColors);
 
-        WheelColor color = RandomGenerator.randomFromList(availableColors);
+        PlayerColor color = RandomGenerator.randomFromList(availableColors);
         return new Player(name, color, 0, GameConfig.STARTING_WHEELS_PER_PLAYER, 0);
     }
 

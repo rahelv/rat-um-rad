@@ -1,7 +1,6 @@
 package ch.progradler.rat_um_rad.shared.models.game;
 
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
 import java.util.Objects;
 
@@ -11,7 +10,7 @@ import java.util.Objects;
  */
 public class PlayerBase {
     private final String name;
-    protected WheelColor color;
+    protected PlayerColor color;
     private int score;
     private int wheelsRemaining;
     /**
@@ -22,11 +21,11 @@ public class PlayerBase {
 
     private PlayerEndResult endResult;
 
-    public PlayerBase(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder) {
+    public PlayerBase(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder) {
         this(name, color, score, wheelsRemaining, playingOrder, null);
     }
 
-    public PlayerBase(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder, PlayerEndResult endResult) {
+    public PlayerBase(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder, PlayerEndResult endResult) {
         this.name = name;
         this.color = color;
         this.score = score;
@@ -39,7 +38,7 @@ public class PlayerBase {
         return name;
     }
 
-    public WheelColor getColor() {
+    public PlayerColor getColor() {
         return color;
     }
 

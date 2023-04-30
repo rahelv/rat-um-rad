@@ -12,7 +12,6 @@ import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ClientPacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ServerPacketCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.WheelCardCoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,11 +50,10 @@ public class PacketCoderTest {
         // prepare
         int level = 1;
 
-        DestinationCard destinationCard = new DestinationCard(
-                "longCard1", new City("city1", "City1", new Point(3, 4)),
+        DestinationCard destinationCard = new DestinationCard(new City("city1", "City1", new Point(3, 4)),
                 new City("city2", "City2", new Point(1, 4)),
                 5);
-        Player player = new Player("own player", WheelColor.BLUE, 4, 5, 1,
+        Player player = new Player("own player", PlayerColor.LIGHT_GREEN, 4, 5, 1,
                 Arrays.asList(new WheelCard(40)), destinationCard, new ArrayList<>());
         List<Activity> activities = Collections.singletonList(new Activity("John", ServerCommand.GAME_JOINED));
 
@@ -63,7 +61,7 @@ public class PacketCoderTest {
 
         ClientGame clientGame = new ClientGame("game1", GameStatus.STARTED, GameMap.defaultMap(),
                 new Date(2023, Calendar.MAY, 14, 4, 4, 4), "creator", 4, Arrays.asList(
-                new VisiblePlayer("Player1", WheelColor.GREEN, 4, 20, 0,
+                new VisiblePlayer("Player1", PlayerColor.LILA, 4, 20, 0,
                         "ip", 5, 3, endResultOtherPlayer)
         ), player, 30, new HashMap<>(), activities);
 

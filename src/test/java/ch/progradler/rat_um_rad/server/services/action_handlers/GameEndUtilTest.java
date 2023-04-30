@@ -65,11 +65,11 @@ class GameEndUtilTest {
         City city3 = new City("city3", "City3", new Point(0, 0));
         City city4 = new City("city4", "City4", new Point(0, 0));
 
-        Road road12 = new Road("road12", city1.getId(), city2.getId(), 3, WheelColor.WHITE);
-        Road road23 = new Road("road23", city2.getId(), city3.getId(), 3, WheelColor.WHITE);
-        Road road34 = new Road("road34", city3.getId(), city4.getId(), 3, WheelColor.WHITE);
-        Road road41 = new Road("road41", city4.getId(), city1.getId(), 3, WheelColor.WHITE);
-        Road road13 = new Road("road13", city1.getId(), city3.getId(), 3, WheelColor.WHITE);
+        Road road12 = new Road(city1.getId(), city2.getId(), 3, WheelColor.WHITE);
+        Road road23 = new Road(city2.getId(), city3.getId(), 3, WheelColor.WHITE);
+        Road road34 = new Road(city3.getId(), city4.getId(), 3, WheelColor.WHITE);
+        Road road41 = new Road(city4.getId(), city1.getId(), 3, WheelColor.WHITE);
+        Road road13 = new Road(city1.getId(), city3.getId(), 3, WheelColor.WHITE);
 
         GameMap gameMap = new GameMap(Arrays.asList(city1, city2, city3, city4),
                 Arrays.asList(road12, road23, road34, road41, road13));
@@ -89,22 +89,22 @@ class GameEndUtilTest {
         int scorePlayer2 = 30;
 
         // achieved
-        DestinationCard p1ShortDestCard1 = new DestinationCard("p1ShortDestCard1", city1, city2, 3);
+        DestinationCard p1ShortDestCard1 = new DestinationCard(city1, city2, 3);
         // not achieved
-        DestinationCard p1ShortDestCard2 = new DestinationCard("p1ShortDestCard2", city3, city4, 3);
+        DestinationCard p1ShortDestCard2 = new DestinationCard(city3, city4, 3);
         // achieved
-        DestinationCard p1LongDestCard = new DestinationCard("p1LongDestCard", city2, city4, 10);
+        DestinationCard p1LongDestCard = new DestinationCard(city2, city4, 10);
 
-        Player player1 = new Player("p1", WheelColor.WHITE, scorePlayer1, 4, 0,
+        Player player1 = new Player("p1", PlayerColor.PINK, scorePlayer1, 4, 0,
                 new ArrayList<>(), p1LongDestCard, Arrays.asList(p1ShortDestCard1, p1ShortDestCard2));
 
         // achieved
-        DestinationCard p2ShortDestCard1 = new DestinationCard("p2ShortDestCard1", city1, city3, 3);
+        DestinationCard p2ShortDestCard1 = new DestinationCard(city1, city3, 3);
         // achieved
-        DestinationCard p2ShortDestCard2 = new DestinationCard("p2ShortDestCard2", city3, city4, 2);
+        DestinationCard p2ShortDestCard2 = new DestinationCard(city3, city4, 2);
         // not achieved
-        DestinationCard p2LongDestCard = new DestinationCard("p2LongDestCard", city1, city2, 8);
-        Player player2 = new Player("p2", WheelColor.ORANGE, scorePlayer2, 6, 1,
+        DestinationCard p2LongDestCard = new DestinationCard(city1, city2, 8);
+        Player player2 = new Player("p2", PlayerColor.LILA, scorePlayer2, 6, 1,
                 new ArrayList<>(), p2LongDestCard, Arrays.asList(p2ShortDestCard1, p2ShortDestCard2));
 
 

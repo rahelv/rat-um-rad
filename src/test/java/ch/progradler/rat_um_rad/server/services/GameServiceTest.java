@@ -5,10 +5,7 @@ import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandlerFactory;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
-import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
@@ -187,7 +184,7 @@ class GameServiceTest {
 
         String ipAddressB = "ipAddressB";
         Player playerB = mock(Player.class);
-        when(playerB.getColor()).thenReturn(WheelColor.BLACK);
+        when(playerB.getColor()).thenReturn(PlayerColor.LILA);
 
         String gameId = "idA";
         Game game = mock(Game.class);
@@ -217,7 +214,7 @@ class GameServiceTest {
         String ipAddressB = "ipAddressB";
         ClientGame clientGameB = mock(ClientGame.class);
         Player playerB = mock(Player.class);
-        when(playerB.getColor()).thenReturn(WheelColor.BLACK);
+        when(playerB.getColor()).thenReturn(PlayerColor.PINK);
 
         String gameId = "idA";
         int requiredPlayerCount = 2;

@@ -8,7 +8,7 @@ import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerColor;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -273,9 +273,9 @@ public class UserServiceTest {
         String ipAddressPlayerB = "clientB";
         String ipAddressPlayerC = "clientC";
 
-        Player playerA = new Player("player A", WheelColor.RED, 100, 10, 2);
-        Player playerB = new Player("player B", WheelColor.BLUE, 50, 15, 1);
-        Player playerC = new Player("player C", WheelColor.PINK, 50, 15, 1);
+        Player playerA = new Player("player A", PlayerColor.LIGHT_BROWN, 100, 10, 2);
+        Player playerB = new Player("player B", PlayerColor.PINK, 50, 15, 1);
+        Player playerC = new Player("player C", PlayerColor.LILA, 50, 15, 1);
         Map<String, Player> players = Map.of(
                 ipAddress, playerA,
                 ipAddressPlayerB, playerB,

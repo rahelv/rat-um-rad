@@ -23,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
-import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor.*;
+import static ch.progradler.rat_um_rad.shared.models.game.PlayerColor.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
 import static ch.progradler.rat_um_rad.shared.util.GameConfig.SHORT_DEST_CARDS_AT_START_COUNT;
@@ -52,8 +52,8 @@ class GameServiceUtilTest {
         int requiredPlayerCount = 5;
         int turn = 20;
 
-        Player creator = new Player("player A", WheelColor.RED, 100, 10, 2);
-        Player otherPlayer = new Player("player B", BLUE, 50, 15, 1);
+        Player creator = new Player("player A", PlayerColor.LILA, 100, 10, 2);
+        Player otherPlayer = new Player("player B", PlayerColor.LIGHT_BROWN, 50, 15, 1);
         String otherPlayerIp = "clientB";
         Map<String, Player> players = Map.of(
                 creatorIp, creator,
@@ -84,7 +84,7 @@ class GameServiceUtilTest {
     void createNewPlayer() {
         String ipAddress = "clientA";
         String name = "John";
-        List<WheelColor> takenColors = Arrays.asList(RED, BLUE, ORANGE, GREEN, PINK);
+        List<PlayerColor> takenColors = Arrays.asList(PINK, LILA, LIGHT_BROWN);
 
         when(mockUserRepository.getUsername(ipAddress)).thenReturn(name);
 
@@ -110,7 +110,7 @@ class GameServiceUtilTest {
                 new ArrayList<>(),
                 true
         );
-        Player player = new Player("John", WheelColor.WHITE, 30, 20, 3,
+        Player player = new Player("John", PlayerColor.LILA, 30, 20, 3,
                 Collections.singletonList(new WheelCard(3)), null, new ArrayList<>(), new ArrayList<>(), endResult);
 
         VisiblePlayer expected = new VisiblePlayer(player.getName(), player.getColor(),
@@ -128,16 +128,16 @@ class GameServiceUtilTest {
         String gameId = "gameA";
         String playerIpAddress = "clientA";
 
-        Player playerA = new Player("player A", WheelColor.RED, 100, 10, 2);
-        Player playerB = new Player("player B", BLUE, 50, 15, 1);
+        Player playerA = new Player("player A", LIGHT_BROWN, 100, 10, 2);
+        Player playerB = new Player("player B", LIGHT_BLUE, 50, 15, 1);
         Map<String, Player> players1 = Map.of(
                 playerIpAddress, playerA,
                 "clientB", playerB
         );
 
         Map<String, Player> players2 = Map.of(
-                "clientC", new Player("player C", WheelColor.RED, 100, 10, 2),
-                "clientD", new Player("player D", WheelColor.RED, 100, 10, 2)
+                "clientC", new Player("player C", LIGHT_BROWN, 100, 10, 2),
+                "clientD", new Player("player D", LIGHT_GREEN, 100, 10, 2)
         );
 
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
@@ -161,7 +161,7 @@ class GameServiceUtilTest {
         when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
+        List<PlayerColor> takenColors = Collections.singletonList(player1.getColor());
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
         Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(ip1, player1);
@@ -213,7 +213,7 @@ class GameServiceUtilTest {
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
 
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
+        List<PlayerColor> takenColors = Collections.singletonList(player1.getColor());
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
 
         Map<String, Player> playerMap = new HashMap<>();
@@ -280,7 +280,6 @@ class GameServiceUtilTest {
         );
         when(game.getDecksOfGame()).thenReturn(decksOfGame);
 
-
         try (MockedStatic<RandomGenerator> utilities = Mockito.mockStatic(RandomGenerator.class)) {
             utilities.when(() -> RandomGenerator.shuffle(any())).then(invocation -> null);
 
@@ -303,7 +302,7 @@ class GameServiceUtilTest {
         when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
+        List<PlayerColor> takenColors = Collections.singletonList(player1.getColor());
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
         Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(ip1, player1);
