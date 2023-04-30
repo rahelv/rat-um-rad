@@ -51,16 +51,20 @@ public class PacketCoderTest {
         // prepare
         int level = 1;
 
-        Player player = new Player("own player", WheelColor.BLUE, 4, 5, 1,
-                Arrays.asList(new WheelCard(40)), new DestinationCard(
+        DestinationCard destinationCard = new DestinationCard(
                 "longCard1", new City("city1", "City1", new Point(3, 4)),
                 new City("city2", "City2", new Point(1, 4)),
-                5), new ArrayList<>());
+                5);
+        Player player = new Player("own player", WheelColor.BLUE, 4, 5, 1,
+                Arrays.asList(new WheelCard(40)), destinationCard, new ArrayList<>());
         List<Activity> activities = Collections.singletonList(new Activity("John", ServerCommand.GAME_JOINED));
+
+        PlayerEndResult endResultOtherPlayer = new PlayerEndResult(Collections.singletonList(destinationCard), new ArrayList<>(), false);
 
         ClientGame clientGame = new ClientGame("game1", GameStatus.STARTED, GameMap.defaultMap(),
                 new Date(2023, Calendar.MAY, 14, 4, 4, 4), "creator", 4, Arrays.asList(
-                new VisiblePlayer("Player1", WheelColor.GREEN, 4, 20, 0, "ip", 5, 3)
+                new VisiblePlayer("Player1", WheelColor.GREEN, 4, 20, 0,
+                        "ip", 5, 3, endResultOtherPlayer)
         ), player, 30, new HashMap<>(), activities);
 
 

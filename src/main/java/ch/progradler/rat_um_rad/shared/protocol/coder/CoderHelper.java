@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -95,17 +96,26 @@ public class CoderHelper {
         return map;
     }
 
-    public static String encodeNullableField(Object object) {
-        if (object == null) {
-            return "null";
-        }
-        return "";
+    public static <T> String encodeNullableField(T object, Function<T, String> encodeNonNull) {
+        if (object == null) return "null";
+        return encodeNonNull.apply(object);
     }
 
-    public static Object decodeNullableField(String encoded) {
-        if (encoded.equals("null")) {
-            return null;
-        }
-        return "";
+    public static <T> T decodeNullableField(String encoded, Function<String, T> decodeNonNull) {
+        if (encoded.equals("null")) return null;
+        return decodeNonNull.apply(encoded);
+    }
+
+    public static <T> String encodeList(Coder<T> coder, List<T> destinationCards, int level) {
+        List<String> listOfEncoded = destinationCards.stream()
+                .map((destinationCard) -> coder.encode(destinationCard, level + 1))
+                .toList();
+        return encodeStringList(level, listOfEncoded);
+    }
+
+    public static <T> List<T> decodeList(Coder<T> coder, String encoded, int level) {
+        List<String> stringList = CoderHelper.decodeStringList(level, encoded);
+        return stringList.stream()
+                .map((s) -> coder.decode(s, level + 1)).toList();
     }
 }

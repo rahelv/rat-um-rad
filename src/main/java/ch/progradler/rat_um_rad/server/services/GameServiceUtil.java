@@ -70,7 +70,8 @@ public class GameServiceUtil {
                 player.getPlayingOrder(),
                 ipAddress,
                 player.getWheelCards().size(),
-                player.getShortDestinationCards().size()
+                player.getShortDestinationCards().size(),
+                player.getEndResult()
         );
     }
 

@@ -6,10 +6,7 @@ import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
-import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -108,13 +105,19 @@ class GameServiceUtilTest {
     @Test
     void toVisiblePlayer() {
         String ipAddress = "playerA";
+        PlayerEndResult endResult = new PlayerEndResult(
+                new ArrayList<>(),
+                new ArrayList<>(),
+                true
+        );
         Player player = new Player("John", WheelColor.WHITE, 30, 20, 3,
-                Collections.singletonList(new WheelCard(3)), null, new ArrayList<>());
+                Collections.singletonList(new WheelCard(3)), null, new ArrayList<>(), new ArrayList<>(), endResult);
 
         VisiblePlayer expected = new VisiblePlayer(player.getName(), player.getColor(),
                 player.getScore(), player.getWheelsRemaining(), player.getPlayingOrder(), ipAddress,
                 player.getWheelCards().size(),
-                player.getShortDestinationCards().size()
+                player.getShortDestinationCards().size(),
+                player.getEndResult()
         );
 
         assertEquals(expected, GameServiceUtil.toVisiblePlayer(player, ipAddress));

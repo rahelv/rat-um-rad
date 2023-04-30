@@ -8,10 +8,7 @@ import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCa
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 import static ch.progradler.rat_um_rad.shared.util.GameConfig.MAX_WHEELS_LEFT_TO_END_GAME;
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,7 +52,7 @@ class GameEndUtilTest {
     }
 
     @Test
-    void updateScoresWorksCorrectly() {
+    void updateScoresAndGetDestinationCardsResultWorksCorrectly() {
         String ip1 = "client1";
         String ip2 = "client2";
 
@@ -116,18 +113,24 @@ class GameEndUtilTest {
         Game game = new Game("game1", GameStatus.STARTED, gameMap, new Date(), "creator",
                 2, players, 20, roadsBuilt, new ArrayList<>(), decksOfGame);
 
-        new GameEndUtil().updateScoresByAchievedDestinationCards(game);
+        new GameEndUtil().updateScoresAndEndResult(game);
 
         int expectedScoredP1 = scorePlayer1 + p1ShortDestCard1.getPoints()
                 - p1ShortDestCard2.getPoints()
                 + p1LongDestCard.getPoints();
         assertEquals(expectedScoredP1, player1.getScore());
+        PlayerEndResult result1 = player1.getEndResult();
+        assertEquals(Collections.singletonList(p1ShortDestCard1), result1.getAchievedShorts());
+        assertEquals(Collections.singletonList(p1ShortDestCard2), result1.getNotAchievedShorts());
+        assertTrue(result1.hasAchievedLong());
 
         int expectedScoredP2 = scorePlayer2 + p2ShortDestCard1.getPoints()
                 + p2ShortDestCard2.getPoints()
                 - p2LongDestCard.getPoints();
         assertEquals(expectedScoredP2, player2.getScore());
-
-        // TODO: add field for cards achieved and test
+        PlayerEndResult result2 = player2.getEndResult();
+        assertEquals(Arrays.asList(p2ShortDestCard1, p2ShortDestCard2), result2.getAchievedShorts());
+        assertTrue(result2.getNotAchievedShorts().isEmpty());
+        assertFalse(result2.hasAchievedLong());
     }
 }

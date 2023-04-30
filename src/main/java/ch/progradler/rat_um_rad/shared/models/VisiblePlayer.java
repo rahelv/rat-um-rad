@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.shared.models;
 
 import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerEndResult;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
 import java.util.Objects;
@@ -21,7 +22,11 @@ public class VisiblePlayer extends PlayerBase {
                          String ipAddress,
                          int wheelCardsCount,
                          int shortDestinationCardsCount) {
-        super(name, color, score, wheelsRemaining, playingOrder);
+        this(name, color, score, wheelsRemaining, playingOrder, ipAddress, wheelCardsCount, shortDestinationCardsCount, null);
+    }
+
+    public VisiblePlayer(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder, String ipAddress, int wheelCardsCount, int shortDestinationCardsCount, PlayerEndResult endResult) {
+        super(name, color, score, wheelsRemaining, playingOrder, endResult);
         this.ipAddress = ipAddress;
         this.wheelCardsCount = wheelCardsCount;
         this.shortDestinationCardsCount = shortDestinationCardsCount;

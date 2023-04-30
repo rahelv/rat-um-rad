@@ -45,13 +45,21 @@ public class Player extends PlayerBase {
                   DestinationCard longDestinationCard,
                   List<DestinationCard> shortDestinationCards,
                   List<DestinationCard> shortDestinationCardsToChooseFrom) {
-        super(name, color, score, wheelsRemaining, playingOrder);
+        this(name, color, score, wheelsRemaining, playingOrder, wheelCards, longDestinationCard, shortDestinationCards, shortDestinationCardsToChooseFrom, null);
+    }
+
+    public Player(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder,
+                  List<WheelCard> wheelCards,
+                  DestinationCard longDestinationCard,
+                  List<DestinationCard> shortDestinationCards,
+                  List<DestinationCard> shortDestinationCardsToChooseFrom,
+                  PlayerEndResult endResult) {
+        super(name, color, score, wheelsRemaining, playingOrder, endResult);
         this.wheelCards = wheelCards;
         this.longDestinationCard = longDestinationCard;
         this.shortDestinationCards = shortDestinationCards;
         this.shortDestinationCardsToChooseFrom = shortDestinationCardsToChooseFrom;
     }
-
 
     public List<WheelCard> getWheelCards() {
         return wheelCards;

@@ -259,7 +259,7 @@ class ActionHandlerTest {
             canEndGame = true;
             actionHandler.handle(IP_ADDRESS, actionData);
 
-            verify(mockGameEndUtil).updateScoresByAchievedDestinationCards(game);
+            verify(mockGameEndUtil).updateScoresAndEndResult(game);
 
             assertEquals(FINISHED, game.getStatus());
             utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, GAME_ENDED));
