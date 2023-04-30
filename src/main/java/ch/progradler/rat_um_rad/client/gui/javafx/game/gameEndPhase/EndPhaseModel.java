@@ -1,8 +1,8 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase;
 
-import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
 import ch.progradler.rat_um_rad.shared.models.game.PlayerEndResult;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import javafx.collections.FXCollections;
@@ -21,10 +21,13 @@ public class EndPhaseModel {
     int scoreOfAchievedShorts;
     int scoreOfNotAchievedShorts;
 
+    int winnerScore;
+    String winnerName;
+
     public EndPhaseModel(ClientGame clientGame) {
         this.clientGame = clientGame;
         rankingList = FXCollections.observableArrayList();
-        otherPlayersInfo();
+        playersInfo();
         myOwnGameAchievements();
     }
 
@@ -35,24 +38,17 @@ public class EndPhaseModel {
     /**
      * descending sort based on scores,first 5 players, who have the highest scores, will be saved in rankingList.
      */
-    private void otherPlayersInfo() {
-        List<VisiblePlayer> otherPlayers = new ArrayList<>(this.clientGame.getOtherPlayers());
-        otherPlayers.sort((o1, o2) -> o2.getScore() - o1.getScore());
+    private void playersInfo() {
+        List<PlayerBase> allPlayers = new ArrayList<>(this.clientGame.getOtherPlayers());
+        allPlayers.add(this.clientGame.getOwnPlayer());
+        allPlayers.sort((o1, o2) -> o2.getScore() - o1.getScore());
 
-        int rankingLimit = 5;
         int rankingNum = 0;
-
-        if (otherPlayers.size() > rankingLimit) {
-            List<VisiblePlayer> newShortOtherPlayersList = otherPlayers.stream()
-                    .limit(rankingLimit).toList();
-            for (VisiblePlayer player : newShortOtherPlayersList) {
-                rankingList.add((++rankingNum) + "   " + player.getName() + "    " + player.getScore());
-            }
-        } else {
-            for (VisiblePlayer player : otherPlayers) {
-                rankingList.add((++rankingNum) + "   " + player.getName() + "    " + player.getScore());
-            }
+        for (PlayerBase player : allPlayers) {
+            rankingList.add((++rankingNum) + "     " + player.getName() + "     " + player.getScore());
         }
+        this.winnerName = allPlayers.get(0).getName();
+        this.winnerScore = allPlayers.get(0).getScore();
     }
 
     /**
@@ -100,5 +96,13 @@ public class EndPhaseModel {
 
     public String getNegativeScoreOfNotAchievedShorts() {
         return "- " + scoreOfNotAchievedShorts;
+    }
+
+    public String getWinnerName() {
+        return winnerName;
+    }
+
+    public String getWinnerScore() {
+        return winnerScore + " points";
     }
 }
