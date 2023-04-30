@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.server.services.action_handlers;
 
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerEndResult;
 import ch.progradler.rat_um_rad.shared.models.game.Road;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 
@@ -23,21 +24,25 @@ public class GameEndUtil {
         return false;
     }
 
-    void updateScoresByAchievedDestinationCards(Game game) {
+    void updateScoresAndEndResult(Game game) {
         for (String ipAddress : game.getPlayerIpAddresses()) {
             Player player = game.getPlayers().get(ipAddress);
 
-            DestinationCardsCheckResult checkResult = getDestinationCardsCheckResultForPlayer(ipAddress, player, game);
-            for (DestinationCard card : checkResult.getAchieved()) {
+            PlayerEndResult endResult = getPlayerEndResult(ipAddress, player, game);
+            for (DestinationCard card : endResult.getAchievedShorts()) {
                 player.setScore(player.getScore() + card.getPoints());
             }
-            for (DestinationCard card : checkResult.getNotAchieved()) {
+            for (DestinationCard card : endResult.getNotAchievedShorts()) {
                 player.setScore(player.getScore() - card.getPoints());
             }
+            int longDestCardsPoints = player.getLongDestinationCard().getPoints();
+            player.setScore(player.getScore() + (endResult.hasAchievedLong() ? 1 : -1) * longDestCardsPoints);
+
+            player.setEndResult(endResult);
         }
     }
 
-    private DestinationCardsCheckResult getDestinationCardsCheckResultForPlayer(String ipAddress, Player player, Game game) {
+    private PlayerEndResult getPlayerEndResult(String ipAddress, Player player, Game game) {
         List<Road> roads = game.getMap().getRoads();
         Map<String, String> allRoadsBuilt = game.getRoadsBuilt();
         List<Road> builtRoadsOfPlayer = roads.stream()
@@ -48,11 +53,8 @@ public class GameEndUtil {
 
         List<Connection> connectedCities = getConnectedCities(builtRoadsOfPlayer);
 
-        if (connectedCities.contains(fromDestinationCard(player.getLongDestinationCard()))) {
-            achieved.add(player.getLongDestinationCard());
-        } else {
-            notAchieved.add(player.getLongDestinationCard());
-        }
+        boolean achievedLong = connectedCities.contains(fromDestinationCard(player.getLongDestinationCard()));
+
 
         for (DestinationCard card : player.getShortDestinationCards()) {
             if (connectedCities.contains(fromDestinationCard(card))) {
@@ -62,7 +64,7 @@ public class GameEndUtil {
             }
         }
 
-        return new DestinationCardsCheckResult(achieved, notAchieved);
+        return new PlayerEndResult(achieved, notAchieved, achievedLong);
     }
 
     Connection fromDestinationCard(DestinationCard card) {
@@ -132,24 +134,6 @@ public class GameEndUtil {
         @Override
         public int hashCode() {
             return Objects.hash(cities);
-        }
-    }
-
-    private static class DestinationCardsCheckResult {
-        private final List<DestinationCard> achieved;
-        private final List<DestinationCard> notAchieved;
-
-        public DestinationCardsCheckResult(List<DestinationCard> achieved, List<DestinationCard> notAchieved) {
-            this.achieved = achieved;
-            this.notAchieved = notAchieved;
-        }
-
-        public List<DestinationCard> getAchieved() {
-            return achieved;
-        }
-
-        public List<DestinationCard> getNotAchieved() {
-            return notAchieved;
         }
     }
 }

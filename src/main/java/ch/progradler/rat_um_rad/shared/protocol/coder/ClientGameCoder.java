@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper.*;
+
 /**
  * Can en- and decode a {@link ClientGame}
  */
@@ -31,25 +33,21 @@ public class ClientGameCoder implements Coder<ClientGame> {
     @Override
     public String encode(ClientGame clientGame, int level) {
         String ownPlayerEncoded = playerCoder.encode(clientGame.getOwnPlayer(), level + 1);
-        List<String> otherPlayersEncodedList = clientGame.getOtherPlayers().stream()
-                .map((p) -> visiblePlayerCoder.encode(p, level + 2))
-                .toList();
-        String otherPlayersEncoded = CoderHelper.encodeStringList(level + 1, otherPlayersEncodedList);
-        List<String> activitiesEncoded = clientGame.getActivities().stream()
-                .map((s) -> activityCoder.encode(s, level + 2)).toList();
+        String otherPlayersEncoded = encodeList(visiblePlayerCoder, clientGame.getOtherPlayers(), level + 1);
+        String activitiesEncoded = encodeList(activityCoder, clientGame.getActivities(), level + 1);
 
-        return CoderHelper.encodeFields(level,
+        return encodeFields(level,
                 clientGame.getId(),
                 clientGame.getStatus().name(),
                 gameMapCoder.encode(clientGame.getMap(), level + 1),
-                CoderHelper.encodeDate(clientGame.getCreatedAt()),
+                encodeDate(clientGame.getCreatedAt()),
                 clientGame.getCreatorPlayerIpAddress(),
                 String.valueOf(clientGame.getRequiredPlayerCount()),
                 otherPlayersEncoded,
                 ownPlayerEncoded,
                 String.valueOf(clientGame.getTurn()),
-                CoderHelper.encodeStringMap(level + 1, clientGame.getRoadsBuilt()),
-                CoderHelper.encodeStringList(level + 1, activitiesEncoded)
+                encodeStringMap(level + 1, clientGame.getRoadsBuilt()),
+                activitiesEncoded
         );
     }
 
@@ -58,22 +56,18 @@ public class ClientGameCoder implements Coder<ClientGame> {
         if (encoded.equals("null")) {
             return null;
         }
-        List<String> fields = CoderHelper.decodeFields(level, encoded);
+        List<String> fields = decodeFields(level, encoded);
         String gameId = fields.get(0);
         GameStatus status = GameStatus.valueOf(fields.get(1));
         GameMap map = gameMapCoder.decode(fields.get(2), level + 1);
-        Date createdAt = CoderHelper.decodeDate(fields.get(3));
+        Date createdAt = decodeDate(fields.get(3));
         String creatorIpAddress = fields.get(4);
         int requiredPlayerCount = Integer.parseInt(fields.get(5));
-        List<String> otherPlayersStrings = CoderHelper.decodeStringList(level + 1, fields.get(6));
-        List<VisiblePlayer> otherPlayers = otherPlayersStrings.stream()
-                .map((s) -> visiblePlayerCoder.decode(s, level + 2)).toList();
+        List<VisiblePlayer> otherPlayers = decodeList(visiblePlayerCoder, fields.get(6), level + 1);
         Player ownPlayer = playerCoder.decode(fields.get(7), level + 1);
         int turn = Integer.parseInt(fields.get(8));
-        Map<String, String> roadsBuilt = CoderHelper.decodeStringMap(level + 1, fields.get(9));
-        List<String> activityStrings = CoderHelper.decodeStringList(level + 1, fields.get(10));
-        List<Activity> activities = activityStrings.stream()
-                .map((s) -> activityCoder.decode(s, level + 2)).toList();
+        Map<String, String> roadsBuilt = decodeStringMap(level + 1, fields.get(9));
+        List<Activity> activities = decodeList(activityCoder, fields.get(10), level + 1);
 
         return new ClientGame(gameId, status, map, createdAt, creatorIpAddress,
                 requiredPlayerCount, otherPlayers, ownPlayer, turn, roadsBuilt, activities);

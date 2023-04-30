@@ -69,7 +69,7 @@ public abstract class ActionHandler<T> {
 
         if (canEndGame() && gameEndUtil.isGameEnded(game)) {
             game.setStatus(FINISHED);
-            gameEndUtil.updateScoresByAchievedDestinationCards(game);
+            gameEndUtil.updateScoresAndEndResult(game);
             gameRepository.updateGame(game);
             GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_ENDED);
         }

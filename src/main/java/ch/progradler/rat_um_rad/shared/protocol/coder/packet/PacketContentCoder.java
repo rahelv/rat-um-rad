@@ -14,6 +14,7 @@ import ch.progradler.rat_um_rad.shared.protocol.coder.game.GameMapCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerEndResultCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
 
 import java.util.List;
@@ -44,10 +45,13 @@ public class PacketContentCoder {
     public static PacketContentCoder defaultPacketContentCoder() {
         Coder<GameMap> gameMapCoder = new GameMapCoder(new CityCoder(new PointCoder()), new RoadCoder());
         Coder<Activity> activityCoder = new ActivityCoder();
+        DestinationCardCoder destinationCardCoder = new DestinationCardCoder(new CityCoder(new PointCoder()));
+        PlayerEndResultCoder playerEndResultCoder = new PlayerEndResultCoder(destinationCardCoder);
         ClientGameCoder clientGameCoder = new ClientGameCoder(gameMapCoder,
-                new VisiblePlayerCoder(),
+                new VisiblePlayerCoder(playerEndResultCoder),
                 new PlayerCoder(new WheelCardCoder(),
-                        new DestinationCardCoder(new CityCoder(new PointCoder()))), activityCoder);
+                        destinationCardCoder, playerEndResultCoder),
+                activityCoder);
         return new PacketContentCoder(new ChatMessageCoder(),
                 new UsernameChangeCoder(),
                 new GameBaseCoder(gameMapCoder, activityCoder),

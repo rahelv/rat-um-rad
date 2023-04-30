@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder.player;
 
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerEndResult;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper;
@@ -8,6 +9,12 @@ import ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper;
 import java.util.List;
 
 public class VisiblePlayerCoder implements Coder<VisiblePlayer> {
+    private final Coder<PlayerEndResult> playerEndResultCoder;
+
+    public VisiblePlayerCoder(Coder<PlayerEndResult> playerEndResultCoder) {
+        this.playerEndResultCoder = playerEndResultCoder;
+    }
+
     @Override
     public String encode(VisiblePlayer player, int level) {
         if (player == null) {
@@ -21,7 +28,9 @@ public class VisiblePlayerCoder implements Coder<VisiblePlayer> {
                 String.valueOf(player.getPlayingOrder()),
                 player.getIpAddress(),
                 String.valueOf(player.getWheelCardsCount()),
-                String.valueOf(player.getShortDestinationCardsCount()));
+                String.valueOf(player.getShortDestinationCardsCount()),
+                playerEndResultCoder.encode(player.getEndResult(), level + 1)
+        );
     }
 
     @Override
@@ -38,6 +47,7 @@ public class VisiblePlayerCoder implements Coder<VisiblePlayer> {
         String ipAddress = fields.get(5);
         int wheelCardsCount = Integer.parseInt(fields.get(6));
         int shortDestinationCardsCount = Integer.parseInt(fields.get(7));
-        return new VisiblePlayer(name, color, score, wheelsRemaining, playingOrder, ipAddress, wheelCardsCount, shortDestinationCardsCount);
+        PlayerEndResult endResult = playerEndResultCoder.decode(fields.get(8), level + 1);
+        return new VisiblePlayer(name, color, score, wheelsRemaining, playingOrder, ipAddress, wheelCardsCount, shortDestinationCardsCount, endResult);
     }
 }
