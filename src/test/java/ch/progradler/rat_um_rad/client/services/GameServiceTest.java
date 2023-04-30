@@ -66,6 +66,14 @@ class GameServiceTest {
     }
 
     @Test
+    void requestHighscores() throws IOException {
+        gameService.requestHighscores();
+
+        Packet.Client expected = new Packet.Client(ClientCommand.REQUEST_HIGHSCORES, null, ContentType.NONE);
+        verify(mockOutputPacketGateway).sendPacket(expected);
+    }
+
+    @Test
     void requestWaitingGamesWorks() throws IOException {
         gameService.requestWaitingGames();
         verify(mockOutputPacketGateway).sendPacket(new Packet.Client(ClientCommand.REQUEST_GAMES, GameStatus.WAITING_FOR_PLAYERS, ContentType.GAME_STATUS));

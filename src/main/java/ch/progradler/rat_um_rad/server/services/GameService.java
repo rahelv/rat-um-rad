@@ -3,6 +3,7 @@ package ch.progradler.rat_um_rad.server.services;
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
+import ch.progradler.rat_um_rad.server.repositories.IHighscoreRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandlerFactory;
 import ch.progradler.rat_um_rad.shared.models.Activity;
@@ -39,18 +40,20 @@ public class GameService implements IGameService {
     private final OutputPacketGateway outputPacketGateway;
     private final IGameRepository gameRepository;
     private final IUserRepository userRepository;
+    private final IHighscoreRepository highscoreRepository;
     private final ActionHandlerFactory actionHandlerFactory;
 
 
-    public GameService(OutputPacketGateway outputPacketGateway, IGameRepository gameRepository, IUserRepository userRepository, ActionHandlerFactory actionHandlerFactory) {
+    public GameService(OutputPacketGateway outputPacketGateway, IGameRepository gameRepository, IUserRepository userRepository, IHighscoreRepository highscoreRepository, ActionHandlerFactory actionHandlerFactory) {
         this.outputPacketGateway = outputPacketGateway;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
+        this.highscoreRepository = highscoreRepository;
         this.actionHandlerFactory = actionHandlerFactory;
     }
 
-    public GameService(OutputPacketGateway outputPacketGateway, IGameRepository gameRepository, IUserRepository userRepository) {
-        this(outputPacketGateway, gameRepository, userRepository, new ActionHandlerFactory(gameRepository, userRepository, outputPacketGateway));
+    public GameService(OutputPacketGateway outputPacketGateway, IGameRepository gameRepository, IUserRepository userRepository, IHighscoreRepository highscoreRepository) {
+        this(outputPacketGateway, gameRepository, userRepository, highscoreRepository, new ActionHandlerFactory(gameRepository, userRepository, highscoreRepository, outputPacketGateway));
     }
 
     @Override
@@ -301,6 +304,12 @@ public class GameService implements IGameService {
     @Override
     public void getFinishedGames(String ipAddress) {
         Packet.Server packet = new Packet.Server(SEND_FINISHED_GAMES, gameRepository.getFinishedGames(), GAME_INFO_LIST);
+        outputPacketGateway.sendPacket(ipAddress, packet);
+    }
+
+    @Override
+    public void requestHighscores(String ipAddress) {
+        Packet.Server packet = new Packet.Server(SEND_HIGHSCORES, highscoreRepository.getHighscores(), HIGHSCORE_LIST);
         outputPacketGateway.sendPacket(ipAddress, packet);
     }
 }

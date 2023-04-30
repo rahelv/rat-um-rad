@@ -4,10 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.protocol.ClientConnectionsHandler;
 import ch.progradler.rat_um_rad.server.protocol.CommandHandler;
 import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
-import ch.progradler.rat_um_rad.server.repositories.GameRepository;
-import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
-import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
-import ch.progradler.rat_um_rad.server.repositories.UserRepository;
+import ch.progradler.rat_um_rad.server.repositories.*;
 import ch.progradler.rat_um_rad.server.services.GameService;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
@@ -40,6 +37,6 @@ public class Server {
     }
 
     private static IGameService getGameService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository) {
-        return new GameService(outputPacketGateway, gameRepository, userRepository);
+        return new GameService(outputPacketGateway, gameRepository, userRepository, new HighscoreRepository());
     }
 }

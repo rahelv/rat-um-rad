@@ -77,4 +77,6 @@ public interface IGameService {
      *                  (i.e. their {@link Game#getStatus()} is {@link GameStatus#FINISHED}
      */
     void getFinishedGames(String ipAddress);
+
+    void requestHighscores(String ipAddress);
 }

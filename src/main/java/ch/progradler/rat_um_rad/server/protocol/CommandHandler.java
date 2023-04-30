@@ -80,6 +80,7 @@ public class CommandHandler implements InputPacketGateway {
             }
             case BUILD_ROAD -> handleBuildRoadPacket(packet, ipAddress);
             case REQUEST_SHORT_DESTINATION_CARDS -> gameService.requestShortDestinationCards(ipAddress);
+            case REQUEST_HIGHSCORES ->  gameService.requestHighscores(ipAddress);
             default -> throw new IllegalStateException("Unexpected value: " + packet.getCommand());
         }
     }

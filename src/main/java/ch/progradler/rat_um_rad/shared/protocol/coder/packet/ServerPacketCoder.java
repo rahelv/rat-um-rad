@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder.packet;
 
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.Highscore;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
@@ -22,8 +23,8 @@ public class ServerPacketCoder extends PacketCoder<ServerCommand> {
         super(contentCoder);
     }
 
-    public ServerPacketCoder(Coder<ChatMessage> messageCoder, Coder<UsernameChange> usernameChangeCoder, Coder<GameBase> gameBaseCoder, Coder<ClientGame> clientGameCoder, Coder<BuildRoadInfo> buildRoadInfoCoder) {
-        super(messageCoder, usernameChangeCoder, gameBaseCoder, clientGameCoder, buildRoadInfoCoder);
+    public ServerPacketCoder(Coder<ChatMessage> messageCoder, Coder<UsernameChange> usernameChangeCoder, Coder<GameBase> gameBaseCoder, Coder<ClientGame> clientGameCoder, Coder<BuildRoadInfo> buildRoadInfoCoder, Coder<Highscore> highscoreCoder) {
+        super(messageCoder, usernameChangeCoder, gameBaseCoder, clientGameCoder, buildRoadInfoCoder, highscoreCoder);
     }
 
     /**

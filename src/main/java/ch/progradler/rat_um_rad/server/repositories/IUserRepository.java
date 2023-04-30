@@ -2,6 +2,9 @@ package ch.progradler.rat_um_rad.server.repositories;
 
 import java.util.List;
 
+/**
+ * Interface which allows interacting with the users and stores them.
+ */
 public interface IUserRepository {
     void addUsername(String username, String ipAddress);
 
