@@ -17,8 +17,6 @@ public interface IGameService {
 
     void buildGreyRoad(String roadId, WheelColor color) throws IOException;
 
-    void takeWheelCards() throws IOException;
-
     void requestWaitingGames() throws IOException;
 
     void requestStartedGames() throws IOException;

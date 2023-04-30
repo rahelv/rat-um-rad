@@ -15,4 +15,6 @@ public interface ControllerChangeListener<T> {
     void selectDestinationCards(ClientGame clientGame);
 
     void returnToGame(ClientGame clientGame);
+
+    void showWinner(ClientGame game);
 }
