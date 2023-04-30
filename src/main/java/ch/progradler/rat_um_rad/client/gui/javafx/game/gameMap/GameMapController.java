@@ -9,9 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -20,7 +18,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,13 +33,9 @@ public class GameMapController extends GridPane {
     private GameService gameService;
     private GameMapModel gameMapModel;
     @FXML
-    private ComboBox<Road> roadsToBuildListView;
-    @FXML
     private Label gameID;
     @FXML
     private Label status;
-    @FXML
-    private Label createdAt;
     @FXML
     private Label requiredPlayers;
     @FXML
@@ -70,15 +63,11 @@ public class GameMapController extends GridPane {
         this.gameMapModel = gameMapModel;
         Platform.runLater(() -> {
             drawMap(gameMapModel.getGameMap());
-            gameID.setText(this.gameMapModel.getGameID());
-            status.setText(this.gameMapModel.getStatus().toString());
-            createdAt.setText(this.gameMapModel.getCreatedAt().toString());
-            requiredPlayers.setText(String.valueOf(this.gameMapModel.getRequiredPlayers()));
+            gameID.setText("Game ID: " + this.gameMapModel.getGameID());
+            status.setText("Status: " + this.gameMapModel.getStatus().toString());
+            requiredPlayers.setText("Required Players: " + this.gameMapModel.getRequiredPlayers());
         });
         this.gameMapModel.updateFields();
-
-        setRoadObservableList();
-        this.gameMapModel.setBuiltRoadObservableList();
     }
 
     private void drawMap(GameMap gameMap) {
@@ -141,7 +130,6 @@ public class GameMapController extends GridPane {
         roadLine.getStrokeDashArray().addAll(strokes);
 
         roadLine.setOnMouseClicked(event -> {
-            System.out.println("Wants to build from " + from.getName() + " to " + to.getName());
             try {
                 this.gameService.buildRoad(road.getId());
             } catch (IOException e) {
@@ -202,55 +190,13 @@ public class GameMapController extends GridPane {
         return strokes;
     }
 
-    private void setRoadObservableList() {
-        this.gameMapModel.setRoadsToBuildObservableList();
-        roadsToBuildListView.setItems(this.gameMapModel.getRoadsToBuildObservableList());
-        roadsToBuildListView.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Road road) {
-                if (road == null) {
-                    return "";
-                }
-                return road.getId();
-            }
-
-            @Override
-            public Road fromString(String string) {
-                return null;
-            }
-        });
-        roadsToBuildListView.setCellFactory(
-                listview -> new ListCell<>() {
-                    @Override
-                    public void updateItem(Road road, boolean empty) {
-                        super.updateItem(road, empty);
-                        textProperty().unbind();
-                        if (road != null)
-                            //TODO: textProperty().bind();
-                            textProperty().setValue(road.getId());
-                        else
-                            setText(null);
-                    }
-                }
-        );
-    }
-
     public void updateGameMapModel(ClientGame clientGame) {
         this.gameMapModel.updateClientGame(clientGame);
     }
 
     public void updateGameMapModelWithMap(ClientGame clientGame) {
-        this.gameMapModel.updateClientGameWithMap(clientGame);
+        this.gameMapModel.updateClientGame(clientGame);
         this.gameMapModel.updateFields();
-    }
-
-    @FXML
-    private void buildRoadAction(ActionEvent event) {
-        try {
-            this.gameService.buildRoad(this.roadsToBuildListView.getValue().getId());
-        } catch (IOException e) {
-            e.printStackTrace(); //TODO: signal failure to user an let him build the road again
-        }
     }
 
     @FXML

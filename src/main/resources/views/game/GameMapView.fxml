@@ -9,13 +9,11 @@
 <fx:root type="GridPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:id="gameMapController">
 <Label  GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="gameID"></Label>
 <Label  GridPane.rowIndex="1" GridPane.columnIndex="0" fx:id="status"></Label>
-<Label  GridPane.rowIndex="2" GridPane.columnIndex="0" fx:id="createdAt"></Label>
 <Label  GridPane.rowIndex="3" GridPane.columnIndex="0" fx:id="requiredPlayers"></Label>
 <HBox GridPane.rowIndex="4" spacing="5">
-    <ComboBox fx:id="roadsToBuildListView" ></ComboBox>
-    <Button fx:id="buildRoad" text="Build Road" onAction="#buildRoadAction"></Button>
     <Button text="Request WheelCards" onAction="#requestWheelCards"></Button>
     <Button text="Select Destination Cards" onAction="#selectDestinationCards"></Button>
+    <Label text=" or select a road to build"></Label>
 </HBox>
 <Pane GridPane.rowIndex="5" prefWidth="500" prefHeight="350" fx:id="mapPane">
     <Group fx:id="mapObjectsGroup">

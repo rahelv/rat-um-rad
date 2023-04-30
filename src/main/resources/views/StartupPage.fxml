@@ -24,6 +24,7 @@
         <HBox spacing="5">
             <Button fx:id="showAllGamesButton" onAction="#showAllGamesAction" text="show all games"/>
             <Button fx:id="createGameButton" onAction="#createGameAction" text="create game"/>
+            <Button fx:id="highScoresButton" onAction="#showHighScores" text="show HighScores"/>
             <Button fx:id="currentPlayersLabelButton"></Button>
         </HBox>
     </VBox>

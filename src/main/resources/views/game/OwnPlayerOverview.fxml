@@ -6,6 +6,8 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ScrollBar?>
+<?import javafx.scene.control.ScrollPane?>
 <fx:root type="VBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:id="ownPlayerOverviewController">
     <Label alignment="CENTER" text="my Cards and Stuff">
         <font>
@@ -13,9 +15,13 @@
         </font>
     </Label>
     <Label>DestinationCards</Label>
-    <ListView prefHeight="100.0" orientation="HORIZONTAL" fx:id="destinationCardListView"></ListView>
+    <ScrollPane fitToWidth="true">
+        <ListView prefHeight="100.0" orientation="HORIZONTAL" fx:id="destinationCardListView"></ListView>
+    </ScrollPane>
     <Label>WheelCards</Label>
-    <ListView prefHeight="100.0" orientation="HORIZONTAL" fx:id="wheelCardListView"></ListView>
+    <ScrollPane fitToWidth="true">
+        <ListView prefHeight="100.0"  orientation="HORIZONTAL" fx:id="wheelCardListView"></ListView>
+    </ScrollPane>
     <HBox>
         <Label text="wheelCount: "></Label>
         <Label fx:id="wheelCount"></Label>

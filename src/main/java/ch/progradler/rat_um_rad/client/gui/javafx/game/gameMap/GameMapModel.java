@@ -9,21 +9,15 @@ import java.util.*;
 
 public class GameMapModel {
     private ClientGame clientGame;
-    private ObservableList<Road> roadsToBuildObservableList;
-    private ObservableList<String> builtRoadsObservableList;
     private String gameID;
     private String status;
-    private Date createdAt;
     private Integer requiredPlayers;
     private Map<String, City> citiesMap;
 
     public GameMapModel(ClientGame clientGame) {
         this.clientGame = clientGame;
-        this.roadsToBuildObservableList = FXCollections.observableArrayList();
-        this.builtRoadsObservableList = FXCollections.observableArrayList();
         this.gameID = clientGame.getId();
         this.status = clientGame.getStatus().toString();
-        this.createdAt = clientGame.getCreatedAt();
         this.requiredPlayers = clientGame.getRequiredPlayerCount();
         citiesMap = createCityHashMap(clientGame.getMap());
     }
@@ -40,54 +34,20 @@ public class GameMapModel {
         return this.clientGame.getMap();
     }
 
-    public ObservableList<Road> getRoadsToBuildObservableList() {
-        return this.roadsToBuildObservableList;
-    }
-
-    public void setRoadsToBuildObservableList() {
-        this.roadsToBuildObservableList = FXCollections.observableArrayList(this.clientGame.getMap().getRoads());
-    }
-
-    public ObservableList<String> getBuiltRoadsObservableList() {
-        return this.builtRoadsObservableList;
-    }
-
-    public void setBuiltRoadObservableList() {
-        List<String> roadsList = new ArrayList<String>(this.clientGame.getRoadsBuilt().keySet());
-        this.builtRoadsObservableList = FXCollections.observableArrayList(roadsList);
-    }
-
     public void updateClientGame(ClientGame clientGame) {
         this.clientGame = clientGame;
 
         //update associated fields
         this.gameID = clientGame.getId();
         this.status = clientGame.getStatus().toString();
-        this.createdAt = clientGame.getCreatedAt();
         this.requiredPlayers = clientGame.getRequiredPlayerCount();
-    }
-
-    public void updateClientGameWithMap(ClientGame clientGame) {
-        this.updateClientGame(clientGame);
-        this.roadsToBuildObservableList.clear();
-        this.roadsToBuildObservableList.addAll(clientGame.getMap().getRoads());
-
-        this.builtRoadsObservableList.clear();
-        this.setBuiltRoadObservableList();
     }
 
     public void updateFields() {
         //update associated fields
         this.gameID = clientGame.getId();
         this.status = clientGame.getStatus().toString();
-        this.createdAt = clientGame.getCreatedAt();
         this.requiredPlayers = clientGame.getRequiredPlayerCount();
-
-        this.roadsToBuildObservableList.clear();
-        this.roadsToBuildObservableList.addAll(clientGame.getMap().getRoads());
-
-        this.builtRoadsObservableList.clear();
-        this.setBuiltRoadObservableList();
     }
 
     public String getGameID() {
@@ -96,10 +56,6 @@ public class GameMapModel {
 
     public String getStatus() {
         return status;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
     }
 
     public Integer getRequiredPlayers() {

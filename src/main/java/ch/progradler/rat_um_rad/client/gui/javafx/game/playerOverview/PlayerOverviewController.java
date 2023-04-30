@@ -1,15 +1,15 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.playerOverview;
 
+import ch.progradler.rat_um_rad.client.gui.javafx.game.UiUtil;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,10 +62,12 @@ public class PlayerOverviewController extends VBox {
             setText(null);
             setGraphic(null);
             if (item != null && !empty) {
-                nameLabel.setText("user: " + item.getName());
-                wheelCardCountLabel.setText("WHEELC: " + item.getWheelCardsCount());
-                wheelsRemainingLabel.setText("RAD: " + item.getWheelsRemaining());
-                shortDestinationCardsCountLabel.setText("ZIELC: " + item.getShortDestinationCardsCount());
+                hbox.setBackground(new Background(new BackgroundFill(UiUtil.playerColor(item.getColor()), CornerRadii.EMPTY, Insets.EMPTY)));
+
+                nameLabel.setText(item.getName());
+                wheelCardCountLabel.setText(" W-CARDS: " + item.getWheelCardsCount());
+                wheelsRemainingLabel.setText(" WHEELS" + item.getWheelsRemaining());
+                shortDestinationCardsCountLabel.setText(" D-CARDS: " + item.getShortDestinationCardsCount());
                 setGraphic(hbox);
             }
         }
