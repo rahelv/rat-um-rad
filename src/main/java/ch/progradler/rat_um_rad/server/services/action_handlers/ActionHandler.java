@@ -5,9 +5,14 @@ import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.GameServiceUtil;
+import ch.progradler.rat_um_rad.server.services.HighscoreManager;
 import ch.progradler.rat_um_rad.shared.models.Activity;
+import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
+
+import java.util.Date;
+import java.util.Map;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.FINISHED;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
@@ -24,15 +29,17 @@ public abstract class ActionHandler<T> {
     private final IUserRepository userRepository;
     private final OutputPacketGateway outputPacketGateway;
     private final GameEndUtil gameEndUtil;
+    private final HighscoreManager highscoreManager;
 
     protected ActionHandler(IGameRepository gameRepository,
                             IUserRepository userRepository,
                             OutputPacketGateway outputPacketGateway,
-                            GameEndUtil gameEndUtil) {
+                            GameEndUtil gameEndUtil, HighscoreManager highscoreManager) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.outputPacketGateway = outputPacketGateway;
         this.gameEndUtil = gameEndUtil;
+        this.highscoreManager = highscoreManager;
     }
 
     /**
@@ -70,8 +77,15 @@ public abstract class ActionHandler<T> {
         if (canEndGame() && gameEndUtil.isGameEnded(game)) {
             game.setStatus(FINISHED);
             gameEndUtil.updateScoresAndEndResult(game);
+            attemptAddHighscores(game.getPlayers());
             gameRepository.updateGame(game);
             GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_ENDED);
+        }
+    }
+
+    private void attemptAddHighscores(Map<String, Player> players) {
+        for (Player player : players.values()) {
+            highscoreManager.attemptAddHighscore(player.getName(), player.getScore(), new Date());
         }
     }
 
