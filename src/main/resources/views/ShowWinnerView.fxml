@@ -9,7 +9,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ImageView fitHeight="800" fitWidth="1000.0" pickOnBounds="true">
+      <ImageView fitHeight="600" fitWidth="1000.0" pickOnBounds="true">
          <image>
             <Image url="@../images/winnerBackgroundImage.jpeg" />
          </image>

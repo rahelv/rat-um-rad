@@ -7,9 +7,11 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.Group?>
 <fx:root type="GridPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:id="gameMapController">
-<Label  GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="gameID"></Label>
-<Label  GridPane.rowIndex="1" GridPane.columnIndex="0" fx:id="status"></Label>
-<Label  GridPane.rowIndex="3" GridPane.columnIndex="0" fx:id="requiredPlayers"></Label>
+<HBox GridPane.rowIndex="0" GridPane.columnIndex="0" spacing="5">
+    <Label fx:id="gameID"></Label>
+    <Label fx:id="status"></Label>
+    <Label fx:id="requiredPlayers"></Label>
+</HBox>
 <HBox GridPane.rowIndex="4" spacing="5">
     <Button text="Request WheelCards" onAction="#requestWheelCards"></Button>
     <Button text="Select Destination Cards" onAction="#selectDestinationCards"></Button>

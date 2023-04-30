@@ -164,7 +164,7 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         loader.setController(controller);
         try {
             Parent content = loader.load();
-            this.mainScene = new Scene(content, 1000, 800);
+            this.mainScene = new Scene(content, 1000, 600);
             this.window.setScene(mainScene);
         } catch (Exception e) {
             e.printStackTrace();

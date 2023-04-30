@@ -14,14 +14,20 @@
             <Font name="Arial Black" size="15.0" />
         </font>
     </Label>
-    <Label>DestinationCards</Label>
-    <ScrollPane fitToWidth="true">
-        <ListView prefHeight="100.0" orientation="HORIZONTAL" fx:id="destinationCardListView"></ListView>
-    </ScrollPane>
-    <Label>WheelCards</Label>
-    <ScrollPane fitToWidth="true">
-        <ListView prefHeight="100.0"  orientation="HORIZONTAL" fx:id="wheelCardListView"></ListView>
-    </ScrollPane>
+    <HBox>
+        <VBox>
+            <Label>DestinationCards</Label>
+            <ScrollPane fitToWidth="true">
+                <ListView prefHeight="100.0" prefWidth="250" orientation="HORIZONTAL" fx:id="destinationCardListView"></ListView>
+            </ScrollPane>
+        </VBox>
+        <VBox>
+            <Label>WheelCards</Label>
+            <ScrollPane fitToWidth="true">
+                <ListView prefHeight="100.0"  orientation="HORIZONTAL" fx:id="wheelCardListView"></ListView>
+            </ScrollPane>
+        </VBox>
+    </HBox>
     <HBox>
         <Label text="wheelCount: "></Label>
         <Label fx:id="wheelCount"></Label>

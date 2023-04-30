@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.layout.GridPane?>
-<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <GridPane>
       <Label GridPane.rowIndex="0" GridPane.columnIndex="0" alignment="CENTER" layoutX="31.0" layoutY="25.0" prefHeight="55.0" prefWidth="400.0" text="High Score List">
          <font>
