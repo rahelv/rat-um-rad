@@ -14,7 +14,6 @@ class WheelCardTest {
         assertColor(WheelColor.ORANGE);
         assertColor(WheelColor.GREEN);
         assertColor(WheelColor.YELLOW);
-        assertColor(WheelColor.PINK);
         assertColor(WheelColor.BLACK);
         assertColor(WheelColor.WHITE);
         // assertColor(WheelColor.JOKER); TODO: re-add

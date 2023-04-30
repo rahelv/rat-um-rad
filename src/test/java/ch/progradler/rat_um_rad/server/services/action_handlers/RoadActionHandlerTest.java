@@ -59,7 +59,6 @@ class RoadActionHandlerTest {
 
     @Test
     void validateReturnsCorrectErrorIfPlayerHasNotEnoughWheels() {
-        String roadId = "road1";
         String ipAddress = "clientA";
 
         Player player = new Player("PlayerA", null, 0, 7, 0);
@@ -67,20 +66,19 @@ class RoadActionHandlerTest {
         Game game = mock(Game.class);
 
         int requiredWheels = 8;
-        Road toBuild = new Road(roadId, "city1", "city2", requiredWheels, WheelColor.RED);
+        Road toBuild = new Road("city1", "city2", requiredWheels, WheelColor.RED);
 
         GameMap map = mock(GameMap.class);
         when(game.getMap()).thenReturn(map);
         when(map.getRoads()).thenReturn(Collections.singletonList(toBuild));
         when(game.getPlayers()).thenReturn(Map.of(ipAddress, player));
 
-        String error = roadActionHandler.validate(game, ipAddress, roadId);
+        String error = roadActionHandler.validate(game, ipAddress, toBuild.getId());
         assertEquals(NOT_ENOUGH_WHEELS_TO_BUILD_ROAD, error);
     }
 
     @Test
     void validateReturnsCorrectErrorIfPlayerHasNotEnoughCardsOfCorrectColor() {
-        String roadId = "road1";
         String ipAddress = "clientA";
 
         List<WheelCard> wheelCards = Arrays.asList(
@@ -94,7 +92,7 @@ class RoadActionHandlerTest {
 
         int requiredWheels = 2;
         WheelColor color = WheelColor.RED;
-        Road toBuild = new Road(roadId, "city1", "city2", requiredWheels, color);
+        Road toBuild = new Road("city1", "city2", requiredWheels, color);
 
         GameMap map = mock(GameMap.class);
         when(game.getMap()).thenReturn(map);
@@ -102,29 +100,31 @@ class RoadActionHandlerTest {
         when(game.getPlayers()).thenReturn(Map.of(ipAddress, player));
 
 
-        String error = roadActionHandler.validate(game, ipAddress, roadId);
+        String error = roadActionHandler.validate(game, ipAddress, toBuild.getId());
+
         assertEquals(NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD, error);
     }
 
     @Test
     void updateGameState() {
-        String roadId = "road1";
         String ipAddress = "clientA";
 
+        int wheelColorsLength = WheelColor.values().length;
         List<WheelCard> wheelCards = new ArrayList<>(Arrays.asList(
-                new WheelCard(WheelColor.RED.ordinal() * 10),
-                new WheelCard(WheelColor.RED.ordinal() * 10 + 1),
-                new WheelCard(WheelColor.RED.ordinal() * 10 + 2),
-                new WheelCard(WheelColor.GREEN.ordinal() * 10),
-                new WheelCard(WheelColor.BLACK.ordinal() * 10)
+                new WheelCard(WheelColor.RED.ordinal()),
+                new WheelCard(WheelColor.RED.ordinal() + wheelColorsLength),
+                new WheelCard(WheelColor.GREEN.ordinal()),
+                new WheelCard(WheelColor.BLACK.ordinal())
         ));
+        Collections.shuffle(wheelCards);
+
         int score = 10;
         int wheelsRemaining = 20;
         Player player = new Player("PlayerA", null, score, wheelsRemaining, 0, wheelCards, null, new ArrayList<>());
 
         int requiredWheels = 2;
         WheelColor color = WheelColor.RED;
-        Road toBuild = new Road(roadId, "city1", "city2", requiredWheels, color);
+        Road toBuild = new Road("city1", "city2", requiredWheels, color);
 
         GameMap map = mock(GameMap.class);
         when(map.getRoads()).thenReturn(Collections.singletonList(toBuild));
@@ -139,12 +139,12 @@ class RoadActionHandlerTest {
                 Map.of(ipAddress, player), 4, roadsBuilt, activities, mock(DecksOfGame.class));
 
         // act
-        roadActionHandler.updateGameState(game, ipAddress, roadId);
+        roadActionHandler.updateGameState(game, ipAddress, toBuild.getId());
 
         // assert
         // check wheel cards removed from player
-        List<Integer> expectedTakenWheelCards = Arrays.asList(WheelColor.RED.ordinal() * 10,
-                WheelColor.RED.ordinal() * 10 + 1); // 2 reds
+        List<Integer> expectedTakenWheelCards = Arrays.asList(WheelColor.RED.ordinal(),
+                WheelColor.RED.ordinal() + wheelColorsLength); // 2 reds
         List<Integer> playerRemainingWheelCardIds = player.getWheelCards().stream()
                 .map(WheelCard::getCardID).toList();
         assertFalse(playerRemainingWheelCardIds.contains(expectedTakenWheelCards.get(0)));
@@ -152,7 +152,7 @@ class RoadActionHandlerTest {
 
         // more assertions
         assertEquals(wheelsRemaining - requiredWheels, player.getWheelsRemaining());
-        assertEquals(ipAddress, game.getRoadsBuilt().get(roadId));
+        assertEquals(ipAddress, game.getRoadsBuilt().get(toBuild.getId()));
         assertEquals(score + GameConfig.scoreForRoadBuild(requiredWheels), player.getScore());
     }
 

@@ -17,7 +17,6 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Application;
@@ -63,7 +62,9 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         launch(args);
     }
 
-    /** starts the GUI Application, see {@link ch.progradler.rat_um_rad.client.Client}
+    /**
+     * starts the GUI Application, see {@link ch.progradler.rat_um_rad.client.Client}
+     *
      * @param primaryStage the primary stage for this application, onto which
      *                     the application scene can be set.
      *                     Applications may create other stages, if needed, but they will not be
@@ -101,13 +102,13 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
          * if no param exists, throws an indexoutofbounds exception.
          */
         try {
-            if(!paramlist.get(0).equals("")) {
+            if (!paramlist.get(0).equals("")) {
                 this.usernameChangeModel = new UsernameChangeModel(new User(), this, paramlist.get(0));
             } else {
                 this.usernameChangeModel = new UsernameChangeModel(new User(), this);
             }
         } catch (IndexOutOfBoundsException e) {
-            if(e instanceof  IndexOutOfBoundsException){
+            if (e instanceof IndexOutOfBoundsException) {
                 LOGGER.error("can't start stage correctly");
             }
             this.usernameChangeModel = new UsernameChangeModel(new User(), this);
@@ -137,7 +138,9 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         this.chooseCardController = new ChooseCardController();
     }
 
-    /** Takes a path to the corresponding FXML file and loads it.
+    /**
+     * Takes a path to the corresponding FXML file and loads it.
+     *
      * @param path
      * @return
      */
@@ -149,9 +152,9 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
             Parent content = loader.load();
             this.mainScene = new Scene(content, 1000, 800);
             this.window.setScene(mainScene);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            if(e instanceof IOException){
+            if (e instanceof IOException) {
                 LOGGER.error("FXMLLoader can't load view correctly");
             }
         }
@@ -188,7 +191,9 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
 
     }
 
-    /** Listener for createGameView --> creates the game model, instantiates the game View
+    /**
+     * Listener for createGameView --> creates the game model, instantiates the game View
+     *
      * @param content
      */
     @Override

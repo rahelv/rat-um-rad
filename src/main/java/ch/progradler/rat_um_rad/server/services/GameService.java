@@ -6,10 +6,7 @@ import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandlerFactory;
 import ch.progradler.rat_um_rad.shared.models.Activity;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.Player;
-import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
@@ -30,8 +27,6 @@ import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.sendInval
 import static ch.progradler.rat_um_rad.server.services.GameServiceUtil.validateAndHandleActionPrecondition;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.ROAD_ALREADY_BUILT_ON;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.ROAD_DOES_NOT_EXIST;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
 import static ch.progradler.rat_um_rad.shared.util.GameConfig.SHORT_DEST_CARDS_AT_START_COUNT;
 import static ch.progradler.rat_um_rad.shared.util.RandomGenerator.generateRandomId;
@@ -123,7 +118,7 @@ public class GameService implements IGameService {
     }
 
     private void addPlayerAndSaveGame(String ipAddress, Game game) {
-        List<WheelColor> takenColors = game.getPlayers().values()
+        List<PlayerColor> takenColors = game.getPlayers().values()
                 .stream().map((PlayerBase::getColor)).toList();
         Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
         game.getPlayers().put(ipAddress, newPlayer);

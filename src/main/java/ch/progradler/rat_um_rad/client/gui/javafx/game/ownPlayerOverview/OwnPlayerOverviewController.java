@@ -1,10 +1,10 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.ownPlayerOverview;
 
+import ch.progradler.rat_um_rad.shared.models.game.City;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -14,7 +14,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
 
 import java.io.IOException;
 
@@ -46,7 +45,7 @@ public class OwnPlayerOverviewController extends VBox {
         this.ownPlayerOverviewModel = ownPlayerOverviewModel;
         this.destinationCardListView.setItems(this.ownPlayerOverviewModel.getDestinationCards());
         this.destinationCardListView.setCellFactory(param -> new DestinationCardCell());
-        this.wheelCardListView.setItems(this.ownPlayerOverviewModel.getWheelCards());
+        this.wheelCardListView.setItems(ownPlayerOverviewModel.getWheelCards());
         this.wheelCardListView.setCellFactory(param -> new WheelCardCell());
         this.wheelCount.textProperty().bind(Bindings.convert(this.ownPlayerOverviewModel.wheelCountProperty()));
     }
@@ -54,6 +53,7 @@ public class OwnPlayerOverviewController extends VBox {
     public void updatePlayer(Player player) {
         this.ownPlayerOverviewModel.updateOwnPlayer(player);
     }
+
     static class DestinationCardCell extends ListCell<DestinationCard> {
         Pane pane = new Pane();
         HBox hbox = new HBox();
@@ -65,12 +65,15 @@ public class OwnPlayerOverviewController extends VBox {
             HBox.setHgrow(pane, Priority.ALWAYS);
         }
 
-        protected void updateItem(DestinationCard item, boolean empty) {
-            super.updateItem(item, empty);
+        protected void updateItem(DestinationCard card, boolean empty) {
+            super.updateItem(card, empty);
             setText(null);
             setGraphic(null);
-            if (item != null && !empty) {
-                nameLabel.setText(item.getCardID());
+            if (card != null && !empty) {
+                City from = card.getDestination1();
+                City to = card.getDestination2();
+                nameLabel.setText(from.getName() + "\n --> \n" + to.getName()
+                        + "\n" + card.getPoints() + " points");
                 setGraphic(hbox);
             }
         }

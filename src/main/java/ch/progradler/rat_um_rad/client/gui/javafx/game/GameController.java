@@ -94,7 +94,6 @@ public class GameController {
     }
 
     public void gameUpdated(ClientGame content) {
-        System.out.println("built roads: " + content.getRoadsBuilt().keySet());
         Platform.runLater(() -> {
             this.gameModel.setClientGame(content);
             this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)

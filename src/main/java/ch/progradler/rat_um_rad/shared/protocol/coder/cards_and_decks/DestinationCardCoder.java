@@ -40,6 +40,6 @@ public class DestinationCardCoder implements Coder<DestinationCard> {
         City destination1 = cityCoder.decode(fields.get(1), level + 1);
         City destination2 = cityCoder.decode(fields.get(2), level + 1);
         int points = Integer.parseInt(fields.get(3));
-        return new DestinationCard(cardID, destination1, destination2, points);
+        return new DestinationCard(destination1, destination2, points);
     }
 }

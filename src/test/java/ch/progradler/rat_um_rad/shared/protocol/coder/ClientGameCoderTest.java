@@ -2,11 +2,7 @@ package ch.progradler.rat_um_rad.shared.protocol.coder;
 
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
-import ch.progradler.rat_um_rad.shared.models.game.Player;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,8 +46,8 @@ class ClientGameCoderTest {
         int requiredPlayerCount = 5;
         int turn = 20;
 
-        Player ownPlayer = new Player("player A", WheelColor.RED, 100, 10, 2);
-        VisiblePlayer otherPlayer = new VisiblePlayer("player B", WheelColor.BLUE,
+        Player ownPlayer = new Player("player A", PlayerColor.LILA, 100, 10, 2);
+        VisiblePlayer otherPlayer = new VisiblePlayer("player B", PlayerColor.LIGHT_BROWN,
                 50, 15, 1, "clientB", 15, 3);
         List<VisiblePlayer> otherPlayers = Collections.singletonList(otherPlayer);
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
@@ -106,8 +102,8 @@ class ClientGameCoderTest {
         int requiredPlayerCount = 5;
         int turn = 20;
 
-        Player ownPlayer = new Player("player A", WheelColor.RED, 100, 10, 2);
-        VisiblePlayer otherPlayer = new VisiblePlayer("player B", WheelColor.BLUE,
+        Player ownPlayer = new Player("player A", PlayerColor.LILA, 100, 10, 2);
+        VisiblePlayer otherPlayer = new VisiblePlayer("player B", PlayerColor.LIGHT_BROWN,
                 50, 15, 1, "clientB", 15, 3);
         List<VisiblePlayer> otherPlayers = Collections.singletonList(otherPlayer);
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");

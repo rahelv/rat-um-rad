@@ -6,9 +6,9 @@ import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerColor;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCardDeck;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
-import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor.BLACK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,8 +62,8 @@ public class TakeWheelCardsHandlerTest {
         expectedInGame.add(wheelCard4);
 
         String playerIp = "playerIp";
-        Player player = new Player("playerIp", BLACK, 0, 0, 0, playerWheelCards, null, null);
-        Map<String, Player> playerMap = new HashMap();
+        Player player = new Player("playerIp", PlayerColor.PINK, 0, 0, 0, playerWheelCards, null, null);
+        Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(playerIp, player);
         Game game = new Game("gameId", STARTED, GameMap.defaultMap(), "creator", 0, playerMap);
         game.getDecksOfGame().setWheelCardDeck(gameWheelCardDeck);

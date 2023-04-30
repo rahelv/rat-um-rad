@@ -32,6 +32,6 @@ public class RoadCoder implements Coder<Road> {
         String toCityId = fields.get(2);
         int requiredWheels = Integer.parseInt(fields.get(3));
         WheelColor color = WheelColor.valueOf(fields.get(4));
-        return new Road(id, fromCityId, toCityId, requiredWheels, color);
+        return new Road(fromCityId, toCityId, requiredWheels, color);
     }
 }

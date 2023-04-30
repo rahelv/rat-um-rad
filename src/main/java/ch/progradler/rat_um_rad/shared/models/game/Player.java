@@ -2,7 +2,6 @@ package ch.progradler.rat_um_rad.shared.models.game;
 
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +16,12 @@ public class Player extends PlayerBase {
     private List<DestinationCard> shortDestinationCards;
     private List<DestinationCard> shortDestinationCardsToChooseFrom;
 
-    public Player(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder) {
+    public Player(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder) {
         this(name, color, score, wheelsRemaining, playingOrder, new ArrayList<>(), null, new ArrayList<>());
     }
 
     public Player(String name,
-                  WheelColor color,
+                  PlayerColor color,
                   int score,
                   int wheelsRemaining,
                   int playingOrder,
@@ -40,7 +39,7 @@ public class Player extends PlayerBase {
                 new ArrayList<>());
     }
 
-    public Player(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder,
+    public Player(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder,
                   List<WheelCard> wheelCards,
                   DestinationCard longDestinationCard,
                   List<DestinationCard> shortDestinationCards,
@@ -48,7 +47,7 @@ public class Player extends PlayerBase {
         this(name, color, score, wheelsRemaining, playingOrder, wheelCards, longDestinationCard, shortDestinationCards, shortDestinationCardsToChooseFrom, null);
     }
 
-    public Player(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder,
+    public Player(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder,
                   List<WheelCard> wheelCards,
                   DestinationCard longDestinationCard,
                   List<DestinationCard> shortDestinationCards,
@@ -89,7 +88,7 @@ public class Player extends PlayerBase {
         this.shortDestinationCardsToChooseFrom = shortDestinationCardsToChooseFrom;
     }
 
-    public void setColor(WheelColor color) {
+    public void setColor(PlayerColor color) {
         this.color = color;
     }
 

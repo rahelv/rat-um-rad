@@ -1,13 +1,11 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap;
 
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.Road;
+import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class GameMapModel {
     private ClientGame clientGame;
@@ -17,6 +15,7 @@ public class GameMapModel {
     private String status;
     private Date createdAt;
     private Integer requiredPlayers;
+    private Map<String, City> citiesMap;
 
     public GameMapModel(ClientGame clientGame) {
         this.clientGame = clientGame;
@@ -26,6 +25,19 @@ public class GameMapModel {
         this.status = clientGame.getStatus().toString();
         this.createdAt = clientGame.getCreatedAt();
         this.requiredPlayers = clientGame.getRequiredPlayerCount();
+        citiesMap = createCityHashMap(clientGame.getMap());
+    }
+
+    private static Map<String, City> createCityHashMap(GameMap gameMap) {
+        Map<String, City> cities = new HashMap<>();
+        for (City city : gameMap.getCities()) {
+            cities.put(city.getId(), city);
+        }
+        return cities;
+    }
+
+    public GameMap getGameMap() {
+        return this.clientGame.getMap();
     }
 
     public ObservableList<Road> getRoadsToBuildObservableList() {
@@ -92,5 +104,20 @@ public class GameMapModel {
 
     public Integer getRequiredPlayers() {
         return requiredPlayers;
+    }
+
+    public Map<String, City> getCitiesMap() {
+        return citiesMap;
+    }
+
+    public Map<String, String> getRoadsBuilt() {
+        return clientGame.getRoadsBuilt();
+    }
+
+    public PlayerColor getPlayerColor(String ipAddress) {
+        for (VisiblePlayer player : clientGame.getOtherPlayers()) {
+            if (player.getIpAddress().equals(ipAddress)) return player.getColor();
+        }
+        return clientGame.getOwnPlayer().getColor();
     }
 }

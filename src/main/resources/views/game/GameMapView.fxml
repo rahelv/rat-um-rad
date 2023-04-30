@@ -3,6 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.Group?>
 <fx:root type="GridPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:id="gameMapController">
 <Label  GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="gameID"></Label>
 <Label  GridPane.rowIndex="1" GridPane.columnIndex="0" fx:id="status"></Label>
@@ -14,5 +17,13 @@
     <Button text="Request WheelCards" onAction="#requestWheelCards"></Button>
     <Button text="Select Destination Cards" onAction="#selectDestinationCards"></Button>
 </HBox>
-<ListView GridPane.rowIndex="5" prefHeight="200.0" fx:id="roadsBuiltListView"></ListView>
+<Pane GridPane.rowIndex="5" prefWidth="500" prefHeight="350" fx:id="mapPane">
+    <Group fx:id="mapObjectsGroup">
+        <ImageView fitWidth="500" fitHeight="350">
+            <image>
+                <Image url="@/images/basel_ohne_labels.png"></Image>
+            </image>
+        </ImageView>
+    </Group>
+</Pane>
 </fx:root>
