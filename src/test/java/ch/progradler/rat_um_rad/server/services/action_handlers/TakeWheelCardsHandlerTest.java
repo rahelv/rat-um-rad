@@ -4,6 +4,7 @@ import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.server.services.HighscoreManager;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.PlayerColor;
@@ -31,12 +32,14 @@ public class TakeWheelCardsHandlerTest {
     IUserRepository mockUserRepository;
     @Mock
     OutputPacketGateway mockOutputPacketGateway;
+    @Mock
+    HighscoreManager mockHighscoreManager;
 
     private TakeWheelCardsActionHandler takeWheelCardsActionHandler;
 
     @BeforeEach
     void setUp() {
-        takeWheelCardsActionHandler = new TakeWheelCardsActionHandler(mockGameRepository, mockUserRepository, mockOutputPacketGateway, new GameEndUtil());
+        takeWheelCardsActionHandler = new TakeWheelCardsActionHandler(mockGameRepository, mockUserRepository, mockOutputPacketGateway, new GameEndUtil(), mockHighscoreManager);
     }
 
     @Test

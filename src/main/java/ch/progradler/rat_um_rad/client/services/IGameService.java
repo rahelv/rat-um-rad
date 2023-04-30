@@ -30,4 +30,6 @@ public interface IGameService {
     void requestWheelCards() throws IOException;
 
     void requestShortDestinationCards() throws IOException;
+
+    void requestHighscores() throws IOException;
 }

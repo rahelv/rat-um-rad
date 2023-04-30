@@ -5,9 +5,11 @@ import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.GameServiceUtil;
+import ch.progradler.rat_um_rad.server.services.HighscoreManager;
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
+import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +47,8 @@ class ActionHandlerTest {
     OutputPacketGateway mockOutputPacketGateway;
     @Mock
     GameEndUtil mockGameEndUtil;
+    @Mock
+    HighscoreManager mockHighscoreManager;
 
     private ActionHandler<String> actionHandler;
 
@@ -52,7 +56,7 @@ class ActionHandlerTest {
 
     @BeforeEach
     void setUp() {
-        actionHandler = new ActionHandler<>(mockGameRepository, mockUserRepository, mockOutputPacketGateway, mockGameEndUtil) {
+        actionHandler = new ActionHandler<>(mockGameRepository, mockUserRepository, mockOutputPacketGateway, mockGameEndUtil, mockHighscoreManager) {
             @Override
             protected String validate(Game game, String ipAddress, String actionData) {
                 return validateResult;
@@ -244,11 +248,26 @@ class ActionHandlerTest {
     }
 
     @Test
-    void handleSavesSetsStatusToFinishedAndUpdatesScoresAndSendsGameUpdate() {
+    void handleSavesSetsStatusToFinishedAndUpdatesScoresAndSendsGameUpdateAndSavesHighscores() {
         GameMap mockGameMap = mock(GameMap.class);
-        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, new HashMap<>(), decksOfGame);
+
+        String playerName1 = "Player 1";
+        String playerName2 = "Player 2";
+        int finalScore1 = 50;
+        int finalScore2 = 70;
+        Player player1 = mock(Player.class);
+        Player player2 = mock(Player.class);
+        when(player1.getName()).thenReturn(playerName1);
+        when(player2.getName()).thenReturn(playerName2);
+        when(player1.getScore()).thenReturn(finalScore1);
+        when(player2.getScore()).thenReturn(finalScore2);
+
+        Map<String, Player> players = Map.of("player1", player1, "player2", player2);
+
+        Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, "creator", 3, players, decksOfGame);
 
         when(mockGameEndUtil.isGameEnded(game)).thenReturn(true);
+        doNothing().when(mockGameEndUtil).updateScoresAndEndResult(game);
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(IP_ADDRESS, mockGameRepository))
@@ -260,6 +279,9 @@ class ActionHandlerTest {
             actionHandler.handle(IP_ADDRESS, actionData);
 
             verify(mockGameEndUtil).updateScoresAndEndResult(game);
+            
+            verify(mockHighscoreManager).attemptAddHighscore(eq(playerName1), eq(finalScore1), any());
+            verify(mockHighscoreManager).attemptAddHighscore(eq(playerName2), eq(finalScore2), any());
 
             assertEquals(FINISHED, game.getStatus());
             utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, GAME_ENDED));

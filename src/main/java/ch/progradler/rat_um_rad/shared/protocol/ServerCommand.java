@@ -31,4 +31,5 @@ public enum ServerCommand {
     ROAD_BUILT,
     WHEEL_CARDS_CHOSEN,
     GAME_ENDED,
+    SEND_HIGHSCORES,
 }
