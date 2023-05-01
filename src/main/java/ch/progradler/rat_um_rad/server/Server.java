@@ -9,8 +9,15 @@ import ch.progradler.rat_um_rad.server.services.GameService;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
 import ch.progradler.rat_um_rad.server.services.UserService;
+import ch.progradler.rat_um_rad.shared.database.Database;
+import ch.progradler.rat_um_rad.shared.database.FileStorage;
+import ch.progradler.rat_um_rad.shared.database.HighscoresDatabase;
+import ch.progradler.rat_um_rad.shared.models.Highscore;
+import ch.progradler.rat_um_rad.shared.protocol.coder.HighscoreCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketCoder;
 import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
+
+import java.util.List;
 
 public class Server {
     public void start(int port) {
@@ -37,6 +44,7 @@ public class Server {
     }
 
     private static IGameService getGameService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository) {
-        return new GameService(outputPacketGateway, gameRepository, userRepository, new HighscoreRepository());
+        Database<List<Highscore>> database = new HighscoresDatabase(new FileStorage(), new HighscoreCoder());
+        return new GameService(outputPacketGateway, gameRepository, userRepository, new HighscoreRepository(database));
     }
 }
