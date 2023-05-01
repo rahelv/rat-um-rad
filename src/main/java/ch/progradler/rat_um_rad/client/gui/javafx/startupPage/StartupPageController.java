@@ -80,7 +80,6 @@ public class StartupPageController {
         this.lobbyController.initData(lobbyModel);
         try {
             this.userService.requestOnlinePlayers();
-            System.out.println("request online players");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -62,8 +62,6 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case INVALID_ACTION_FATAL -> {
                 String error = (String) packet.getContent();
-                System.out.println(error);
-                //TODO: send error to GUI so it calls a popup there
                 notifyListenersOfType(error, ServerCommand.INVALID_ACTION_FATAL);
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
@@ -77,9 +75,12 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(message, packet.getCommand());
             }
             case WHISPER_CHAT_SENT -> {
-                ChatMessage whisperMessage =(ChatMessage)packet.getContent();
-                ContentType contentType = packet.getContentType();
+                ChatMessage whisperMessage = (ChatMessage) packet.getContent();
                 notifyListenersOfType(whisperMessage, packet.getCommand());
+            }
+            case BROADCAST_CHAT_SENT -> {
+                ChatMessage broadcastMessage = (ChatMessage) packet.getContent();
+                notifyListenersOfType(broadcastMessage, packet.getCommand());
             }
             case SEND_WAITING_GAMES, SEND_STARTED_GAMES, SEND_FINISHED_GAMES -> {
                 Object content = packet.getContent();
