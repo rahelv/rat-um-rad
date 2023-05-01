@@ -6,6 +6,9 @@ import ch.progradler.rat_um_rad.start.MainArgs;
 import ch.progradler.rat_um_rad.start.MainArgsParser;
 
 public class Main {
+    /**
+     * Depending on @param args, either the server or the client is started as specified in the requirements.
+     */
     public static void main(String[] args) {
         MainArgs mainArgs = null;
         try {
