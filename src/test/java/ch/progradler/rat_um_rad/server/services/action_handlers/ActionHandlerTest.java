@@ -1,11 +1,13 @@
 package ch.progradler.rat_um_rad.server.services.action_handlers;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.server.models.Action;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.GameServiceUtil;
 import ch.progradler.rat_um_rad.server.services.HighscoreManager;
+import ch.progradler.rat_um_rad.server.validation.Validator;
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
@@ -22,8 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.FINISHED;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.GAME_ENDED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,6 +50,8 @@ class ActionHandlerTest {
     GameEndUtil mockGameEndUtil;
     @Mock
     HighscoreManager mockHighscoreManager;
+    @Mock
+    Validator<Action<String>> mockActionValidator;
 
     private ActionHandler<String> actionHandler;
 
@@ -56,7 +59,7 @@ class ActionHandlerTest {
 
     @BeforeEach
     void setUp() {
-        actionHandler = new ActionHandler<>(mockGameRepository, mockUserRepository, mockOutputPacketGateway, mockGameEndUtil, mockHighscoreManager) {
+        actionHandler = new ActionHandler<>(mockGameRepository, mockUserRepository, mockOutputPacketGateway, mockGameEndUtil, mockHighscoreManager, mockActionValidator) {
             @Override
             protected String validate(Game game, String ipAddress, String actionData) {
                 return validateResult;
@@ -83,13 +86,11 @@ class ActionHandlerTest {
     void handleSendsErrorMessageToClientAndDoesNotUpdateGameStateIfSpecificValidateErrorNotNull() {
         validateResult = "some error";
         Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
+        when(mockActionValidator.validate(any())).thenReturn(null);
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(IP_ADDRESS, mockGameRepository))
                     .thenReturn(game);
-            utilities.when(() -> GameServiceUtil.isPlayersTurn(game, IP_ADDRESS))
-                    .thenReturn(true);
 
             actionHandler.handle(IP_ADDRESS, actionData);
 
@@ -102,7 +103,7 @@ class ActionHandlerTest {
     void handleDoesNotSendErrorMessageToClientIfSpecificValidateErrorNull() {
         validateResult = null;
         Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
+        when(mockActionValidator.validate(any())).thenReturn(null);
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(IP_ADDRESS, mockGameRepository))
@@ -115,8 +116,9 @@ class ActionHandlerTest {
     }
 
     @Test
-    void validateGeneralReturnsCorrectErrorIfGameNull() {
+    void DoesNotUpdateStateWhenGeneralValidationFails() {
         String ipAddress = "clientA";
+        when(mockActionValidator.validate(any())).thenReturn("error");
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(IP_ADDRESS, mockGameRepository))
@@ -125,57 +127,18 @@ class ActionHandlerTest {
             actionHandler.handle(IP_ADDRESS, actionData);
 
             assertFalse(updateGameStateCalled);
-            utilities.verify(() -> GameServiceUtil.sendInvalidActionResponse(ipAddress, PLAYER_IN_NO_GAME, mockOutputPacketGateway));
+            utilities.verify(() -> GameServiceUtil.sendInvalidActionResponse(ipAddress, "error", mockOutputPacketGateway));
         }
     }
 
     @Test
-    void validateGeneralReturnsCorrectErrorIfStatusIsNotStarted() {
-        String ipAddress = "clientA";
+    void DoesNotUpdateStateWhenGeneralValidationSucceeds() {
         Game game = mock(Game.class);
-
-        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
-            for (GameStatus status : Arrays.asList(WAITING_FOR_PLAYERS, PREPARATION, FINISHED)) {
-                when(game.getStatus()).thenReturn(status);
-                utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(IP_ADDRESS, mockGameRepository))
-                        .thenReturn(game);
-
-                actionHandler.handle(IP_ADDRESS, actionData);
-            }
-            assertFalse(updateGameStateCalled);
-            utilities.verify(() -> GameServiceUtil.sendInvalidActionResponse(ipAddress, GAME_NOT_STARTED, mockOutputPacketGateway),
-                    times(3));
-        }
-    }
-
-    @Test
-    void validateGeneralReturnsCorrectErrorIfIsNotPlayersTurn() {
-        Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
+        when(mockActionValidator.validate(any())).thenReturn(null); // no error
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(IP_ADDRESS, mockGameRepository))
                     .thenReturn(game);
-            utilities.when(() -> GameServiceUtil.isPlayersTurn(game, IP_ADDRESS))
-                    .thenReturn(false);
-
-            actionHandler.handle(IP_ADDRESS, actionData);
-            assertFalse(updateGameStateCalled);
-
-            utilities.verify(() -> GameServiceUtil.sendInvalidActionResponse(IP_ADDRESS, NOT_PLAYERS_TURN, mockOutputPacketGateway));
-        }
-    }
-
-    @Test
-    void validateGeneralReturnsNoErrorAndCallsUpdateGameStateIfAllOk() {
-        Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
-
-        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
-            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(IP_ADDRESS, mockGameRepository))
-                    .thenReturn(game);
-            utilities.when(() -> GameServiceUtil.isPlayersTurn(game, IP_ADDRESS))
-                    .thenReturn(true);
 
             actionHandler.handle(IP_ADDRESS, actionData);
 
@@ -279,7 +242,7 @@ class ActionHandlerTest {
             actionHandler.handle(IP_ADDRESS, actionData);
 
             verify(mockGameEndUtil).updateScoresAndEndResult(game);
-            
+
             verify(mockHighscoreManager).attemptAddHighscore(eq(playerName1), eq(finalScore1), any());
             verify(mockHighscoreManager).attemptAddHighscore(eq(playerName2), eq(finalScore2), any());
 
