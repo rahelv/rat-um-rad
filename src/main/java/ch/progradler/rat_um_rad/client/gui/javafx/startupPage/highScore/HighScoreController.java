@@ -19,6 +19,7 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class HighScoreController {
@@ -26,7 +27,7 @@ public class HighScoreController {
     @FXML
     private Button backToLobbyButton;
     @FXML
-    private ListView highScoreListView;
+    private ListView<Highscore> highScoreListView;
     private IGameService gameService;
     private HighScoreModel highScoreModel;
 
@@ -70,7 +71,7 @@ public class HighScoreController {
         highScoreListView.setCellFactory(param -> new Cell());
     }
 
-    static class Cell extends ListCell<Highscore>{
+    static class Cell extends ListCell<Highscore> {
         Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
@@ -78,7 +79,7 @@ public class HighScoreController {
         public Cell() {
             super();
             hbox.getChildren().addAll(nameLabel, pane);
-            hbox.setHgrow(pane, Priority.ALWAYS);
+            HBox.setHgrow(pane, Priority.ALWAYS);
         }
 
         protected void updateItem(Highscore item, boolean empty) {
@@ -86,7 +87,8 @@ public class HighScoreController {
             setText(null);
             setGraphic(null);
             if (item != null && !empty) {
-                nameLabel.setText("user: " + item.getUsername() + " score: " + item.getScore());
+                String formattedDate = new SimpleDateFormat().format(item.getDate());
+                nameLabel.setText("user: " + item.getUsername() + ", score: " + item.getScore() + ", date: " + formattedDate);
                 setGraphic(hbox);
             }
         }
