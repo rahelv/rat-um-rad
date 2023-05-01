@@ -31,5 +31,7 @@
     <HBox>
         <Label text="wheelCount: "></Label>
         <Label fx:id="wheelCount"></Label>
+        <Label text="  score: "></Label>
+        <Label fx:id="playerScore"></Label>
     </HBox>
 </fx:root>

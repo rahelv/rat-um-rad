@@ -1,17 +1,11 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase;
 
-import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
-import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
-import java.net.URL;
-import java.util.ResourceBundle;
 
 public class EndPhaseController {
     Stage stage;
@@ -24,8 +18,8 @@ public class EndPhaseController {
     public Label notAchievedGoalCardsNum;
     public Label notAchievedGoalCardsScore;
 
-    public Label longestPathNum;
-    public Label longestPathScore;
+    public Label winnerNameLabel;
+    public Label winnerScoreLabel;
 
     public Label totalScore;
 
@@ -51,5 +45,8 @@ public class EndPhaseController {
 
         achievedGoalCardsScore.setText(endPhaseModel.getPositiveScoreOfAchievedShorts());
         notAchievedGoalCardsScore.setText(endPhaseModel.getNegativeScoreOfNotAchievedShorts());
+
+        winnerScoreLabel.setText(endPhaseModel.getWinnerScore());
+        winnerNameLabel.setText(endPhaseModel.getWinnerName());
     }
 }

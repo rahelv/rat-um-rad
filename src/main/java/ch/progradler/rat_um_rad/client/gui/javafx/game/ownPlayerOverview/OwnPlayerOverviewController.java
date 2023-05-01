@@ -28,6 +28,8 @@ public class OwnPlayerOverviewController extends VBox {
     private ListView<WheelCard> wheelCardListView;
     @FXML
     private Label wheelCount;
+    @FXML
+    private Label playerScore;
 
     public OwnPlayerOverviewController() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/game/OwnPlayerOverview.fxml"));
@@ -48,6 +50,7 @@ public class OwnPlayerOverviewController extends VBox {
         this.wheelCardListView.setItems(ownPlayerOverviewModel.getWheelCards());
         this.wheelCardListView.setCellFactory(param -> new WheelCardCell());
         this.wheelCount.textProperty().bind(Bindings.convert(this.ownPlayerOverviewModel.wheelCountProperty()));
+        this.playerScore.textProperty().bind(Bindings.convert(this.ownPlayerOverviewModel.playerScoreProperty()));
     }
 
     public void updatePlayer(Player player) {

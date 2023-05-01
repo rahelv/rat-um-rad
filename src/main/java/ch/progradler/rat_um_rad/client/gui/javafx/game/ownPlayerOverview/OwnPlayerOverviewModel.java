@@ -20,6 +20,7 @@ public class OwnPlayerOverviewModel {
     private final ObservableList<DestinationCard> destinationCards = FXCollections.observableArrayList();
     private final ObservableList<WheelCard> wheelCards = FXCollections.observableArrayList();
     private IntegerProperty wheelCount = new SimpleIntegerProperty(this, "wheelCount");
+    private IntegerProperty playerScore = new SimpleIntegerProperty(this, "playerScore");
 
     public void updateOwnPlayer(Player player) {
         this.ownPlayer = player;
@@ -30,6 +31,7 @@ public class OwnPlayerOverviewModel {
         wheelCardList.sort(Comparator.comparing(WheelCard::getColor));
         this.wheelCards.addAll(wheelCardList);
         this.wheelCount.set(player.getWheelsRemaining());
+        this.playerScore.set(player.getScore());
     }
 
     public ObservableList<DestinationCard> getDestinationCards() {
@@ -55,4 +57,5 @@ public class OwnPlayerOverviewModel {
     public IntegerProperty wheelCountProperty() {
         return wheelCount;
     }
+    public IntegerProperty playerScoreProperty() {return playerScore;}
 }
