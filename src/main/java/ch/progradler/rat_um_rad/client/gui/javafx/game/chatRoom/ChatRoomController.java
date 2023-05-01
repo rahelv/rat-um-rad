@@ -51,7 +51,7 @@ public class ChatRoomController implements Initializable {
             String[] strings = textInputContent.split(separator);
             if (strings[0].equals(whisperCommand)) {
                 String toUsername = strings[1];
-                String whisperContent = "whisper from " + toUsername + " : " + strings[2];
+                String whisperContent = "whisper : " + strings[2];
                 userService.sendWhisperMessage(whisperContent, toUsername);
             } else if (strings[0].equals(broadCommand)) {
                 String broadcastContent = "broadcast: " + strings[1];
