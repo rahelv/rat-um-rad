@@ -30,14 +30,27 @@ public class ChatRoomController implements Initializable {
     private IUserService userService;
 
     /**
-     * send chat message to server through userService
+     * whisper chat form : WHISPER<>ToUsername<>chatContent
+     * when user wants to send whisper chat, he/she should enter message in this form:
+     * ToUsername can be found in activities
+     * WHISPER<>smith<>how many cards do you have
      *
-     * @param event
+     * @param event send chat message to server through userService
      */
     @FXML
     public void sendChatMessageAction(ActionEvent event) {
         try {
-            userService.sendGameInternalMessage(chatRoomModel.getTextInputContent());
+            String whisperCommand = "WHISPER";
+            String separator = "<>";
+            String textInputContent = chatRoomModel.getTextInputContent();
+            String[] strings = textInputContent.split(separator);
+            if (strings[0].equals(whisperCommand)) {
+                String toUsername = strings[1];
+                String whisperContent = strings[2];
+                userService.sendWhisperMessage(whisperContent, toUsername);
+            } else {
+                userService.sendGameInternalMessage(strings[0]);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,9 +59,7 @@ public class ChatRoomController implements Initializable {
     }
 
     /**
-     * adds the own written message to ChatPanel
-     *
-     * @param content
+     * @param content adds the own written message to ChatPanel
      */
     public void addMyOwnChatContentToChatPaneList(String content) {
         chatRoomModel.addChatMessageToList(new ChatMessage("You", content));
@@ -64,7 +75,8 @@ public class ChatRoomController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(
                 getChatListener());
-
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(
+                getWhisperChatListener());
         this.chatRoomModel = new ChatRoomModel();
         chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty()); //bind TextField for Chat Input to model
         this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
@@ -79,9 +91,7 @@ public class ChatRoomController implements Initializable {
     private ServerResponseListener<ChatMessage> getChatListener() {
         return new ServerResponseListener<>() {
             /**
-             * when a chatMessage is received on the ServerResponseHandler, adds the received message to the list.
-             *
-             * @param chatMessage
+             * @param chatMessage when a chatMessage is received on the ServerResponseHandler, adds the received message to the list.
              */
             @Override
             public void serverResponseReceived(ChatMessage chatMessage) {
@@ -93,6 +103,22 @@ public class ChatRoomController implements Initializable {
             @Override
             public ServerCommand forCommand() {
                 return ServerCommand.GAME_INTERNAL_CHAT_SENT;
+            }
+        };
+    }
+
+    private ServerResponseListener<ChatMessage> getWhisperChatListener() {
+        return new ServerResponseListener<>() {
+            @Override
+            public void serverResponseReceived(ChatMessage content) {
+                Platform.runLater(() -> {
+                    chatRoomModel.addChatMessageToList(content);
+                });
+            }
+
+            @Override
+            public ServerCommand forCommand() {
+                return ServerCommand.WHISPER_CHAT_SENT;
             }
         };
     }
