@@ -35,8 +35,9 @@ public class GameEndUtil {
             for (DestinationCard card : endResult.getNotAchievedShorts()) {
                 player.setScore(player.getScore() - card.getPoints());
             }
-            int longDestCardsPoints = player.getLongDestinationCard().getPoints();
-            player.setScore(player.getScore() + (endResult.hasAchievedLong() ? 1 : -1) * longDestCardsPoints);
+
+            // TODO: re-add: int longDestCardsPoints = player.getLongDestinationCard().getPoints();
+            player.setScore(player.getScore() /* TODO:+ (endResult.hasAchievedLong() ? 1 : -1) * longDestCardsPoints*/);
 
             player.setEndResult(endResult);
         }
