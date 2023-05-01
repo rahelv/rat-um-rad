@@ -5,8 +5,12 @@ import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IHighscoreRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
+import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandler;
 import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandlerFactory;
+import ch.progradler.rat_um_rad.server.services.action_handlers.RoadActionHandler;
+import ch.progradler.rat_um_rad.server.services.action_handlers.TakeWheelCardsActionHandler;
 import ch.progradler.rat_um_rad.shared.models.Highscore;
+import ch.progradler.rat_um_rad.shared.models.Point;
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -480,5 +484,26 @@ class GameServiceTest {
 
         Packet.Server packet = new Packet.Server(SEND_HIGHSCORES, highscores, HIGHSCORE_LIST);
         verify(mockOutputPacketGateway).sendPacket(ipAddress, packet);
+    }
+
+    @Test
+    void buildRoadWorks() {
+        RoadActionHandler mockRoadActionHandler = mock(RoadActionHandler.class);
+        when(mockActionHandlerFactory.createRoadActionHandler()).thenReturn(mockRoadActionHandler);
+        String ipAddress = "ipAddress";
+        String roadId = "roadId";
+        gameService.buildRoad(ipAddress, roadId);
+        verify(mockActionHandlerFactory).createRoadActionHandler();
+        verify(mockRoadActionHandler).handle(ipAddress, roadId);
+    }
+
+    @Test
+    void takeWheelCardsWorks() {
+        TakeWheelCardsActionHandler mockTakeWheelCardsActionHandler = mock(TakeWheelCardsActionHandler.class);
+        when(mockActionHandlerFactory.createTakeWheelCardsActionHandler()).thenReturn(mockTakeWheelCardsActionHandler);
+        String ipAddress = "ipAddress";
+        gameService.takeWheelCardFromDeck(ipAddress);
+        verify(mockActionHandlerFactory).createTakeWheelCardsActionHandler();
+        verify(mockTakeWheelCardsActionHandler).handle(ipAddress, "");
     }
 }
