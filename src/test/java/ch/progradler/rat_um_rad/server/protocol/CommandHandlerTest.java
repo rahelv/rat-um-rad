@@ -162,13 +162,33 @@ class CommandHandlerTest {
     }
 
     @Test
+    void requestTakingWheelCardsIsHandledProperly() {
+        String ipAddress = "clientA";
+        Packet.Client packet = new Packet.Client(ClientCommand.REQUEST_WHEEL_CARDS, null, ContentType.NONE);
+
+        commandHandler.handleCommand(packet, ipAddress);
+
+        verify(mockGameService).takeWheelCardFromDeck(ipAddress);
+    }
+
+    @Test
     void requestOnSelectingDestinationCardsInPrepIsHandledCorrectly() {
         String ipAddress = "clientA";
         List<String> selectedCards = Arrays.asList("card1", "card2");
-        Packet.Client packet = new Packet.Client(ClientCommand.SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION, selectedCards, ContentType.STRING_LIST);
+        Packet.Client packet = new Packet.Client(ClientCommand.SHORT_DESTINATION_CARDS_SELECTED, selectedCards, ContentType.STRING_LIST);
 
         commandHandler.handleCommand(packet, ipAddress);
 
         verify(mockGameService).selectShortDestinationCards(ipAddress, selectedCards);
+    }
+
+    @Test
+    void requestHighscoresIsHandledCorrectly() {
+        String ipAddress = "clientA";
+        Packet.Client packet = new Packet.Client(ClientCommand.REQUEST_HIGHSCORES, null, ContentType.NONE);
+
+        commandHandler.handleCommand(packet, ipAddress);
+
+        verify(mockGameService).requestHighscores(ipAddress);
     }
 }

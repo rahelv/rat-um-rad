@@ -14,10 +14,8 @@ public class Road {
     private final int requiredWheels;
     private final WheelColor color;
 
-    // TODO: String builtBy (null oder playerId)?
-
-    public Road(String id, String fromCityId, String toCityId, int requiredWheels, WheelColor color) {
-        this.id = id;
+    public Road(String fromCityId, String toCityId, int requiredWheels, WheelColor color) {
+        this.id = fromCityId + "-to-" + toCityId;
         this.fromCityId = fromCityId;
         this.toCityId = toCityId;
         this.requiredWheels = requiredWheels;

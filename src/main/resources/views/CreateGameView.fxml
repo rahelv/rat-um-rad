@@ -14,7 +14,6 @@
             <Font name="Arial Black" size="23.0" />
          </font>
       </Label>
-      <!--<TextField fx:id="groupNameTextField" layoutX="117.0" layoutY="144.0" prefHeight="50.0" prefWidth="367.0" promptText="group name" />-->
       <Spinner fx:id="playerNumSpinner" layoutX="370.0" layoutY="232.0" prefHeight="40.0" prefWidth="114.0" />
       <Label layoutX="117.0" layoutY="232.0" prefHeight="40.0" prefWidth="247.0" text="Number of players ( choose from 2 - 5) : ">
          <font>

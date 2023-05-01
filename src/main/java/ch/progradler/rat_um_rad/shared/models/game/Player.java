@@ -2,7 +2,6 @@ package ch.progradler.rat_um_rad.shared.models.game;
 
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +14,14 @@ public class Player extends PlayerBase {
     private final List<WheelCard> wheelCards;
     private DestinationCard longDestinationCard;
     private List<DestinationCard> shortDestinationCards;
-    private List<DestinationCard> shortDestinationCardsToChooseFrom = new ArrayList<>();
+    private List<DestinationCard> shortDestinationCardsToChooseFrom;
 
-    //TODO List of roads built by player?
-
-    public Player(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder) {
+    public Player(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder) {
         this(name, color, score, wheelsRemaining, playingOrder, new ArrayList<>(), null, new ArrayList<>());
     }
 
     public Player(String name,
-                  WheelColor color,
+                  PlayerColor color,
                   int score,
                   int wheelsRemaining,
                   int playingOrder,
@@ -42,22 +39,31 @@ public class Player extends PlayerBase {
                 new ArrayList<>());
     }
 
-    public Player(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder,
+    public Player(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder,
                   List<WheelCard> wheelCards,
                   DestinationCard longDestinationCard,
                   List<DestinationCard> shortDestinationCards,
                   List<DestinationCard> shortDestinationCardsToChooseFrom) {
-        super(name, color, score, wheelsRemaining, playingOrder);
+        this(name, color, score, wheelsRemaining, playingOrder, wheelCards, longDestinationCard, shortDestinationCards, shortDestinationCardsToChooseFrom, null);
+    }
+
+    public Player(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder,
+                  List<WheelCard> wheelCards,
+                  DestinationCard longDestinationCard,
+                  List<DestinationCard> shortDestinationCards,
+                  List<DestinationCard> shortDestinationCardsToChooseFrom,
+                  PlayerEndResult endResult) {
+        super(name, color, score, wheelsRemaining, playingOrder, endResult);
         this.wheelCards = wheelCards;
         this.longDestinationCard = longDestinationCard;
         this.shortDestinationCards = shortDestinationCards;
         this.shortDestinationCardsToChooseFrom = shortDestinationCardsToChooseFrom;
     }
 
-
     public List<WheelCard> getWheelCards() {
         return wheelCards;
     }
+
     public DestinationCard getLongDestinationCard() {
         return longDestinationCard;
     }
@@ -70,8 +76,8 @@ public class Player extends PlayerBase {
         return shortDestinationCards;
     }
 
-    public void setShortDestinationCards(List<DestinationCard> shortDestinationCards) {
-        this.shortDestinationCards = shortDestinationCards;
+    public void addShortDestinationCards(List<DestinationCard> shortDestinationCards) {
+        this.shortDestinationCards.addAll(shortDestinationCards);
     }
 
     public List<DestinationCard> getShortDestinationCardsToChooseFrom() {
@@ -82,7 +88,7 @@ public class Player extends PlayerBase {
         this.shortDestinationCardsToChooseFrom = shortDestinationCardsToChooseFrom;
     }
 
-    public void setColor(WheelColor color) {
+    public void setColor(PlayerColor color) {
         this.color = color;
     }
 

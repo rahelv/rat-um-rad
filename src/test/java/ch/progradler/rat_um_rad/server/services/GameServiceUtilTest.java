@@ -6,13 +6,9 @@ import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
-import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
-import ch.progradler.rat_um_rad.shared.models.game.GameMap;
-import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
-import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
-import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.util.GameConfig;
@@ -26,11 +22,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.*;
-import static ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor.*;
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
+import static ch.progradler.rat_um_rad.shared.models.game.PlayerColor.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.GAME;
-import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
+import static ch.progradler.rat_um_rad.shared.util.GameConfig.SHORT_DEST_CARDS_AT_START_COUNT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -56,8 +52,8 @@ class GameServiceUtilTest {
         int requiredPlayerCount = 5;
         int turn = 20;
 
-        Player creator = new Player("player A", WheelColor.RED, 100, 10, 2);
-        Player otherPlayer = new Player("player B", BLUE, 50, 15, 1);
+        Player creator = new Player("player A", PlayerColor.LILA, 100, 10, 2);
+        Player otherPlayer = new Player("player B", PlayerColor.LIGHT_BROWN, 50, 15, 1);
         String otherPlayerIp = "clientB";
         Map<String, Player> players = Map.of(
                 creatorIp, creator,
@@ -88,7 +84,7 @@ class GameServiceUtilTest {
     void createNewPlayer() {
         String ipAddress = "clientA";
         String name = "John";
-        List<WheelColor> takenColors = Arrays.asList(RED, BLUE, ORANGE, GREEN, PINK);
+        List<PlayerColor> takenColors = Arrays.asList(PINK, LILA, LIGHT_BROWN);
 
         when(mockUserRepository.getUsername(ipAddress)).thenReturn(name);
 
@@ -109,13 +105,19 @@ class GameServiceUtilTest {
     @Test
     void toVisiblePlayer() {
         String ipAddress = "playerA";
-        Player player = new Player("John", WheelColor.WHITE, 30, 20, 3,
-                Collections.singletonList(new WheelCard(3)), null, new ArrayList<>());
+        PlayerEndResult endResult = new PlayerEndResult(
+                new ArrayList<>(),
+                new ArrayList<>(),
+                true
+        );
+        Player player = new Player("John", PlayerColor.LILA, 30, 20, 3,
+                Collections.singletonList(new WheelCard(3)), null, new ArrayList<>(), new ArrayList<>(), endResult);
 
         VisiblePlayer expected = new VisiblePlayer(player.getName(), player.getColor(),
                 player.getScore(), player.getWheelsRemaining(), player.getPlayingOrder(), ipAddress,
                 player.getWheelCards().size(),
-                player.getShortDestinationCards().size()
+                player.getShortDestinationCards().size(),
+                player.getEndResult()
         );
 
         assertEquals(expected, GameServiceUtil.toVisiblePlayer(player, ipAddress));
@@ -126,16 +128,16 @@ class GameServiceUtilTest {
         String gameId = "gameA";
         String playerIpAddress = "clientA";
 
-        Player playerA = new Player("player A", WheelColor.RED, 100, 10, 2);
-        Player playerB = new Player("player B", BLUE, 50, 15, 1);
+        Player playerA = new Player("player A", LIGHT_BROWN, 100, 10, 2);
+        Player playerB = new Player("player B", LIGHT_BLUE, 50, 15, 1);
         Map<String, Player> players1 = Map.of(
                 playerIpAddress, playerA,
                 "clientB", playerB
         );
 
         Map<String, Player> players2 = Map.of(
-                "clientC", new Player("player C", WheelColor.RED, 100, 10, 2),
-                "clientD", new Player("player D", WheelColor.RED, 100, 10, 2)
+                "clientC", new Player("player C", LIGHT_BROWN, 100, 10, 2),
+                "clientD", new Player("player D", LIGHT_GREEN, 100, 10, 2)
         );
 
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
@@ -159,7 +161,7 @@ class GameServiceUtilTest {
         when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
+        List<PlayerColor> takenColors = Collections.singletonList(player1.getColor());
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
         Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(ip1, player1);
@@ -211,7 +213,7 @@ class GameServiceUtilTest {
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
 
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
+        List<PlayerColor> takenColors = Collections.singletonList(player1.getColor());
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
 
         Map<String, Player> playerMap = new HashMap<>();
@@ -236,11 +238,11 @@ class GameServiceUtilTest {
         // check short dest cards too choose handed out:
         List<DestinationCard> shorts1 = player1.getShortDestinationCardsToChooseFrom();
         List<DestinationCard> shorts2 = player2.getShortDestinationCardsToChooseFrom();
-        assertEquals(3, shorts1.size());
-        assertEquals(3, shorts2.size());
-        assertFalse(shorts1.contains(shorts2.get(0)));
-        assertFalse(shorts1.contains(shorts2.get(1)));
-        assertFalse(shorts1.contains(shorts2.get(2)));
+        assertEquals(SHORT_DEST_CARDS_AT_START_COUNT, shorts1.size());
+        assertEquals(SHORT_DEST_CARDS_AT_START_COUNT, shorts2.size());
+        for (DestinationCard shortPlayer1 : shorts1) {
+            assertFalse(shorts2.contains(shortPlayer1));
+        }
 
         // check order was assigned:
         int order1 = player1.getPlayingOrder();
@@ -248,6 +250,13 @@ class GameServiceUtilTest {
         assertTrue(order1 <= 1 && order1 >= 0);
         assertTrue(order2 <= 1 && order2 >= 0);
         assertNotEquals(order1, order2);
+
+        // check that certain amount of wheel cards distributed
+        assertEquals(GameConfig.START_WHEEL_CARD_HANDOUT_COUNT, player1.getWheelCards().size());
+        assertEquals(GameConfig.START_WHEEL_CARD_HANDOUT_COUNT, player2.getWheelCards().size());
+
+        assertEquals(GameConfig.TOTAL_WHEEL_CARD_COUNT - 2 * GameConfig.START_WHEEL_CARD_HANDOUT_COUNT,
+                game.getDecksOfGame().getWheelCardDeck().getDeckOfCards().size());
 
         verify(mockGameRepository, times(1)).updateGame(game);
 
@@ -259,9 +268,9 @@ class GameServiceUtilTest {
     void prepareGameShufflesDecks() {
         Game game = mock(Game.class);
         doNothing().when(game).setStatus(PREPARATION);
-        List<WheelCard> wheelCards = mock(List.class);
-        List<DestinationCard> longDestinationCards = mock(List.class);
-        List<DestinationCard> shortDestinationCards = mock(List.class);
+        List<WheelCard> wheelCards = Collections.singletonList(new WheelCard(0));
+        List<DestinationCard> longDestinationCards = Collections.singletonList(mock(DestinationCard.class));
+        List<DestinationCard> shortDestinationCards = Collections.singletonList(mock(DestinationCard.class));
 
         DecksOfGame decksOfGame = new DecksOfGame(
                 new WheelCardDeck(wheelCards),
@@ -270,7 +279,6 @@ class GameServiceUtilTest {
                 new DestinationCardDeck(shortDestinationCards)
         );
         when(game.getDecksOfGame()).thenReturn(decksOfGame);
-
 
         try (MockedStatic<RandomGenerator> utilities = Mockito.mockStatic(RandomGenerator.class)) {
             utilities.when(() -> RandomGenerator.shuffle(any())).then(invocation -> null);
@@ -294,7 +302,7 @@ class GameServiceUtilTest {
         when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
         when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
         Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
+        List<PlayerColor> takenColors = Collections.singletonList(player1.getColor());
         Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
         Map<String, Player> playerMap = new HashMap<>();
         playerMap.put(ip1, player1);
@@ -322,41 +330,26 @@ class GameServiceUtilTest {
     @Test
     void handoutShortDestinationCardsTest() {
         //preparation
-        String ip1 = "ip1";
-        String ip2 = "ip2";
-        String name1 = "name1";
-        String name2 = "name2";
-        when(mockUserRepository.getUsername(ip1)).thenReturn(name1);
-        when(mockUserRepository.getUsername(ip2)).thenReturn(name2);
-        Player player1 = GameServiceUtil.createNewPlayer(ip1, mockUserRepository, new ArrayList<>());
-        List<WheelColor> takenColors = Collections.singletonList(player1.getColor());
+        Player player1 = GameServiceUtil.createNewPlayer("clientA", mockUserRepository, new ArrayList<>());
+        Player player2 = GameServiceUtil.createNewPlayer("clientB", mockUserRepository, new ArrayList<>());
 
-        Player player2 = GameServiceUtil.createNewPlayer(ip2, mockUserRepository, takenColors);
-        Map<String, Player> playerMap = new HashMap<>();
-        playerMap.put(ip1, player1);
-        playerMap.put(ip2, player2);
+        List<DestinationCard> availableCards = DestinationCardDeck.shortDestinations(GameMap.defaultMap()).getCardDeck();
 
-        Game game = new Game("gameId", GameStatus.STARTED, GameMap.defaultMap(), "creator", 3, playerMap);
+        // act
+        int sizOfAvailableBeforeCalling = availableCards.size();
+        GameServiceUtil.handOutShortDestinationCardsTooChoose(player1, availableCards);
+        GameServiceUtil.handOutShortDestinationCardsTooChoose(player2, availableCards);
 
-        //testing
-        int sizeInGameBeforeCalling = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck().size();
-        GameServiceUtil.handOutShortDestinationCardsTooChoose(game, ip1);
-        GameServiceUtil.handOutShortDestinationCardsTooChoose(game, ip2);
+        //assert
+        List<DestinationCard> destinationCards1 = player1.getShortDestinationCardsToChooseFrom();
+        List<DestinationCard> destinationCards2 = player2.getShortDestinationCardsToChooseFrom();
 
-        List<DestinationCard> destinationCards1 = game.getPlayers().get(ip1).getShortDestinationCards();
-        List<DestinationCard> destinationCards2 = game.getPlayers().get(ip2).getShortDestinationCards();
-        List<DestinationCard> longDestinationCards = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck();
-
-        assertEquals(sizeInGameBeforeCalling - 6, longDestinationCards.size());
-        assertEquals(3, destinationCards1.size());
-        assertEquals(3, destinationCards2.size());
-        for (DestinationCard card : destinationCards1) {
-            assertFalse(longDestinationCards.contains(card));
+        assertEquals(sizOfAvailableBeforeCalling - SHORT_DEST_CARDS_AT_START_COUNT * 2, availableCards.size());
+        assertEquals(SHORT_DEST_CARDS_AT_START_COUNT, destinationCards1.size());
+        assertEquals(SHORT_DEST_CARDS_AT_START_COUNT, destinationCards2.size());
+        for (DestinationCard player1Card : destinationCards1) {
+            assertFalse(destinationCards2.contains(player1Card));
         }
-        for (DestinationCard card : destinationCards2) {
-            assertFalse(longDestinationCards.contains(card));
-        }
-        assertNotEquals(destinationCards1, destinationCards2);
     }
 
     @Test
@@ -401,68 +394,37 @@ class GameServiceUtilTest {
     }
 
     @Test
-    void validateAndHandleActionSendsErrorAndReturnsFalseIfGameNull() {
+    void updateGameStateForShortDestCardsSelectionGeneral() {
         String ipAddress = "clientA";
-        boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, null, mockOutputPacketGateway);
-        assertFalse(result);
-        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
-                ErrorResponse.PLAYER_IN_NO_GAME,
-                STRING);
-        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
-    }
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations(GameMap.defaultMap()).getCardDeck();
 
-    @Test
-    void validateAndHandleActionSendsErrorAndReturnsFalseIfGameDoesNotHaveStatusStarted() {
-        String ipAddress = "clientA";
-        Game game = mock(Game.class);
+        List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
+                allShortDestCards.get(5),
+                allShortDestCards.get(2),
+                allShortDestCards.get(6)));
 
-        for (GameStatus status : Arrays.asList(WAITING_FOR_PLAYERS, PREPARATION, FINISHED)) {
-            when(game.getStatus()).thenReturn(status);
-            boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
-            assertFalse(result);
+        List<String> selectedCardIds = Arrays.asList(
+                allShortDestCards.get(2).getCardID(),
+                allShortDestCards.get(6).getCardID());
+
+        Map<String, Player> players = new HashMap<>();
+        Player player = new Player("Player A", null, 0, 35, 2);
+        player.setShortDestinationCardsToChooseFrom(optionalCards);
+        players.put(ipAddress, player);
+
+        Game game = new Game("game1", PREPARATION, GameMap.defaultMap(), "creator", 4, players);
+
+        GameServiceUtil.updateGameStateForShortDestCardsSelectionGeneral(selectedCardIds, game, player);
+
+        List<DestinationCard> selectedCards = Arrays.asList(
+                allShortDestCards.get(2),
+                allShortDestCards.get(6));
+
+        assertEquals(selectedCards, player.getShortDestinationCards());
+
+        List<DestinationCard> gameShortDestDeck = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck();
+        for (DestinationCard selectedCard : selectedCards) {
+            assertFalse(gameShortDestDeck.contains(selectedCard));
         }
-
-        verify(mockGameRepository, never()).updateGame(any());
-        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
-                ErrorResponse.GAME_NOT_STARTED,
-                STRING);
-        verify(mockOutputPacketGateway, times(3)).sendPacket(ipAddress, errorResponse);
-    }
-
-    @Test
-    void validateAndHandleActionSendsErrorAndReturnsFalseIfIsNotPlayersTurn() {
-        String ipAddress = "clientA";
-        Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
-        when(game.getTurn()).thenReturn(0);
-
-        Player player = mock(Player.class);
-        when(player.getPlayingOrder()).thenReturn(1);
-        when(game.getPlayers()).thenReturn(Map.of(ipAddress, player, "otherPlayer", mock(Player.class)));
-
-        boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
-        assertFalse(result);
-
-        Packet.Server errorResponse = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL,
-                ErrorResponse.NOT_PLAYERS_TURN,
-                STRING);
-        verify(mockOutputPacketGateway).sendPacket(ipAddress, errorResponse);
-    }
-
-    @Test
-    void validateAndHandleActionSendsNoErrorAndReturnsTrueIfAllOk() {
-        String ipAddress = "clientA";
-        Game game = mock(Game.class);
-        when(game.getStatus()).thenReturn(STARTED);
-        when(game.getTurn()).thenReturn(2);
-
-        Player player = mock(Player.class);
-        when(player.getPlayingOrder()).thenReturn(0);
-        when(game.getPlayers()).thenReturn(Map.of(ipAddress, player, "otherPlayer", mock(Player.class)));
-
-        boolean result = GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, mockOutputPacketGateway);
-        assertTrue(result);
-
-        verify(mockOutputPacketGateway, never()).sendPacket(any(), any());
     }
 }

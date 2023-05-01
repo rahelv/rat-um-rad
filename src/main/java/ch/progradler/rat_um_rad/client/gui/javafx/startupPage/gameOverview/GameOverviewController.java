@@ -113,7 +113,7 @@ public class GameOverviewController {
             hbox.getChildren().addAll(nameLabel, pane, listPlayersButton);
             hbox.setHgrow(pane, Priority.ALWAYS);
             listPlayersButton.setOnAction(event -> {
-                System.out.println("listing all players in this game");
+                //TODO: listing all players in this game
             });
         }
 

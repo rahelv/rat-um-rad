@@ -12,7 +12,7 @@ public interface IUserService {
 
     void requestOnlinePlayers(String ipAddress);
 
-    void handleBroadCastMessageFromUser(String message, String ipAddress);
+    void    handleBroadCastMessageFromUser(String message, String ipAddress);
 
     void handleGameInternalMessageFromUser(String message, String ipAddress);
 

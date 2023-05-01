@@ -7,10 +7,11 @@ import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerColor;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
@@ -27,6 +28,7 @@ import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
 import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
+import static ch.progradler.rat_um_rad.shared.util.GameConfig.SHORT_DEST_CARDS_AT_START_COUNT;
 
 /**
  * Util class for {@link GameService} with complex methods that are used multiple times.
@@ -55,12 +57,12 @@ public class GameServiceUtil {
                 game.getActivities());
     }
 
-    static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<WheelColor> takenColors) {
+    static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<PlayerColor> takenColors) {
         String name = userRepository.getUsername(ipAddress);
-        List<WheelColor> availableColors = new ArrayList<>(Arrays.stream(WheelColor.values()).toList());
+        List<PlayerColor> availableColors = new ArrayList<>(Arrays.stream(PlayerColor.values()).toList());
         availableColors.removeAll(takenColors);
 
-        WheelColor color = RandomGenerator.randomFromList(availableColors);
+        PlayerColor color = RandomGenerator.randomFromList(availableColors);
         return new Player(name, color, 0, GameConfig.STARTING_WHEELS_PER_PLAYER, 0);
     }
 
@@ -72,7 +74,8 @@ public class GameServiceUtil {
                 player.getPlayingOrder(),
                 ipAddress,
                 player.getWheelCards().size(),
-                player.getShortDestinationCards().size()
+                player.getShortDestinationCards().size(),
+                player.getEndResult()
         );
     }
 
@@ -88,7 +91,7 @@ public class GameServiceUtil {
         LOGGER.info("Notifying players of game update for game " + game.getId() + "and command " + command);
         Set<String> playerIps = game.getPlayerIpAddresses();
         for (String ipAddress : playerIps) {
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            ClientGame clientGame = toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet.Server(command, clientGame, ContentType.GAME));
         }
     }
@@ -105,11 +108,11 @@ public class GameServiceUtil {
                 " for game " + game.getId() + "and actionCommand " + actionCommand);
         for (String ipAddress : game.getPlayerIpAddresses()) {
             if (ipAddress.equals(actorIp)) continue;
-            ClientGame clientGame = GameServiceUtil.toClientGame(game, ipAddress);
+            ClientGame clientGame = toClientGame(game, ipAddress);
             outputPacketGateway.sendPacket(ipAddress, new Packet.Server(GAME_UPDATED, clientGame, ContentType.GAME));
         }
 
-        ClientGame actorClientGame = GameServiceUtil.toClientGame(game, actorIp);
+        ClientGame actorClientGame = toClientGame(game, actorIp);
         outputPacketGateway.sendPacket(actorIp, new Packet.Server(actionCommand, actorClientGame, ContentType.GAME));
     }
 
@@ -125,18 +128,37 @@ public class GameServiceUtil {
         int playerCount = playerIpAddresses.size();
 
         List<Integer> playingOrders = generateShuffledPlayingOrders(playerCount);
+        List<WheelCard> allWheelCards = game.getDecksOfGame().getWheelCardDeck().getDeckOfCards();
+
+        // the randomly picked cards are removed from this list after each handout availableShortDestCards
+        // this is to make sure no players get the same destination cards as options.
+        // that's why it is important that this list is a new list, so the actual deck is not altered.
+        // these are shuffled because the decks were shuffled before
+        List<DestinationCard> availableShortDestCards = new ArrayList<>(game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck());
 
         for (int i = 0; i < playerCount; i++) {
             String ipAddress = playerIpAddresses.get(i);
-            GameServiceUtil.handOutLongDestinationCard(game, ipAddress);
-            GameServiceUtil.handOutShortDestinationCardsTooChoose(game, ipAddress);
+            Player player = players.get(ipAddress);
+
+            handOutLongDestinationCard(game, ipAddress);
+            handOutShortDestinationCardsTooChoose(player, availableShortDestCards);
             game.getPlayersHaveChosenShortDestinationCards().put(ipAddress, false);
 
-            Player player = players.get(ipAddress);
             player.setPlayingOrder(playingOrders.get(i));
+
+            distributeStartingWheelCards(allWheelCards, player);
         }
         gameRepository.updateGame(game);
         notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_STARTED_SELECT_DESTINATION_CARDS);
+    }
+
+    private static void distributeStartingWheelCards(List<WheelCard> allWheelCards, Player player) {
+        List<WheelCard> startingWheelCards = new ArrayList<>();
+        for (int j = 0; j < GameConfig.START_WHEEL_CARD_HANDOUT_COUNT; j++) {
+            startingWheelCards.add(allWheelCards.get(0)); // basically random, because was shuffled before
+            allWheelCards.remove(0);
+        }
+        player.getWheelCards().addAll(startingWheelCards);
     }
 
     private static void shuffleDecks(Game game) {
@@ -160,14 +182,11 @@ public class GameServiceUtil {
         player.setLongDestinationCard(longDestinationCard);
     }
 
-    static void handOutShortDestinationCardsTooChoose(Game game, String ipAddress) {
-        Player player = game.getPlayers().get(ipAddress);
-        DestinationCardDeck shortDestinationCardDeck = game.getDecksOfGame().getShortDestinationCardDeck();
-
-        List<DestinationCard> cardsToChooseFrom = player.getShortDestinationCards();
-        for (int i = 0; i < 3; i++) {
-            DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(shortDestinationCardDeck.getCardDeck().toArray(new DestinationCard[0]));
-            shortDestinationCardDeck.getCardDeck().remove(shortDestinationCard);
+    static void handOutShortDestinationCardsTooChoose(Player player, List<DestinationCard> availableCards) {
+        List<DestinationCard> cardsToChooseFrom = new ArrayList<>();
+        for (int i = 0; i < SHORT_DEST_CARDS_AT_START_COUNT; i++) {
+            DestinationCard shortDestinationCard = RandomGenerator.randomFromArray(availableCards.toArray(new DestinationCard[0]));
+            availableCards.remove(shortDestinationCard);
             cardsToChooseFrom.add(shortDestinationCard);
         }
         player.setShortDestinationCardsToChooseFrom(cardsToChooseFrom);
@@ -199,10 +218,10 @@ public class GameServiceUtil {
             return false;
         }
 
-       /* if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) { //TODO: uses this method when cards are selected but in the beginning it's nobodys turn!!!
+        if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) { //TODO: uses this method when cards are selected but in the beginning it's nobodys turn!!!
             sendInvalidActionResponse(ipAddress, NOT_PLAYERS_TURN, outputPacketGateway);
             return false;
-        }*/
+        }
         return true;
     }
 
@@ -211,5 +230,15 @@ public class GameServiceUtil {
                 errorMessage,
                 STRING);
         outputPacketGateway.sendPacket(ipAddress, errorResponse);
+    }
+
+    public static void updateGameStateForShortDestCardsSelectionGeneral(List<String> selectedCardIds, Game game, Player player) {
+        List<DestinationCard> shortDestCardDeck = game.getDecksOfGame()
+                .getShortDestinationCardDeck().getCardDeck();
+        List<DestinationCard> selectedCards = shortDestCardDeck.stream()
+                .filter(c -> selectedCardIds.contains(c.getCardID())).toList();
+
+        player.addShortDestinationCards(selectedCards);
+        shortDestCardDeck.removeAll(selectedCards);
     }
 }

@@ -23,7 +23,7 @@ public class RoadCoder implements Coder<Road> {
 
     @Override
     public Road decode(String encoded, int level) {
-        if(encoded.equals("null")) {
+        if (encoded.equals("null")) {
             return null;
         }
         List<String> fields = CoderHelper.decodeFields(level, encoded);
@@ -32,6 +32,6 @@ public class RoadCoder implements Coder<Road> {
         String toCityId = fields.get(2);
         int requiredWheels = Integer.parseInt(fields.get(3));
         WheelColor color = WheelColor.valueOf(fields.get(4));
-        return new Road(id, fromCityId, toCityId, requiredWheels, color);
+        return new Road(fromCityId, toCityId, requiredWheels, color);
     }
 }

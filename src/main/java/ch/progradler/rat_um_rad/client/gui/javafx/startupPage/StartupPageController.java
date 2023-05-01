@@ -80,7 +80,6 @@ public class StartupPageController {
         this.lobbyController.initData(lobbyModel);
         try {
             this.userService.requestOnlinePlayers();
-            System.out.println("request online players");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,6 +95,13 @@ public class StartupPageController {
     public void showAllGamesAction(ActionEvent event) {
         Platform.runLater(() -> {
             startupPageModel.getListener().controllerChanged("showAllGamesView");
+        });
+    }
+
+    @FXML
+    public void showHighScores(ActionEvent event) {
+        Platform.runLater(() -> {
+            startupPageModel.getListener().controllerChanged("showHighScores");
         });
     }
 

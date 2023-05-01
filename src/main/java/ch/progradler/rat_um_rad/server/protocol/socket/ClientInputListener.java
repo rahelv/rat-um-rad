@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * Listens to incoming commands from a specific client via socket stream.
+ * Listens to incoming commands from a specific client via socket stream. For each client, there is one such a input listener.
  */
 public class ClientInputListener implements Runnable {
     public static final Logger LOGGER = LogManager.getLogger();

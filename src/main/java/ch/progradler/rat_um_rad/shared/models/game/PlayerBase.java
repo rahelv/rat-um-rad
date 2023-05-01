@@ -1,7 +1,6 @@
 package ch.progradler.rat_um_rad.shared.models.game;
 
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 
 import java.util.Objects;
 
@@ -11,7 +10,7 @@ import java.util.Objects;
  */
 public class PlayerBase {
     private final String name;
-    protected WheelColor color;
+    protected PlayerColor color;
     private int score;
     private int wheelsRemaining;
     /**
@@ -20,21 +19,26 @@ public class PlayerBase {
      */
     private int playingOrder;
 
-    //TODO List of roads build by player?
+    private PlayerEndResult endResult;
 
-    public PlayerBase(String name, WheelColor color, int score, int wheelsRemaining, int playingOrder) {
+    public PlayerBase(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder) {
+        this(name, color, score, wheelsRemaining, playingOrder, null);
+    }
+
+    public PlayerBase(String name, PlayerColor color, int score, int wheelsRemaining, int playingOrder, PlayerEndResult endResult) {
         this.name = name;
         this.color = color;
         this.score = score;
         this.wheelsRemaining = wheelsRemaining;
         this.playingOrder = playingOrder;
+        this.endResult = endResult;
     }
 
     public String getName() {
         return name;
     }
 
-    public WheelColor getColor() {
+    public PlayerColor getColor() {
         return color;
     }
 
@@ -62,16 +66,24 @@ public class PlayerBase {
         this.wheelsRemaining = wheelsRemaining;
     }
 
+    public PlayerEndResult getEndResult() {
+        return endResult;
+    }
+
+    public void setEndResult(PlayerEndResult endResult) {
+        this.endResult = endResult;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PlayerBase)) return false;
         PlayerBase that = (PlayerBase) o;
-        return score == that.score && wheelsRemaining == that.wheelsRemaining && playingOrder == that.playingOrder && name.equals(that.name) && color == that.color;
+        return score == that.score && wheelsRemaining == that.wheelsRemaining && playingOrder == that.playingOrder && name.equals(that.name) && color == that.color && Objects.equals(endResult, that.endResult);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, color, score, wheelsRemaining, playingOrder);
+        return Objects.hash(name, color, score, wheelsRemaining, playingOrder, endResult);
     }
 }

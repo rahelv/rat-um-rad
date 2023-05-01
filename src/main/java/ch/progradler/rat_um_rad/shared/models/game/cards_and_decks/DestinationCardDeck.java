@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.shared.models.game.cards_and_decks;
 
-import ch.progradler.rat_um_rad.shared.models.Point;
 import ch.progradler.rat_um_rad.shared.models.game.City;
 import ch.progradler.rat_um_rad.shared.models.game.CityId;
 import ch.progradler.rat_um_rad.shared.models.game.GameMap;
@@ -22,31 +21,34 @@ public class DestinationCardDeck implements CardDeck {
 
     /**
      * Factory Method to create deck with only short destination cards
+     * @param map must be the {@link GameMap#defaultMap()}
      */
-    public static DestinationCardDeck shortDestinations(GameMap map) {
+    public static DestinationCardDeck   shortDestinations(GameMap map) {
         Map<String, City> cities = new HashMap<>();
         map.getCities().forEach((city -> cities.put(city.getId(), city)));
 
         List<DestinationCard> destinationCards = new ArrayList<>();
         //needed for Testing
-        destinationCards.add(new DestinationCard("FromBaselToZuerich", cities.get(CityId.BASEL), cities.get(CityId.ZURICH), 5));
-        destinationCards.add(new DestinationCard("FromZuerichToLuzern", cities.get(CityId.ZURICH), cities.get(CityId.LUZERN), 4));
-        destinationCards.add(new DestinationCard("FromLuzernToBern", cities.get(CityId.LUZERN), cities.get(CityId.BERN), 6));
-        destinationCards.add(new DestinationCard("FromBernToBasel", cities.get(CityId.BERN), cities.get(CityId.BASEL), 4));
-        destinationCards.add(new DestinationCard("FromBaselToLuzern", cities.get(CityId.BASEL), cities.get(CityId.LUZERN), 5 ));
-        destinationCards.add(new DestinationCard("FromBernToGenf", cities.get(CityId.BERN), cities.get(CityId.GENF), 3));
-        destinationCards.add(new DestinationCard("FromGenfToNeuchatel", cities.get(CityId.GENF), cities.get(CityId.NEUCHATEL), 3));
-        destinationCards.add(new DestinationCard("FromNeuchatelToBasel", cities.get(CityId.NEUCHATEL), cities.get(CityId.BASEL), 3));
-        destinationCards.add(new DestinationCard("FromNeuchatelToBern", cities.get(CityId.NEUCHATEL), cities.get(CityId.BERN), 3));
-        destinationCards.add(new DestinationCard("FromZuerichToChur", cities.get(CityId.ZURICH), cities.get(CityId.CHUR), 3));
-        destinationCards.add(new DestinationCard("FromChurToLugano", cities.get(CityId.CHUR), cities.get(CityId.LUGANO), 3));
-        destinationCards.add(new DestinationCard("FromLuganoToLuzern", cities.get(CityId.LUGANO), cities.get(CityId.LUZERN), 3));
-        destinationCards.add(new DestinationCard("FromZuerichToLugano", cities.get(CityId.ZURICH), cities.get(CityId.LUGANO), 3));
-        destinationCards.add(new DestinationCard("FromChurToNeuchatel", cities.get(CityId.CHUR), cities.get(CityId.NEUCHATEL), 3));
-        destinationCards.add(new DestinationCard("FromChurToBasel", cities.get(CityId.CHUR), cities.get(CityId.BASEL), 3));
-        destinationCards.add(new DestinationCard("FromGenfToLuzern", cities.get(CityId.GENF), cities.get(CityId.LUZERN), 3));
-        destinationCards.add(new DestinationCard("FromLuganoToGenf", cities.get(CityId.LUGANO), cities.get(CityId.GENF), 3));
-
+        destinationCards.add(new DestinationCard(cities.get(CityId.PHILOSOPHIE), cities.get(CityId.PHARMA), 5));
+        destinationCards.add(new DestinationCard(cities.get(CityId.BIBLIOTHEK), cities.get(CityId.THEOLOGIE), 2));
+        destinationCards.add(new DestinationCard(cities.get(CityId.WWZ), cities.get(CityId.GEOGRAPHIE), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.PHILOSOPHIE), cities.get(CityId.KOLLEGIENHAUS), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.PHARMA), cities.get(CityId.SPORT), 5));
+        destinationCards.add(new DestinationCard(cities.get(CityId.BIOZENTRUM), cities.get(CityId.THEOLOGIE), 3));
+        destinationCards.add(new DestinationCard(cities.get(CityId.DMI), cities.get(CityId.SBB), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.PHILOSOPHIE), cities.get(CityId.THEOLOGIE), 3));
+        destinationCards.add(new DestinationCard(cities.get(CityId.BIOLOGIE), cities.get(CityId.KUNSTGESCHICHTE), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.SBB), cities.get(CityId.JUS), 3));
+        destinationCards.add(new DestinationCard(cities.get(CityId.SBB), cities.get(CityId.GEOGRAPHIE), 5));
+        destinationCards.add(new DestinationCard(cities.get(CityId.BIOZENTRUM), cities.get(CityId.BIOLOGIE), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.PHARMA), cities.get(CityId.DMI), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.KOLLEGIENHAUS), cities.get(CityId.POWI), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.SBB), cities.get(CityId.MEDIZIN), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.DMI), cities.get(CityId.DEUTSCH), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.BIBLIOTHEK), cities.get(CityId.CHEMIE), 4));
+        destinationCards.add(new DestinationCard(cities.get(CityId.JUS), cities.get(CityId.GEOGRAPHIE), 2));
+        destinationCards.add(new DestinationCard(cities.get(CityId.PHILOSOPHIE), cities.get(CityId.SBB), 5));
+        destinationCards.add(new DestinationCard(cities.get(CityId.DMI), cities.get(CityId.PSYCHOLOGIE), 3));
         return new DestinationCardDeck(destinationCards);
 
         // TODO: implement correct cards
@@ -54,6 +56,7 @@ public class DestinationCardDeck implements CardDeck {
 
     /**
      * Factory Method to create deck with only short destination cards
+     * @param map must be the {@link GameMap#defaultMap()}
      */
     public static DestinationCardDeck longDestinations(GameMap map) {
         Map<String, City> cities = new HashMap<>();
@@ -61,11 +64,11 @@ public class DestinationCardDeck implements CardDeck {
 
         List<DestinationCard> destinationCards = new ArrayList<>();
         //needed for Testing
-        destinationCards.add(new DestinationCard("FromBaselToZuerich", cities.get(CityId.BASEL), cities.get(CityId.ZURICH), 5));
-        destinationCards.add(new DestinationCard("FromZuerichToLuzern", cities.get(CityId.ZURICH), cities.get(CityId.LUZERN), 4));
-        destinationCards.add(new DestinationCard("FromLuzernToBern", cities.get(CityId.LUZERN), cities.get(CityId.BERN), 6));
-        destinationCards.add(new DestinationCard("FromBernToBasel", cities.get(CityId.BERN), cities.get(CityId.BASEL), 4));
-        destinationCards.add(new DestinationCard("FromBaselToLuzern", cities.get(CityId.BASEL), cities.get(CityId.LUZERN), 5 ));
+        destinationCards.add(new DestinationCard(cities.get(CityId.DMI), cities.get(CityId.POWI), 6));
+        destinationCards.add(new DestinationCard(cities.get(CityId.PHILOSOPHIE), cities.get(CityId.MEDIZIN), 7));
+        destinationCards.add(new DestinationCard(cities.get(CityId.CHEMIE), cities.get(CityId.POWI), 6));
+        destinationCards.add(new DestinationCard(cities.get(CityId.THEOLOGIE), cities.get(CityId.GEOGRAPHIE), 6));
+        destinationCards.add(new DestinationCard(cities.get(CityId.PSYCHOLOGIE), cities.get(CityId.CHEMIE), 7));
         return new DestinationCardDeck(destinationCards);
 
         // TODO: implement correct cards

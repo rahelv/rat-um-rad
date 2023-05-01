@@ -3,20 +3,18 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.VBox?>
 
-<fx:root type="AnchorPane" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:id="activityController">
-   <children>
-      <Label alignment="CENTER" layoutX="270.0" layoutY="20.0" text="Activities">
+<fx:root type="VBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:id="playerOverviewController">
+      <Label alignment="CENTER" text="PlayerOverview">
          <font>
             <Font name="Arial Black" size="15.0" />
          </font>
       </Label>
-      <ScrollPane layoutX="61.0" layoutY="62.0" prefHeight="244.0" prefWidth="481.0">
+      <ScrollPane fitToWidth="true">
          <content>
-            <ListView fx:id="activitiesListView" prefHeight="243.0" prefWidth="479.0" />
+            <ListView fx:id="playerOverviewListView"/>
          </content>
       </ScrollPane>
-   </children>
 </fx:root>

@@ -23,15 +23,11 @@ public class WheelCard {
     }
 
     /**
-     * There are 8 colors (see {@link WheelColor}s).
-     * The color of a card is determined by the id,
-     * such that the index of the color is the rest of {@link WheelCard#cardID} divided by 10.
-     *
+     * Uses same principle as determining if is players turn (total players count, playing order, turn)
      * @return the index of the color in {@link WheelColor}s
      */
     private int colorIndicator() {
-        int roundedTo10s = cardID - (cardID % 10);
-        return (roundedTo10s) / 10; // how many times a 10 was subtracted
+        return (cardID % WheelColor.values().length);
     }
 
     public WheelColor getColor() {

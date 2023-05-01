@@ -13,8 +13,8 @@ public class DestinationCard {
     private final City destination2;
     private final int points;
 
-    public DestinationCard(String cardID, City destination1, City destination2, int points) {
-        this.cardID = cardID;
+    public DestinationCard(City destination1, City destination2, int points) {
+        this.cardID = "From" + destination1.getName() + "To" + destination2.getName();
         assert destination1 != null;
         assert destination2 != null;
         this.destination1 = destination1;

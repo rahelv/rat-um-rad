@@ -9,7 +9,7 @@ import java.util.List;
 public class PointCoder implements Coder<Point> {
     @Override
     public String encode(Point point, int level) {
-        if(point == null) {
+        if (point == null) {
             return "null";
         }
         return CoderHelper.encodeFields(level,
@@ -19,7 +19,7 @@ public class PointCoder implements Coder<Point> {
 
     @Override
     public Point decode(String encoded, int level) {
-        if(encoded.equals("null")) {
+        if (encoded.equals("null")) {
             return null;
         }
         List<String> fields = CoderHelper.decodeFields(level, encoded);

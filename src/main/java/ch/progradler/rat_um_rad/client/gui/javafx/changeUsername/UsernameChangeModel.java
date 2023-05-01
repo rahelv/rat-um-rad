@@ -6,9 +6,6 @@ import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Model for UsernameChange (stores the User)
  */

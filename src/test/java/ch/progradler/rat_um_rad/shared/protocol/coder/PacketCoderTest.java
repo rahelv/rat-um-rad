@@ -35,14 +35,16 @@ public class PacketCoderTest {
     Coder<ClientGame> clientGameCoder;
     @Mock
     Coder<BuildRoadInfo> buildRoadInfoCoder;
+    @Mock
+    Coder<Highscore> highscoreCoder;
 
     private PacketCoder<ClientCommand> clientPacketCoder;
     private PacketCoder<ServerCommand> serverPacketCoder;
 
     @BeforeEach
     public void initPacketCoder() {
-        clientPacketCoder = new ClientPacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder, clientGameCoder, buildRoadInfoCoder);
-        serverPacketCoder = new ServerPacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder, clientGameCoder, buildRoadInfoCoder);
+        clientPacketCoder = new ClientPacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder, clientGameCoder, buildRoadInfoCoder, highscoreCoder);
+        serverPacketCoder = new ServerPacketCoder(messageCoderMock, usernameChangeCoder, gameBaseCoder, clientGameCoder, buildRoadInfoCoder, highscoreCoder);
     }
 
     @Test
@@ -50,16 +52,19 @@ public class PacketCoderTest {
         // prepare
         int level = 1;
 
-        Player player = new Player("own player", WheelColor.BLUE, 4, 5, 1,
-                Arrays.asList(new WheelCard(40)), new DestinationCard(
-                "longCard1", new City("city1", "City1", new Point(3, 4)),
+        DestinationCard destinationCard = new DestinationCard(new City("city1", "City1", new Point(3, 4)),
                 new City("city2", "City2", new Point(1, 4)),
-                5), new ArrayList<>());
+                5);
+        Player player = new Player("own player", PlayerColor.LIGHT_GREEN, 4, 5, 1,
+                Arrays.asList(new WheelCard(40)), destinationCard, new ArrayList<>());
         List<Activity> activities = Collections.singletonList(new Activity("John", ServerCommand.GAME_JOINED));
+
+        PlayerEndResult endResultOtherPlayer = new PlayerEndResult(Collections.singletonList(destinationCard), new ArrayList<>(), false);
 
         ClientGame clientGame = new ClientGame("game1", GameStatus.STARTED, GameMap.defaultMap(),
                 new Date(2023, Calendar.MAY, 14, 4, 4, 4), "creator", 4, Arrays.asList(
-                new VisiblePlayer("Player1", WheelColor.GREEN, 4, 20, 0, "ip", 5, 3)
+                new VisiblePlayer("Player1", PlayerColor.LILA, 4, 20, 0,
+                        "ip", 5, 3, endResultOtherPlayer)
         ), player, 30, new HashMap<>(), activities);
 
 
@@ -469,5 +474,61 @@ public class PacketCoderTest {
 
         // assert
         assertEquals(packet, result);
+    }
+
+    @Test
+    public void encodeWorksForHighscore() {
+        // prepare
+        int level = 2;
+        String username = "userA";
+        int score = 50;
+        Date date = new Date();
+        Highscore highscore = new Highscore(username, score, date);
+        List<Highscore> content = Collections.singletonList(highscore);
+
+        String encodedHighscore = "encoded";
+        when(highscoreCoder.encode(highscore, level + 2))
+                .thenReturn(encodedHighscore);
+
+        ServerCommand command = ServerCommand.SEND_HIGHSCORES;
+        ContentType contentType = ContentType.HIGHSCORE_LIST;
+        Packet.Server packet = new Packet.Server(command, content, contentType);
+
+        // execute
+        String result = serverPacketCoder.encode(packet, level);
+
+        // assert
+        String expected = CoderHelper.encodeFields(level, command.name(),
+                "{" + CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedHighscore)) + "}",
+                contentType.name());
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void decodeWorksForHighscore() {
+        // prepare
+        int level = 2;
+        String username = "userA";
+        int score = 50;
+        Date date = new Date();
+        Highscore highscore = new Highscore(username, score, date);
+        List<Highscore> highscores = Collections.singletonList(highscore);
+
+        String encodedHighscore = "encodedHighscore";
+        when(highscoreCoder.decode(encodedHighscore, level + 2))
+                .thenReturn(highscore);
+
+        ServerCommand command = ServerCommand.SEND_HIGHSCORES;
+        ContentType contentType = ContentType.HIGHSCORE_LIST;
+
+        String encoded = CoderHelper.encodeFields(level, command.name(),
+                "{" + CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedHighscore)) + "}",
+                contentType.name());
+
+        // execute
+        Packet<ServerCommand> result = serverPacketCoder.decode(encoded, level);
+
+        // assert
+        assertEquals(highscores, result.getContent());
     }
 }

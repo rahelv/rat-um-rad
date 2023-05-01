@@ -40,7 +40,8 @@ public class CommandHandler implements InputPacketGateway {
     public void handleCommand(Packet<ClientCommand> packet, String ipAddress) {
         // TODO: unittest
 
-        LOGGER.info("Received client command " + packet.getCommand() + " from " + ipAddress);
+        if (packet.getCommand() != ClientCommand.PONG)
+            LOGGER.info("Received client command " + packet.getCommand() + " from " + ipAddress);
 
         switch (packet.getCommand()) {
             case SEND_WHISPER_CHAT -> {
@@ -71,10 +72,15 @@ public class CommandHandler implements InputPacketGateway {
                 }
             }
             case WANT_JOIN_GAME -> gameService.joinGame(ipAddress, (String) packet.getContent());
-            case SHORT_DESTINATION_CARDS_SELECTED_IN_PREPARATION -> {
+            case SHORT_DESTINATION_CARDS_SELECTED -> {
                 gameService.selectShortDestinationCards(ipAddress, (List<String>) packet.getContent());
             }
+            case REQUEST_WHEEL_CARDS -> {
+                gameService.takeWheelCardFromDeck(ipAddress);
+            }
             case BUILD_ROAD -> handleBuildRoadPacket(packet, ipAddress);
+            case REQUEST_SHORT_DESTINATION_CARDS -> gameService.requestShortDestinationCards(ipAddress);
+            case REQUEST_HIGHSCORES ->  gameService.requestHighscores(ipAddress);
             default -> throw new IllegalStateException("Unexpected value: " + packet.getCommand());
         }
     }

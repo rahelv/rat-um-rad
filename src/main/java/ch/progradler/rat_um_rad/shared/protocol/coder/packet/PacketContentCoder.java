@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.shared.protocol.coder.packet;
 
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.Highscore;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
@@ -14,6 +15,7 @@ import ch.progradler.rat_um_rad.shared.protocol.coder.game.GameMapCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerEndResultCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
 
 import java.util.List;
@@ -28,31 +30,37 @@ public class PacketContentCoder {
     private final Coder<GameBase> gameBaseCoder;
     private final Coder<ClientGame> clientGameCoder;
     private final Coder<BuildRoadInfo> buildRoadInfoCoder;
+    private final Coder<Highscore> highscoreCoder;
 
     public PacketContentCoder(Coder<ChatMessage> messageCoder,
                               Coder<UsernameChange> usernameChangeCoder,
                               Coder<GameBase> gameBaseCoder,
                               Coder<ClientGame> clientGameCoder,
-                              Coder<BuildRoadInfo> buildRoadInfoCoder) {
+                              Coder<BuildRoadInfo> buildRoadInfoCoder, Coder<Highscore> highscoreCoder) {
         this.messageCoder = messageCoder;
         this.usernameChangeCoder = usernameChangeCoder;
         this.gameBaseCoder = gameBaseCoder;
         this.clientGameCoder = clientGameCoder;
         this.buildRoadInfoCoder = buildRoadInfoCoder;
+        this.highscoreCoder = highscoreCoder;
     }
 
     public static PacketContentCoder defaultPacketContentCoder() {
         Coder<GameMap> gameMapCoder = new GameMapCoder(new CityCoder(new PointCoder()), new RoadCoder());
         Coder<Activity> activityCoder = new ActivityCoder();
+        DestinationCardCoder destinationCardCoder = new DestinationCardCoder(new CityCoder(new PointCoder()));
+        PlayerEndResultCoder playerEndResultCoder = new PlayerEndResultCoder(destinationCardCoder);
         ClientGameCoder clientGameCoder = new ClientGameCoder(gameMapCoder,
-                new VisiblePlayerCoder(),
+                new VisiblePlayerCoder(playerEndResultCoder),
                 new PlayerCoder(new WheelCardCoder(),
-                        new DestinationCardCoder(new CityCoder(new PointCoder()))), activityCoder);
+                        destinationCardCoder, playerEndResultCoder),
+                activityCoder);
         return new PacketContentCoder(new ChatMessageCoder(),
                 new UsernameChangeCoder(),
                 new GameBaseCoder(gameMapCoder, activityCoder),
                 clientGameCoder,
-                new BuildRoadInfoCoder());
+                new BuildRoadInfoCoder(),
+                new HighscoreCoder());
     }
 
 
@@ -87,7 +95,7 @@ public class PacketContentCoder {
                 return clientGameCoder.encode((ClientGame) content, level);
             }
             case GAME_INFO_LIST -> {
-                return encodeGameInfoList((List<GameBase>) content, level);
+                return CoderHelper.encodeList(gameBaseCoder, (List<GameBase>) content, level);
             }
             case GAME_STATUS -> {
                 return ((GameStatus) content).name();
@@ -101,14 +109,12 @@ public class PacketContentCoder {
             case BUILD_ROAD_INFO -> {
                 return buildRoadInfoCoder.encode((BuildRoadInfo) content, level);
             }
+            case HIGHSCORE_LIST -> {
+                return CoderHelper.encodeList(highscoreCoder, (List<Highscore>) content, level);
+            }
         }
         // should never happen
         throw new IllegalArgumentException("Unrecognized contentType while encoding: " + contentType);
-    }
-
-    private String encodeGameInfoList(List<GameBase> games, int level) {
-        List<String> encodedGames = games.stream().map((g) -> gameBaseCoder.encode(g, level + 1)).toList();
-        return CoderHelper.encodeStringList(level, encodedGames);
     }
 
     /**
@@ -145,7 +151,7 @@ public class PacketContentCoder {
                 return clientGameCoder.decode(contentUnwrapped, level);
             }
             case GAME_INFO_LIST -> {
-                return decodeGameInfoList(contentUnwrapped, level);
+                return CoderHelper.decodeList(gameBaseCoder, contentUnwrapped, level);
             }
             case GAME_STATUS -> {
                 return GameStatus.valueOf(contentUnwrapped);
@@ -153,13 +159,11 @@ public class PacketContentCoder {
             case BUILD_ROAD_INFO -> {
                 return buildRoadInfoCoder.decode(contentUnwrapped, level);
             }
+            case HIGHSCORE_LIST -> {
+                return CoderHelper.decodeList(highscoreCoder, contentUnwrapped, level);
+            }
         }
         // should never happen
         throw new IllegalArgumentException("Unrecognized contentType while decoding: " + contentType);
-    }
-
-    private List<GameBase> decodeGameInfoList(String content, int level) {
-        List<String> asStrings = CoderHelper.decodeStringList(level, content);
-        return asStrings.stream().map((encoded) -> gameBaseCoder.decode(encoded, level + 1)).toList();
     }
 }

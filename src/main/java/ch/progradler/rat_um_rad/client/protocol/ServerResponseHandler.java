@@ -4,8 +4,8 @@ import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.Highscore;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
@@ -18,8 +18,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
+import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.PING;
 
 /**
  * Handles incoming responses from server.
@@ -49,18 +48,9 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
      */
     @Override
     public void handleResponse(Packet<ServerCommand> packet) {
-        LOGGER.info("Received server command:  " + packet.getCommand());
+        if (packet.getCommand() != PING)
+            LOGGER.info("Received server command:  " + packet.getCommand());
         //TODO: implement QUIT command and other commands
-
-        // TODO: implement properly:
-        if (packet.getContentType() == ContentType.GAME) {
-            System.out.println("Activities of game: ");
-            List<Activity> activities = ((ClientGame) packet.getContent()).getActivities();
-            List<String> formatted = activities.stream()
-                    .map((activity -> activity.getUsername() + " did " + activity.getCommand()))
-                    .toList();
-            System.out.println(String.join(", ", formatted));
-        }
 
         switch (packet.getCommand()) {
             case PING -> {
@@ -72,17 +62,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case INVALID_ACTION_FATAL -> {
                 String error = (String) packet.getContent();
-                System.out.println(error);
-                //TODO: differentiate further between fatal actions
-                //this.userService.chooseAndSendUsername(this.serverOutput);
-                switch ((String) packet.getContent()) {
-                    case JOINING_NOT_POSSIBLE -> {
-                        //TODO: implement
-                    }
-                    case USERNAME_INVALID -> {
-                        //this.usernameHandler.chooseAndSendUsername(userService);
-                    }
-                }
+                notifyListenersOfType(error, ServerCommand.INVALID_ACTION_FATAL);
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
                 List<String> allOnlinePlayers = (List<String>) packet.getContent();
@@ -93,6 +73,14 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ChatMessage message = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType(message, packet.getCommand());
+            }
+            case WHISPER_CHAT_SENT -> {
+                ChatMessage whisperMessage = (ChatMessage) packet.getContent();
+                notifyListenersOfType(whisperMessage, packet.getCommand());
+            }
+            case BROADCAST_CHAT_SENT -> {
+                ChatMessage broadcastMessage = (ChatMessage) packet.getContent();
+                notifyListenersOfType(broadcastMessage, packet.getCommand());
             }
             case SEND_WAITING_GAMES, SEND_STARTED_GAMES, SEND_FINISHED_GAMES -> {
                 Object content = packet.getContent();
@@ -110,18 +98,31 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, ServerCommand.GAME_JOINED);
             }
-            case NEW_PLAYER, GAME_UPDATED, ROAD_BUILT -> { //TODO: what happens if game is updated the same time you're doing something (can this even happen?)
+            case NEW_PLAYER, GAME_UPDATED, ROAD_BUILT, WHEEL_CARDS_CHOSEN -> { //TODO: what happens if game is updated the same time you're doing something (can this even happen?)
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, ServerCommand.GAME_UPDATED); //updated ClientGame is sent to Controller, so it can display the new state
             }
             case GAME_STARTED_SELECT_DESTINATION_CARDS -> { //TODO: soll auch benutzt werden um während dem Spiel karten zu ziehen
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
-                notifyListenersOfType(content, packet.getCommand());
+                notifyListenersOfType(content, ServerCommand.GAME_STARTED_SELECT_DESTINATION_CARDS);
+            }
+            case REQUEST_SHORT_DESTINATION_CARDS_RESULT -> {
+                Object content = packet.getContent();
+                ContentType contentType = packet.getContentType();
+                notifyListenersOfType(content, ServerCommand.REQUEST_SHORT_DESTINATION_CARDS_RESULT);
             }
             case DESTINATION_CARDS_SELECTED -> {
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, ServerCommand.DESTINATION_CARDS_SELECTED);
+            }
+            case GAME_ENDED -> {
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, ServerCommand.GAME_ENDED);
+            }
+            case SEND_HIGHSCORES -> {
+                List<Highscore> highScores = (List<Highscore>) packet.getContent();
+                notifyListenersOfType(highScores, ServerCommand.SEND_HIGHSCORES);
             }
             default -> presenter.display(packet);
         }
