@@ -4,25 +4,20 @@ import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
-import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
 import ch.progradler.rat_um_rad.shared.models.Highscore;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
-import com.sun.marlin.stats.Histogram;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.JOINING_NOT_POSSIBLE;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.USERNAME_INVALID;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.PING;
 
 /**
@@ -80,6 +75,11 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ChatMessage message = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType(message, packet.getCommand());
+            }
+            case WHISPER_CHAT_SENT -> {
+                ChatMessage whisperMessage =(ChatMessage)packet.getContent();
+                ContentType contentType = packet.getContentType();
+                notifyListenersOfType(whisperMessage, packet.getCommand());
             }
             case SEND_WAITING_GAMES, SEND_STARTED_GAMES, SEND_FINISHED_GAMES -> {
                 Object content = packet.getContent();
