@@ -50,10 +50,11 @@ public class PlayerOverviewController extends VBox {
         Label wheelCardCountLabel = new Label();
         Label wheelsRemainingLabel = new Label();
         Label shortDestinationCardsCountLabel = new Label();
+        Label playerScore = new Label();
 
         public PlayerOverviewCell() {
             super();
-            hbox.getChildren().addAll(nameLabel, wheelsRemainingLabel, wheelCardCountLabel, shortDestinationCardsCountLabel, pane);
+            hbox.getChildren().addAll(nameLabel, wheelsRemainingLabel, wheelCardCountLabel, shortDestinationCardsCountLabel, playerScore, pane);
             HBox.setHgrow(pane, Priority.ALWAYS);
         }
 
@@ -62,10 +63,11 @@ public class PlayerOverviewController extends VBox {
             setText(null);
             setGraphic(null);
             if (item != null && !empty) {
-                nameLabel.setText("user: " + item.getName());
-                wheelCardCountLabel.setText("WHEELC: " + item.getWheelCardsCount());
-                wheelsRemainingLabel.setText("RAD: " + item.getWheelsRemaining());
-                shortDestinationCardsCountLabel.setText("ZIELC: " + item.getShortDestinationCardsCount());
+                nameLabel.setText(item.getName());
+                wheelCardCountLabel.setText(" WHEELC: " + item.getWheelCardsCount());
+                wheelsRemainingLabel.setText(" RAD: " + item.getWheelsRemaining());
+                shortDestinationCardsCountLabel.setText(" ZIELC: " + item.getShortDestinationCardsCount());
+                playerScore.setText(" SCORE: " + item.getScore());
                 setGraphic(hbox);
             }
         }
