@@ -49,7 +49,7 @@ public class ServerInputListener implements Runnable {
                 continue;
                 // TODO: display error to user?
             }
-            if(encodedPacket !=null ) {
+            if(encodedPacket != null ) {
                 Packet<ServerCommand> packet = packetCoder.decode(encodedPacket, 0);
                 inputPacketGateway.handleResponse(packet);
             }

@@ -63,6 +63,7 @@ public class PlayerOverviewController extends VBox {
             setText(null);
             setGraphic(null);
             if (item != null && !empty) {
+                hbox.setBackground(new Background(new BackgroundFill(UiUtil.playerColor(item.getColor()), CornerRadii.EMPTY, Insets.EMPTY)));
                 nameLabel.setText(item.getName());
                 wheelCardCountLabel.setText(" WHEELC: " + item.getWheelCardsCount());
                 wheelsRemainingLabel.setText(" RAD: " + item.getWheelsRemaining());
