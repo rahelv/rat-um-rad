@@ -8,7 +8,10 @@ import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.PlayerColor;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.*;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCardDeck;
+import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
@@ -227,5 +230,15 @@ public class GameServiceUtil {
                 errorMessage,
                 STRING);
         outputPacketGateway.sendPacket(ipAddress, errorResponse);
+    }
+
+    public static void updateGameStateForShortDestCardsSelectionGeneral(List<String> selectedCardIds, Game game, Player player) {
+        List<DestinationCard> shortDestCardDeck = game.getDecksOfGame()
+                .getShortDestinationCardDeck().getCardDeck();
+        List<DestinationCard> selectedCards = shortDestCardDeck.stream()
+                .filter(c -> selectedCardIds.contains(c.getCardID())).toList();
+
+        player.addShortDestinationCards(selectedCards);
+        shortDestCardDeck.removeAll(selectedCards);
     }
 }

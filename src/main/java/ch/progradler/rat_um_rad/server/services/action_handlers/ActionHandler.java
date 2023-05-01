@@ -1,11 +1,14 @@
 package ch.progradler.rat_um_rad.server.services.action_handlers;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.server.models.Action;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.GameServiceUtil;
 import ch.progradler.rat_um_rad.server.services.HighscoreManager;
+import ch.progradler.rat_um_rad.server.validation.ActionValidator;
+import ch.progradler.rat_um_rad.server.validation.Validator;
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
@@ -15,8 +18,6 @@ import java.util.Date;
 import java.util.Map;
 
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.FINISHED;
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.GAME_ENDED;
 
 /**
@@ -25,6 +26,8 @@ import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.GAME_ENDED;
  * @param <T> Type of action data required to process action.
  */
 public abstract class ActionHandler<T> {
+    private final Validator<Action<T>> actionValidator;
+
     private final IGameRepository gameRepository;
     private final IUserRepository userRepository;
     private final OutputPacketGateway outputPacketGateway;
@@ -34,17 +37,26 @@ public abstract class ActionHandler<T> {
     protected ActionHandler(IGameRepository gameRepository,
                             IUserRepository userRepository,
                             OutputPacketGateway outputPacketGateway,
-                            GameEndUtil gameEndUtil, HighscoreManager highscoreManager) {
+                            GameEndUtil gameEndUtil,
+                            HighscoreManager highscoreManager,
+                            Validator<Action<T>> actionValidator) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.outputPacketGateway = outputPacketGateway;
         this.gameEndUtil = gameEndUtil;
         this.highscoreManager = highscoreManager;
+        this.actionValidator = actionValidator;
     }
 
-    /**
-     * @return error message ({@link ErrorResponse} if invalid or null if valid.
-     */
+    protected ActionHandler(IGameRepository gameRepository,
+                            IUserRepository userRepository,
+                            OutputPacketGateway outputPacketGateway,
+                            GameEndUtil gameEndUtil,
+                            HighscoreManager highscoreManager) {
+        this(gameRepository, userRepository, outputPacketGateway, gameEndUtil, highscoreManager, new ActionValidator<>());
+    }
+
+
     protected abstract String validate(Game game, String ipAddress, T actionData);
 
     /**
@@ -62,7 +74,7 @@ public abstract class ActionHandler<T> {
     public final void handle(String ipAddress, T actionData) {
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
 
-        String error = validateActionGeneral(game, ipAddress, actionData);
+        String error = validateGeneralAndSpecific(game, ipAddress, actionData);
         if (error != null) {
             GameServiceUtil.sendInvalidActionResponse(ipAddress, error, outputPacketGateway);
             return;
@@ -100,12 +112,9 @@ public abstract class ActionHandler<T> {
     /**
      * @return error message ({@link ErrorResponse} if invalid or null if valid.
      */
-    private String validateActionGeneral(Game game, String ipAddress, T actionData) {
-        if (game == null) return PLAYER_IN_NO_GAME;
-        if (game.getStatus() != STARTED) return GAME_NOT_STARTED;
-
-        if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) return NOT_PLAYERS_TURN;
-
+    private String validateGeneralAndSpecific(Game game, String ipAddress, T actionData) {
+        String actionError = actionValidator.validate(new Action<>(game, ipAddress, actionData));
+        if (actionError != null) return actionError;
         return validate(game, ipAddress, actionData);
     }
 }

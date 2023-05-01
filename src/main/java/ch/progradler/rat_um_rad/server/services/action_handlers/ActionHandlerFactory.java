@@ -5,6 +5,7 @@ import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IHighscoreRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.HighscoreManager;
+import ch.progradler.rat_um_rad.server.validation.SelectDestinationCardsValidator;
 
 /**
  * Creates the {@link ActionHandler}s.
@@ -29,5 +30,14 @@ public class ActionHandlerFactory {
 
     public TakeWheelCardsActionHandler createTakeWheelCardsActionHandler() {
         return new TakeWheelCardsActionHandler(gameRepository, userRepository, outputPacketGateway, new GameEndUtil(), new HighscoreManager(highscoreRepository));
+    }
+
+    public SelectDestinationCardsActionHandler createSelectDestinationCardsActionHandler() {
+        return new SelectDestinationCardsActionHandler(gameRepository,
+                userRepository,
+                outputPacketGateway,
+                new GameEndUtil(),
+                new HighscoreManager(highscoreRepository),
+                new SelectDestinationCardsValidator());
     }
 }

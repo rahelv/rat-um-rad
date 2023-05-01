@@ -392,4 +392,39 @@ class GameServiceUtilTest {
         assertFalse(GameServiceUtil.isPlayersTurn(game, player3));
         assertFalse(GameServiceUtil.isPlayersTurn(game, player4));
     }
+
+    @Test
+    void updateGameStateForShortDestCardsSelectionGeneral() {
+        String ipAddress = "clientA";
+        List<DestinationCard> allShortDestCards = DestinationCardDeck.shortDestinations(GameMap.defaultMap()).getCardDeck();
+
+        List<DestinationCard> optionalCards = new ArrayList<>(Arrays.asList(
+                allShortDestCards.get(5),
+                allShortDestCards.get(2),
+                allShortDestCards.get(6)));
+
+        List<String> selectedCardIds = Arrays.asList(
+                allShortDestCards.get(2).getCardID(),
+                allShortDestCards.get(6).getCardID());
+
+        Map<String, Player> players = new HashMap<>();
+        Player player = new Player("Player A", null, 0, 35, 2);
+        player.setShortDestinationCardsToChooseFrom(optionalCards);
+        players.put(ipAddress, player);
+
+        Game game = new Game("game1", PREPARATION, GameMap.defaultMap(), "creator", 4, players);
+
+        GameServiceUtil.updateGameStateForShortDestCardsSelectionGeneral(selectedCardIds, game, player);
+
+        List<DestinationCard> selectedCards = Arrays.asList(
+                allShortDestCards.get(2),
+                allShortDestCards.get(6));
+
+        assertEquals(selectedCards, player.getShortDestinationCards());
+
+        List<DestinationCard> gameShortDestDeck = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck();
+        for (DestinationCard selectedCard : selectedCards) {
+            assertFalse(gameShortDestDeck.contains(selectedCard));
+        }
+    }
 }
