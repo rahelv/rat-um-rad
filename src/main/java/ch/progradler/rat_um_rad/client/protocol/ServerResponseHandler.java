@@ -62,8 +62,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             }
             case INVALID_ACTION_FATAL -> {
                 String error = (String) packet.getContent();
-                System.out.println(error);
-                //TODO: send error to GUI so it calls a popup there
+                //send error to GUI so it calls a popup there
                 notifyListenersOfType(error, ServerCommand.INVALID_ACTION_FATAL);
             }
             case SEND_ALL_CONNECTED_PLAYERS -> {
