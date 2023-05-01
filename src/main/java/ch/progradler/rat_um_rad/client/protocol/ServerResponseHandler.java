@@ -6,6 +6,7 @@ import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
+import ch.progradler.rat_um_rad.shared.models.Highscore;
 import ch.progradler.rat_um_rad.shared.models.UsernameChange;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.GameBase;
@@ -13,6 +14,7 @@ import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCa
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
+import com.sun.marlin.stats.Histogram;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -116,6 +118,10 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
             case GAME_ENDED -> {
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, ServerCommand.GAME_ENDED);
+            }
+            case SEND_HIGHSCORES -> {
+                List<Highscore> highScores = (List<Highscore>) packet.getContent();
+                notifyListenersOfType(highScores, ServerCommand.SEND_HIGHSCORES);
             }
             default -> presenter.display(packet);
         }

@@ -100,6 +100,13 @@ public class StartupPageController {
     }
 
     @FXML
+    public void showHighScores(ActionEvent event) {
+        Platform.runLater(() -> {
+            startupPageModel.getListener().controllerChanged("showHighScores");
+        });
+    }
+
+    @FXML
     public void createGameAction(ActionEvent actionEvent) {
         Platform.runLater(() -> {
             startupPageModel.getListener().controllerChanged("createGame");

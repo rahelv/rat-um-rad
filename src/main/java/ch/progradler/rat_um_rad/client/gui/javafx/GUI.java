@@ -17,6 +17,8 @@ import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateG
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.gameOverview.GameOverviewModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.highScore.HighScoreController;
+import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.highScore.HighScoreModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.lobby.LobbyModel;
 import ch.progradler.rat_um_rad.client.models.User;
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
@@ -57,6 +59,8 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     private ChooseCardController chooseCardController;
     private ShowWinnerController showWinnerController;
     private EndPhaseController endPhaseController;
+    private HighScoreModel highScoreModel;
+    private HighScoreController highScoreController;
     Stage window;
     Scene mainScene;
 
@@ -128,6 +132,7 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         this.window = primaryStage;
 
         this.startupPageModel = new StartupPageModel(this);
+        this.highScoreModel = new HighScoreModel(this);
         loadControllers();
 
         this.loadFXMLView("/views/ChangeUsernameView.fxml", this.usernameChangeController);
@@ -144,6 +149,7 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         this.chooseCardController = new ChooseCardController();
         this.showWinnerController = new ShowWinnerController();
         this.endPhaseController = new EndPhaseController();
+        this.highScoreController = new HighScoreController();
     }
 
     /**
@@ -158,7 +164,7 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         loader.setController(controller);
         try {
             Parent content = loader.load();
-            this.mainScene = new Scene(content, 1000, 800);
+            this.mainScene = new Scene(content, 1000, 600);
             this.window.setScene(mainScene);
         } catch (Exception e) {
             e.printStackTrace();
@@ -193,6 +199,11 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
             case "createGame" -> {
                 this.loadFXMLView("/views/CreateGameView.fxml", this.createGameController);
                 this.createGameController.initData(this.createGameModel, this.window);
+                this.window.show();
+            }
+            case "showHighScores" -> {
+                this.loadFXMLView("/views/HighScoreView.fxml", this.highScoreController);
+                this.highScoreController.initData(this.highScoreModel, this.window);
                 this.window.show();
             }
         }

@@ -12,7 +12,7 @@
             <Font name="Arial Black" size="15.0" />
          </font>
       </Label>
-      <ScrollPane>
+      <ScrollPane fitToWidth="true">
          <content>
             <ListView fx:id="playerOverviewListView"/>
          </content>

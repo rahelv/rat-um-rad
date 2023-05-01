@@ -9,7 +9,7 @@
 <?import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapController?>
 <?import ch.progradler.rat_um_rad.client.gui.javafx.game.playerOverview.PlayerOverviewController?>
 <?import ch.progradler.rat_um_rad.client.gui.javafx.game.ownPlayerOverview.OwnPlayerOverviewController?>
-<AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <fx:include source="../MainMenu.fxml" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
         <VBox AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0">
             <GameMapController fx:id="gameMapController" ></GameMapController>
@@ -17,7 +17,7 @@
         </VBox>
         <VBox AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50" prefWidth="260">
             <fx:include prefHeight="200.0" source="ChatRoomView.fxml" />
-            <ActivityController prefHeight="200.0" fx:id="activityController"></ActivityController>
-            <PlayerOverviewController prefHeight="200.0" fx:id="playerOverviewController"></PlayerOverviewController>
+            <ActivityController prefHeight="170.0" fx:id="activityController"></ActivityController>
+            <PlayerOverviewController prefHeight="150.0" fx:id="playerOverviewController"></PlayerOverviewController>
         </VBox>
 </AnchorPane>
