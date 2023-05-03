@@ -12,16 +12,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
  * Listens to messages from server
  */
 public class ServerInputListener implements Runnable {
-    private InputStream inputStream;
-    private BufferedReader bufferedReader;
     private final ServerInputPacketGateway inputPacketGateway;
     private final Coder<Packet<ServerCommand>> packetCoder;
+    private InputStream inputStream;
+    private BufferedReader bufferedReader;
 
     public ServerInputListener(Socket socket, ServerInputPacketGateway inputPacketGateway, Coder<Packet<ServerCommand>> packetCoder) {
         this.inputPacketGateway = inputPacketGateway;
@@ -49,7 +48,7 @@ public class ServerInputListener implements Runnable {
                 continue;
                 // TODO: display error to user?
             }
-            if(encodedPacket != null ) {
+            if (encodedPacket != null) {
                 Packet<ServerCommand> packet = packetCoder.decode(encodedPacket, 0);
                 inputPacketGateway.handleResponse(packet);
             }

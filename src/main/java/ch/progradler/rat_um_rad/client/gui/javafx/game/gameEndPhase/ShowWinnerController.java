@@ -8,8 +8,8 @@ import javafx.stage.Stage;
 public class ShowWinnerController {
     public Label winnerNameLabel;
     public Label winnerScoreLabel;
-    private IGameService gameService;
     Stage stage;
+    private IGameService gameService;
     private ShowWinnerModel showWinnerModel;
 
     public ShowWinnerController() {

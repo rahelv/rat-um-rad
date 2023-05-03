@@ -17,15 +17,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
-public class CreateGameController  {
+public class CreateGameController {
     public static final Logger LOGGER = LogManager.getLogger();
+    public Button createGameButton;
     private Stage stage;
     @FXML
     private Spinner<Integer> playerNumSpinner;
-    public Button createGameButton;
     private CreateGameModel createGameModel;
     private IGameService gameService;
 
@@ -45,7 +43,9 @@ public class CreateGameController  {
         this.gameService = new GameService();
     }
 
-    /** initializes the model which comes from the GUI class.
+    /**
+     * initializes the model which comes from the GUI class.
+     *
      * @param createGameModel
      * @param window
      */
@@ -59,7 +59,9 @@ public class CreateGameController  {
         playerNumSpinner.setEditable(false);
     }
 
-    /** bound to createGameButton in View. sends request to server to create game through gameService.
+    /**
+     * bound to createGameButton in View. sends request to server to create game through gameService.
+     *
      * @param actionEvent
      */
     @FXML
@@ -68,14 +70,16 @@ public class CreateGameController  {
         try {
             gameService.createGame(playerCount.intValue());
         } catch (IOException e) {
-            if(e instanceof IOException){
+            if (e instanceof IOException) {
                 LOGGER.error("create game button action has error");
             }
             e.printStackTrace();
         }
     }
 
-    /** listener for @ServerResponseHandler. When game is created, sends notification to listener (here GUI class) so it can set the according scene.
+    /**
+     * listener for @ServerResponseHandler. When game is created, sends notification to listener (here GUI class) so it can set the according scene.
+     *
      * @param clientGame
      */
     public void gameCreated(ClientGame clientGame) {

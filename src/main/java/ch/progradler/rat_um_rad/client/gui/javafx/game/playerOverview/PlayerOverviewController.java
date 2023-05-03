@@ -9,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,6 +42,7 @@ public class PlayerOverviewController extends VBox {
     public void updatePlayerOverview(List<VisiblePlayer> players) {
         this.playerOverviewModel.updatePlayers(players);
     }
+
     static class PlayerOverviewCell extends ListCell<VisiblePlayer> {
         Pane pane = new Pane();
         HBox hbox = new HBox();

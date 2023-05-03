@@ -21,20 +21,29 @@ import ch.progradler.rat_um_rad.shared.util.UsernameValidator;
 import java.util.List;
 
 public class Server {
+    private static IUserService getUserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository) {
+        return new UserService(outputPacketGateway, userRepository, gameRepository, new UsernameValidator());
+    }
+
+    private static IGameService getGameService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository) {
+        Database<List<Highscore>> database = new HighscoresDatabase(new FileStorage(), new HighscoreCoder());
+        return new GameService(outputPacketGateway, gameRepository, userRepository, new HighscoreRepository(database));
+    }
+
     /**
      * This method starts the Server.
-     *
+     * <p>
      * Connections:
      * For managing existing and handling new connections, {@link ClientConnectionsHandler} is used.
      * To check that there is no connection loss to the connections, we use the {@link ServerPingPongRunner}.
-     *
+     * <p>
      * Communication:
      * The interpretation of packets received from the connections as part of the protocol is the job of the {@link CommandHandler}.
-     *
+     * <p>
      * Games and Users:
      * As repositories for users and games and as services for all kinds of interactions with users and game instances,
      * the {@link IGameService}, {@link IGameRepository}, {@link IUserService} and {@link IUserRepository} are used.
-     *
+     * <p>
      * Open Threads:
      * In the end, the open threads are:
      * - the {@link ClientConnectionsHandler} waiting for setting up new connections.
@@ -59,14 +68,5 @@ public class Server {
                 getUserService(outputPacketGateway, userRepository, gameRepository),
                 getGameService(outputPacketGateway, userRepository, gameRepository));
         connectionsHandler.start(port, commandHandler, serverPingPongRunner);
-    }
-
-    private static IUserService getUserService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository) {
-        return new UserService(outputPacketGateway, userRepository, gameRepository, new UsernameValidator());
-    }
-
-    private static IGameService getGameService(OutputPacketGateway outputPacketGateway, IUserRepository userRepository, IGameRepository gameRepository) {
-        Database<List<Highscore>> database = new HighscoresDatabase(new FileStorage(), new HighscoreCoder());
-        return new GameService(outputPacketGateway, gameRepository, userRepository, new HighscoreRepository(database));
     }
 }

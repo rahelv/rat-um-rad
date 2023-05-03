@@ -19,17 +19,17 @@ public class InputReaderTest {
 
     private static final String PROMPT = "Some prompt";
     private static final String INPUT = "input";
-
-    @Mock
-    Scanner scannerMock;
-
-    private InputReader inputReader;
-
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errStream = new ByteArrayOutputStream();
+    @Mock
+    Scanner scannerMock;
+    private InputReader inputReader;
     private PrintStream outBackup;
     private PrintStream errBackup;
 
+    private static String removeNewline(String str) {
+        return str.replace("\n", "").replace("\r", "");
+    }
 
     @BeforeEach
     void setUp() {
@@ -58,10 +58,6 @@ public class InputReaderTest {
         String toTest = outStream.toString();
         toTest = removeNewline(toTest);
         assertEquals(PROMPT, toTest);
-    }
-
-    private static String removeNewline(String str) {
-        return str.replace("\n", "").replace("\r", "");
     }
 
     @Test

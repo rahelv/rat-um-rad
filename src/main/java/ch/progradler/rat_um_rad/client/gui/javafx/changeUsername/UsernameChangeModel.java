@@ -10,13 +10,13 @@ import javafx.beans.property.StringProperty;
  * Model for UsernameChange (stores the User)
  */
 public class UsernameChangeModel {
-    private String chosenUsernameCommandLine = null;
-    private final ControllerChangeListener<?> listener;
-    ComputerInfo computerInfo;
-    private String systemUsername;
-    private final User user;
-    private StringProperty chosenUsername;
     private static final String usernameRules = "Username Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!\n";
+    private final ControllerChangeListener<?> listener;
+    private final User user;
+    ComputerInfo computerInfo;
+    private String chosenUsernameCommandLine = null;
+    private String systemUsername;
+    private StringProperty chosenUsername;
 
     public UsernameChangeModel(User user, ControllerChangeListener<?> listener) {
         this.listener = listener;
@@ -36,8 +36,9 @@ public class UsernameChangeModel {
     }
 
     public String getChosenUsername() {
-         return chosenUsername.get();
+        return chosenUsername.get();
     }
+
     public void setChosenUsername(String chosenUsername) {
         this.chosenUsername.setValue(chosenUsername);
     }

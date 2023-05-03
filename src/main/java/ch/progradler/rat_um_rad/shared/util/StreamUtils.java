@@ -2,10 +2,6 @@ package ch.progradler.rat_um_rad.shared.util;
 
 
 import java.io.*;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Helper to:

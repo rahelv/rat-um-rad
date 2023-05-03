@@ -1,30 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.layout.VBox?>
-
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.ScrollBar?>
-<?import javafx.scene.control.ScrollPane?>
-<fx:root type="VBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:id="ownPlayerOverviewController">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="VBox" xmlns="http://javafx.com/javafx/19"
+         fx:id="ownPlayerOverviewController">
     <Label alignment="CENTER" text="my Cards and Stuff">
         <font>
-            <Font name="Arial Black" size="15.0" />
+            <Font name="Arial Black" size="15.0"/>
         </font>
     </Label>
     <HBox>
         <VBox>
             <Label>DestinationCards</Label>
             <ScrollPane fitToWidth="true">
-                <ListView prefHeight="100.0" prefWidth="250" orientation="HORIZONTAL" fx:id="destinationCardListView"></ListView>
+                <ListView prefHeight="100.0" prefWidth="250" orientation="HORIZONTAL"
+                          fx:id="destinationCardListView"></ListView>
             </ScrollPane>
         </VBox>
         <VBox>
             <Label>WheelCards</Label>
             <ScrollPane fitToWidth="true">
-                <ListView prefHeight="100.0"  orientation="HORIZONTAL" fx:id="wheelCardListView"></ListView>
+                <ListView prefHeight="100.0" orientation="HORIZONTAL" fx:id="wheelCardListView"></ListView>
             </ScrollPane>
         </VBox>
     </HBox>

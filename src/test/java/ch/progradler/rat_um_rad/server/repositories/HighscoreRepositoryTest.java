@@ -21,15 +21,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class HighscoreRepositoryTest {
 
-    @Mock
-    Database<List<Highscore>> mockDatabase;
-
-    private HighscoreRepository highscoreRepository;
-
     private final Highscore highscore1 = new Highscore("userA", 100, new Date(2023, Calendar.FEBRUARY, 4, 4, 0));
     private final Highscore highscore2 = new Highscore("userB", 56, new Date(2023, Calendar.MAY, 1, 3, 0));
     private final List<Highscore> highscores = Arrays.asList(highscore1, highscore2);
-
+    @Mock
+    Database<List<Highscore>> mockDatabase;
+    private HighscoreRepository highscoreRepository;
 
     @BeforeEach
     void setUp() {

@@ -21,7 +21,7 @@ public class MainMenuController implements Initializable {
 
     @FXML
     public void refreshPage(ActionEvent event) {
-       //TODO: reload page and model data
+        //TODO: reload page and model data
         System.out.println("page refreshed");
     }
 }

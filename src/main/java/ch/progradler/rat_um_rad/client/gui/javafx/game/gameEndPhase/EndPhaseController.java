@@ -8,21 +8,15 @@ import javafx.stage.Stage;
 
 
 public class EndPhaseController {
-    Stage stage;
-
     public ListView<String> rankingListView;
-
     public Label achievedGoalCardsNum;
     public Label achievedGoalCardsScore;
-
     public Label notAchievedGoalCardsNum;
     public Label notAchievedGoalCardsScore;
-
     public Label winnerNameLabel;
     public Label winnerScoreLabel;
-
     public Label totalScore;
-
+    Stage stage;
     private IGameService gameService;
     private EndPhaseModel endPhaseModel;
 

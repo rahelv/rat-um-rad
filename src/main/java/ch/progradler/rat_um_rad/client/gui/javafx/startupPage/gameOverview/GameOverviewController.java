@@ -11,7 +11,6 @@ import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -21,9 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class GameOverviewController {
     @FXML
@@ -102,7 +99,7 @@ public class GameOverviewController {
         finishedGamesListView.setCellFactory(param -> new GameOverviewController.Cell());
     }
 
-    static class Cell extends ListCell<GameBase>{
+    static class Cell extends ListCell<GameBase> {
         Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();

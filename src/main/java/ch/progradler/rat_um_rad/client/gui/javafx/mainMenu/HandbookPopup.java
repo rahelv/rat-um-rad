@@ -13,9 +13,9 @@ import java.net.URL;
  * Displays the Handbook for the game. Handbook is stored in file handbuch.htm
  */
 public class HandbookPopup extends Stage {
+    private final WebView webView = new WebView();
     ScrollPane scrollPane = new ScrollPane();
     private WebEngine webEngine;
-    private final WebView webView = new WebView();
 
     public HandbookPopup() {
         setTitle("Rat um Rad - Handbuch");

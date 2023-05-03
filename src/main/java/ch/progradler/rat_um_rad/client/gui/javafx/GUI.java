@@ -10,7 +10,6 @@ import ch.progradler.rat_um_rad.client.gui.javafx.game.chooseCard.ChooseCardMode
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase.EndPhaseController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase.EndPhaseModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase.ShowWinnerController;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase.ShowWinnerModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
@@ -44,6 +43,8 @@ import java.util.List;
  */
 public class GUI extends Application implements ControllerChangeListener<UsernameChangeController> {
     public static final Logger LOGGER = LogManager.getLogger();
+    Stage window;
+    Scene mainScene;
     private UsernameChangeModel usernameChangeModel;
     private UsernameChangeController usernameChangeController;
     private StartupPageModel startupPageModel;
@@ -61,8 +62,6 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     private EndPhaseController endPhaseController;
     private HighScoreModel highScoreModel;
     private HighScoreController highScoreController;
-    Stage window;
-    Scene mainScene;
 
     /**
      * Launching this method will not work on some platforms.
@@ -243,10 +242,10 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
 
     @Override
     public void showWinner(ClientGame game) {
-       /** ShowWinnerModel showWinnerModel = new ShowWinnerModel(game);
-        this.loadFXMLView("/views/ShowWinnerView.fxml", this.showWinnerController);
-        this.showWinnerController.initData(showWinnerModel, this.window);
-        this.window.show();**/
+        /** ShowWinnerModel showWinnerModel = new ShowWinnerModel(game);
+         this.loadFXMLView("/views/ShowWinnerView.fxml", this.showWinnerController);
+         this.showWinnerController.initData(showWinnerModel, this.window);
+         this.window.show();**/
         EndPhaseModel endPhaseModel = new EndPhaseModel(game);
         this.loadFXMLView("/views/EndPhaseView.fxml", this.endPhaseController);
         this.endPhaseController.initData(endPhaseModel, this.window);

@@ -1,11 +1,13 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap;
 
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
-import ch.progradler.rat_um_rad.shared.models.game.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import ch.progradler.rat_um_rad.shared.models.game.City;
+import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
+import ch.progradler.rat_um_rad.shared.models.game.GameMap;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerColor;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameMapModel {
     private ClientGame clientGame;

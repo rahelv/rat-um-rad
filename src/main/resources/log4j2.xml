@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration name="CoreConfig" status="INFO">
-  <Properties>
-    <Property name="loggingPattern">[%d{MM-dd HH:mm:ss.SSS}][%-5level][%t] %C{1} - %msg%n</Property>
-  </Properties>
-  <Appenders>
-    <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="${loggingPattern}"/>
-      <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
-    </Console>
-    <RollingFile name="File">
-      <FileName>logs/cs108.log</FileName>
-      <FilePattern>logs/%d{yyyy-MM-dd-hh}-%i.log.zip</FilePattern>
-      <PatternLayout pattern="${loggingPattern}"/>
-      <Policies>
-        <SizeBasedTriggeringPolicy size="3000 KB"/>
-      </Policies>
-      <DefaultRolloverStrategy max="5" />
-      <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
-    </RollingFile>
-    <RollingFile name="PingPong">
-      <FileName>logs/pingpong.log</FileName>
-      <FilePattern>logs/%d{yyyy-MM-dd-hh}-%i.log.zip</FilePattern>
-      <PatternLayout pattern="${loggingPattern}"/>
-      <Policies>
-        <SizeBasedTriggeringPolicy size="3000 KB"/>
-      </Policies>
-      <DefaultRolloverStrategy max="5" />
-        <ThresholdFilter level="DEBUG" onMatch="DENY" onMismatch="Neutral"/>
-    </RollingFile>
-  </Appenders>
-  <Loggers>
-    <Root level="ALL">
-      <AppenderRef ref="Console" level="WARN"/>
-      <AppenderRef ref="File" level="DEBUG"/>
-      <AppenderRef ref="PingPong" level="ALL"/>
-    </Root>
-  </Loggers>
+    <Properties>
+        <Property name="loggingPattern">[%d{MM-dd HH:mm:ss.SSS}][%-5level][%t] %C{1} - %msg%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${loggingPattern}"/>
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+        <RollingFile name="File">
+            <FileName>logs/cs108.log</FileName>
+            <FilePattern>logs/%d{yyyy-MM-dd-hh}-%i.log.zip</FilePattern>
+            <PatternLayout pattern="${loggingPattern}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="3000 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingFile>
+        <RollingFile name="PingPong">
+            <FileName>logs/pingpong.log</FileName>
+            <FilePattern>logs/%d{yyyy-MM-dd-hh}-%i.log.zip</FilePattern>
+            <PatternLayout pattern="${loggingPattern}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="3000 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+            <ThresholdFilter level="DEBUG" onMatch="DENY" onMismatch="Neutral"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="ALL">
+            <AppenderRef ref="Console" level="WARN"/>
+            <AppenderRef ref="File" level="DEBUG"/>
+            <AppenderRef ref="PingPong" level="ALL"/>
+        </Root>
+    </Loggers>
 </Configuration>
 

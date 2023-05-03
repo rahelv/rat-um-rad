@@ -17,31 +17,21 @@ import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class StartupPageController {
-    private UserService userService;
     public ServerResponseListener<List<String>> allPlayersListener;
-
-    @FXML
-    private LobbyController lobbyController;
-
-    private StartupPageModel startupPageModel;
     Stage stage;
     UsernameChangeModel usernameChangeModel;
-
+    private UserService userService;
+    @FXML
+    private LobbyController lobbyController;
+    private StartupPageModel startupPageModel;
     @FXML
     private Button currentPlayersLabelButton;
 
     @FXML
     private Label welcomeLabel;
-
-    @FXML
-    private void changeUsernameButtonTriggered(ActionEvent event) {
-        this.showUsernameChangeDialog();
-    }
 
     public StartupPageController() {
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
@@ -70,6 +60,10 @@ public class StartupPageController {
         this.userService = new UserService();
     }
 
+    @FXML
+    private void changeUsernameButtonTriggered(ActionEvent event) {
+        this.showUsernameChangeDialog();
+    }
 
     public void initData(UsernameChangeModel usernameChangeModel, StartupPageModel startupPageModel, Stage stage, LobbyModel lobbyModel) {
         this.usernameChangeModel = usernameChangeModel;

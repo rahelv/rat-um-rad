@@ -56,7 +56,7 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     @Override
     public void broadcast(Packet<ServerCommand> packet) {
         final List<String> clientsForBroadCast = new ArrayList<>(connections.keySet());
-        for(String ipAddress : clientsForBroadCast) {
+        for (String ipAddress : clientsForBroadCast) {
             sendPacket(ipAddress, packet);
         }
     }

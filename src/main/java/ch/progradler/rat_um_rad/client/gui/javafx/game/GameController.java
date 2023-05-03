@@ -18,9 +18,9 @@ import javafx.fxml.FXML;
 import javafx.stage.Stage;
 
 public class GameController {
-    private GameService gameService;
     Stage stage;
     GameModel gameModel;
+    private GameService gameService;
     @FXML
     private ActivityController activityController = new ActivityController();
     @FXML
@@ -29,13 +29,14 @@ public class GameController {
     private OwnPlayerOverviewController ownPlayerOverviewController = new OwnPlayerOverviewController();
     @FXML
     private GameMapController gameMapController = new GameMapController();
+
     /**
      * 1. Warten auf Spieler in Lobby
      * 2. Game Startet
      * 3. --> Karten wählen
      * 4. --> Farbe zugewiesen, Radkarten bekommen etc.
      * 5. Karte anzeigen
-     * */
+     */
     public GameController() {
         this.gameService = new GameService();
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {

@@ -16,11 +16,11 @@ import java.nio.charset.StandardCharsets;
  * Allows easy output to a client with certain {@link ClientOutput#ipAddress} via the {@link ClientOutput#out} stream.
  */
 public class ClientOutput {
+    private final String ipAddress;
+    private final Coder<Packet<ServerCommand>> packetCoder;
     private Socket socket;
     private OutputStream out; //TODO: implement using own serialization
     private PrintWriter printWriter;
-    private final String ipAddress;
-    private final Coder<Packet<ServerCommand>> packetCoder;
 
     public ClientOutput(Socket socket, String ipAddress, Coder<Packet<ServerCommand>> packetCoder) {
         this.socket = socket;

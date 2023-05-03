@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class GameMapController extends GridPane {
     private static final double CITY_GRAPHIC_DIM = 16;
-
+    private static final int ROAD_LINE_WIDTH = 8;
     private GameService gameService;
     private GameMapModel gameMapModel;
     @FXML
@@ -40,10 +40,8 @@ public class GameMapController extends GridPane {
     private Label requiredPlayers;
     @FXML
     private Pane mapPane;
-
     @FXML
     private Group mapObjectsGroup;
-    private static final int ROAD_LINE_WIDTH = 8;
 
 
     public GameMapController() {

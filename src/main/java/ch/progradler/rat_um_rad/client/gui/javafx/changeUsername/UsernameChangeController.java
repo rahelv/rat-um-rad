@@ -16,25 +16,20 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
  * Controller for ChangeUsernameView.fxml (in resources/views)
  */
 public class UsernameChangeController {
     public static final Logger LOGGER = LogManager.getLogger();
+    public TextField username;
     private Stage stage;
     @FXML
     private Label usernameRulesLabel;
     @FXML
     private Label invalidLabel;
-
-    public TextField username;
     @FXML
     private Button confirmUsernameButton;
     @FXML
@@ -82,7 +77,7 @@ public class UsernameChangeController {
             try {
                 confirmButtonAction(new ActionEvent());
             } catch (Exception e) {
-                if(e instanceof Exception){
+                if (e instanceof Exception) {
                     LOGGER.error("confirm button action in usernameModel has error");
                 }
                 e.printStackTrace();
@@ -137,7 +132,7 @@ public class UsernameChangeController {
         try {
             sendUsernameToServer();
         } catch (Exception e) {
-            if(e instanceof Exception){
+            if (e instanceof Exception) {
                 LOGGER.error("send username to server has error");
             }
             e.printStackTrace();

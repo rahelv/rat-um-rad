@@ -19,7 +19,7 @@ public class StartupPageModel {
         return listener;
     }
 
-    public void addPlayersToList(List<String> allOnlinePlayers){
+    public void addPlayersToList(List<String> allOnlinePlayers) {
         this.allOnlinePlayersList.clear();
         this.allOnlinePlayersList.addAll(allOnlinePlayers);
     }

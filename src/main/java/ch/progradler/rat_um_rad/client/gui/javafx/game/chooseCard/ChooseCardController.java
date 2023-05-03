@@ -26,6 +26,7 @@ import java.util.List;
 
 public class ChooseCardController {
 
+    List<String> selectedRoadIdList = new ArrayList<>();
     private Stage stage;
     @FXML
     private Button chooseCardsButton;
@@ -33,7 +34,6 @@ public class ChooseCardController {
     private ListView cardsListView;
     private ChooseCardModel chooseCardModel;
     private IGameService gameService;
-    List<String> selectedRoadIdList = new ArrayList<>();
 
     public ChooseCardController() {
         this.gameService = new GameService();

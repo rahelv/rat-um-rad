@@ -1,8 +1,8 @@
 package ch.progradler.rat_um_rad.shared.protocol.coder.player;
 
 import ch.progradler.rat_um_rad.shared.models.game.Player;
-import ch.progradler.rat_um_rad.shared.models.game.PlayerEndResult;
 import ch.progradler.rat_um_rad.shared.models.game.PlayerColor;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerEndResult;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;

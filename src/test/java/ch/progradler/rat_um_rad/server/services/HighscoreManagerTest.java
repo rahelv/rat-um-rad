@@ -21,11 +21,6 @@ class HighscoreManagerTest {
 
     private HighscoreManager highscoreManager;
 
-    @BeforeEach
-    void setUp() {
-        highscoreManager = new HighscoreManager(mockHighscoreRepository);
-    }
-
     private static List<Highscore> generateHighscores(String... usernames) {
         List<Highscore> highscores = new ArrayList<>();
 
@@ -35,6 +30,11 @@ class HighscoreManagerTest {
             highscores.add(new Highscore(username, random.nextInt(100), new Date()));
         }
         return highscores;
+    }
+
+    @BeforeEach
+    void setUp() {
+        highscoreManager = new HighscoreManager(mockHighscoreRepository);
     }
 
     @Test

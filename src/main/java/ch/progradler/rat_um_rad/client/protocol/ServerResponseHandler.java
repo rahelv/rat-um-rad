@@ -76,7 +76,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 notifyListenersOfType(message, packet.getCommand());
             }
             case WHISPER_CHAT_SENT -> {
-                ChatMessage whisperMessage =(ChatMessage)packet.getContent();
+                ChatMessage whisperMessage = (ChatMessage) packet.getContent();
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType(whisperMessage, packet.getCommand());
             }

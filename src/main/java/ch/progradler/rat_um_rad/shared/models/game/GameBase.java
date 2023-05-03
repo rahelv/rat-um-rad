@@ -11,20 +11,18 @@ import java.util.*;
  */
 public class GameBase {
     private final String id;
-    private GameStatus status;
     private final GameMap map;
-
     private final Date createdAt;
     private final String creatorPlayerIpAddress;
     private final int requiredPlayerCount;
-    private int turn;
     private final List<Activity> activities;
-
     /**
      * Saves information on roads which have been built by which player.
      * Keys are road ids and values are player ip addresses.
      */
     private final Map<String, String> roadsBuilt;
+    private GameStatus status;
+    private int turn;
 
     public GameBase(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount) {
         this(id, status, map, new Date() /* now */, creatorPlayerIpAddress, requiredPlayerCount, 0, new HashMap<>(), new ArrayList<>());

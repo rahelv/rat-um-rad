@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +37,7 @@ class UsernameHandlerTest {
         String suggestedUsername = "systemUsername";
         when((computerInfoMock).getSystemUsername()).thenReturn(suggestedUsername);
         when(inputReaderMock.readInputWithPrompt(new StringBuilder()
-                .append( "The username suggested for you is: ")
+                .append("The username suggested for you is: ")
                 .append(suggestedUsername)
                 .append("\nPress enter to confirm. Otherwise enter your new username below and click Enter.")
                 .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")
@@ -51,8 +51,8 @@ class UsernameHandlerTest {
         String suggestedUsername = "systemUsername";
         String chosenUsername = "chosenUsername";
         when((computerInfoMock).getSystemUsername()).thenReturn(suggestedUsername);
-        when(inputReaderMock.readInputWithPrompt( new StringBuilder()
-                .append( "The username suggested for you is: ")
+        when(inputReaderMock.readInputWithPrompt(new StringBuilder()
+                .append("The username suggested for you is: ")
                 .append(suggestedUsername)
                 .append("\nPress enter to confirm. Otherwise enter your new username below and click Enter.")
                 .append("\nUsername Rules: 5-30 characters. only letters, digits and underscores allowed. first char must be a letter!")

@@ -19,7 +19,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
  * Listens to incoming commands from a specific client via socket stream. For each client, there is one such a input listener.
@@ -27,13 +26,13 @@ import java.util.List;
 public class ClientInputListener implements Runnable {
     public static final Logger LOGGER = LogManager.getLogger();
     private final InputPacketGateway inputPacketGateway;
+    private final Coder<Packet<ClientCommand>> packetCoder;
+    private final ClientDisconnectedListener clientDisconnectedListener;
+    private final ServerPingPongRunner serverPingPongRunner;
     private InputStream inputStream;
     private BufferedReader bufferedReader;
-    private final Coder<Packet<ClientCommand>> packetCoder;
     private String ipAddress;
-    private final ClientDisconnectedListener clientDisconnectedListener;
     private UsernameReceivedListener usernameReceivedListener;
-    private final ServerPingPongRunner serverPingPongRunner;
 
     public ClientInputListener(Socket socket,
                                InputPacketGateway inputPacketGateway,

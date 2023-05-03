@@ -17,19 +17,9 @@ public class UsernameHandler {
 
     private final ComputerInfo computerInfo;
     private final InputReader inputReader;
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private String username;
     private UsernameValidator usernameValidator;
-
-    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-    /**
-     * Adds PropertyChangeListener for the username property
-     *
-     * @param listener
-     */
-    public void addUsernameObserver(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(PROPERTY_NAME_USERNAME, listener);
-    }
 
     public UsernameHandler() {
         this.computerInfo = new ComputerInfo();
@@ -46,6 +36,15 @@ public class UsernameHandler {
     public UsernameHandler(ComputerInfo computerInfo, InputReader inputReader) {
         this.computerInfo = computerInfo;
         this.inputReader = inputReader;
+    }
+
+    /**
+     * Adds PropertyChangeListener for the username property
+     *
+     * @param listener
+     */
+    public void addUsernameObserver(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(PROPERTY_NAME_USERNAME, listener);
     }
 
     public String getUsername() {

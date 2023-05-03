@@ -23,10 +23,10 @@ import java.util.ServiceLoader;
  * Controller for the lobby internal chat (for view ChatRoomView.fxml)
  */
 public class ChatRoomController implements Initializable {
-    private ChatRoomModel chatRoomModel;
     public TextField chatMsgTextField;
     public Button sendButton;
     public ListView<ChatMessage> chatPaneListView;
+    private ChatRoomModel chatRoomModel;
     private IUserService userService;
 
     /**
@@ -46,7 +46,7 @@ public class ChatRoomController implements Initializable {
             String[] strings = textInputContent.split(separator);
             if (strings[0].equals(whisperCommand)) {
                 String toUsername = strings[1];
-                String whisperContent = "whisper from "+toUsername+" : "+strings[2];
+                String whisperContent = "whisper from " + toUsername + " : " + strings[2];
                 userService.sendWhisperMessage(whisperContent, toUsername);
             } else {
                 userService.sendGameInternalMessage(strings[0]);

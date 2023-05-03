@@ -3,18 +3,18 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.layout.VBox?>
-
-<fx:root type="VBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:id="playerOverviewController">
-      <Label alignment="CENTER" text="PlayerOverview">
-         <font>
-            <Font name="Arial Black" size="15.0" />
-         </font>
-      </Label>
-      <ScrollPane fitToWidth="true">
-         <content>
+<?import javafx.scene.text.Font?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="VBox" xmlns="http://javafx.com/javafx/19"
+         fx:id="playerOverviewController">
+    <Label alignment="CENTER" text="PlayerOverview">
+        <font>
+            <Font name="Arial Black" size="15.0"/>
+        </font>
+    </Label>
+    <ScrollPane fitToWidth="true">
+        <content>
             <ListView fx:id="playerOverviewListView"/>
-         </content>
-      </ScrollPane>
+        </content>
+    </ScrollPane>
 </fx:root>

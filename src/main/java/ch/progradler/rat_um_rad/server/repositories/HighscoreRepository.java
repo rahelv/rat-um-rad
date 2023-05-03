@@ -40,7 +40,7 @@ public class HighscoreRepository implements IHighscoreRepository {
                 highscores = database.read(DATABASE_KEY);
             } catch (NoSuchFileException e) {
                 highscores = new ArrayList<>();
-            }catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
