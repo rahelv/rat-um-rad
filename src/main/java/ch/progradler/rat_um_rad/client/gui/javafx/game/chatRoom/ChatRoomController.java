@@ -34,6 +34,10 @@ public class ChatRoomController implements Initializable {
      * when user wants to send whisper chat, he/she should enter message in this form:
      * ToUsername can be found in activities
      * WHISPER<>smith<>how many cards do you have
+     * <p>
+     * broadcast chat form : BROADCAST<>chatContent
+     * when user wants to send broadcast message to all clients ,he/she should enter message in this form:
+     * BROADCAST<>I like this game
      *
      * @param event send chat message to server through userService
      */
@@ -41,13 +45,17 @@ public class ChatRoomController implements Initializable {
     public void sendChatMessageAction(ActionEvent event) {
         try {
             String whisperCommand = "WHISPER";
+            String broadCommand = "BROADCAST";
             String separator = "<>";
             String textInputContent = chatRoomModel.getTextInputContent();
             String[] strings = textInputContent.split(separator);
             if (strings[0].equals(whisperCommand)) {
                 String toUsername = strings[1];
-                String whisperContent = "whisper from " + toUsername + " : " + strings[2];
+                String whisperContent = "whisper : " + strings[2];
                 userService.sendWhisperMessage(whisperContent, toUsername);
+            } else if (strings[0].equals(broadCommand)) {
+                String broadcastContent = "broadcast: " + strings[1];
+                userService.sendBroadCastMessage(broadcastContent);
             } else {
                 userService.sendGameInternalMessage(strings[0]);
             }
@@ -77,6 +85,8 @@ public class ChatRoomController implements Initializable {
                 getChatListener());
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(
                 getWhisperChatListener());
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(
+                getBroadcastListener());
         this.chatRoomModel = new ChatRoomModel();
         chatMsgTextField.textProperty().bindBidirectional(chatRoomModel.TextInputContentProperty()); //bind TextField for Chat Input to model
         this.chatPaneListView.setItems(chatRoomModel.chatMessageList);
@@ -119,6 +129,22 @@ public class ChatRoomController implements Initializable {
             @Override
             public ServerCommand forCommand() {
                 return ServerCommand.WHISPER_CHAT_SENT;
+            }
+        };
+    }
+
+    private ServerResponseListener<ChatMessage> getBroadcastListener() {
+        return new ServerResponseListener<ChatMessage>() {
+            @Override
+            public void serverResponseReceived(ChatMessage content) {
+                Platform.runLater(() -> {
+                    chatRoomModel.addChatMessageToList(content);
+                });
+            }
+
+            @Override
+            public ServerCommand forCommand() {
+                return ServerCommand.BROADCAST_CHAT_SENT;
             }
         };
     }
