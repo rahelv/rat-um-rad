@@ -1,8 +1,14 @@
 package ch.progradler.rat_um_rad.server.protocol.socket;
 
+import ch.progradler.rat_um_rad.server.protocol.ClientConnectionsHandler;
+import ch.progradler.rat_um_rad.server.protocol.CommandHandler;
+import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
+import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ClientPacketCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ServerPacketCoder;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -100,5 +108,55 @@ public class ConnectionPoolTest {
     void sendPacketThrowsNoErrorIfIPAddressNotPresent() {
         Packet.Server packet = new Packet.Server(ServerCommand.PING, null, ContentType.NONE);
         assertDoesNotThrow(() -> connectionPool.sendPacket("nonExistentClient", packet));
+    }
+
+    @Test
+    void getIpOfThreadWorks() {
+        int PORT = 6666;
+        try {
+            CommandHandler mockCommandHandler = mock(CommandHandler.class);
+            ClientPacketCoder mockClientPacketCoder = mock(ClientPacketCoder.class);
+            ServerPingPongRunner serverPingPongRunner = mock(ServerPingPongRunner.class);
+            ServerPacketCoder mockServerPacketCoder = mock(ServerPacketCoder.class);
+            ServerSocket serverSocket = new ServerSocket(PORT);
+
+            //first connection
+            Socket socketInClient1 = new Socket("localhost", PORT);
+            Socket socketInServer1 = serverSocket.accept();
+            String ipAddress1 = socketInServer1.getRemoteSocketAddress().toString();
+            ClientInputListener clientInputListener1= new ClientInputListener(socketInClient1,
+                    mockCommandHandler,
+                    mockClientPacketCoder,
+                    ipAddress1,
+                    connectionPool,
+                    serverPingPongRunner);
+            ClientOutput clientOutput1 = new ClientOutput(socketInServer1, ipAddress1, mockServerPacketCoder, connectionPool);
+            connectionPool.addConnection(ipAddress1, new Connection(socketInServer1, clientOutput1, clientInputListener1));
+            Thread thread1 = new Thread(clientInputListener1);
+            clientInputListener1.setThread(thread1);
+
+            //second connection
+            Socket socketInClient2 = new Socket("localhost", PORT);
+            Socket socketInServer2 = serverSocket.accept();
+            String ipAddress2 = socketInServer2.getRemoteSocketAddress().toString();
+            ClientInputListener clientInputListener2 = new ClientInputListener(socketInClient2,
+                    mockCommandHandler,
+                    mockClientPacketCoder,
+                    ipAddress2,
+                    connectionPool,
+                    serverPingPongRunner);
+            ClientOutput clientOutput2 = new ClientOutput(socketInServer2, ipAddress2, mockServerPacketCoder, connectionPool);
+            connectionPool.addConnection(ipAddress2, new Connection(socketInServer2, clientOutput2, clientInputListener2));
+            Thread thread2 = new Thread(clientInputListener2);
+            clientInputListener2.setThread(thread2);
+
+            //testing
+            Assertions.assertEquals(ipAddress1, connectionPool.getIpOfThread(thread1));
+            Assertions.assertEquals(ipAddress2, connectionPool.getIpOfThread(thread2));
+            Assertions.assertNotEquals(ipAddress1, connectionPool.getIpOfThread(thread2));
+            Assertions.assertNotEquals(ipAddress2, connectionPool.getIpOfThread(thread1));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

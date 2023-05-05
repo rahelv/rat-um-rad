@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Holds all client connections.
  */
-public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedListener {
+public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedListener, ConnectionPoolInfo {
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -77,5 +77,14 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     @Override
     public void onDisconnected(String ipAddress) {
         removeConnection(ipAddress);
+    }
+
+    public String getIpOfThread(Thread thread) {
+        for (String ipAddress: connections.keySet()) {
+            if (connections.get(ipAddress).getThread() == thread) {
+                return ipAddress;
+            }
+        }
+        return null;
     }
 }
