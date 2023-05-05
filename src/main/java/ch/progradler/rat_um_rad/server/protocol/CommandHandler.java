@@ -37,8 +37,9 @@ public class CommandHandler implements InputPacketGateway {
      * For more information on the protocol, read the corresponding document or read the javadoc of the
      * commands in the switch cases or the used methods in the code block for each case.
      */
-    public void handleCommand(Packet<ClientCommand> packet, String ipAddress) {
+    synchronized public void handleCommand(Packet<ClientCommand> packet, String ipAddress) {
         // TODO: unittest
+        // TODO: is it enough to just synchronize this method?
 
         if (packet.getCommand() != ClientCommand.PONG)
             LOGGER.info("Received client command " + packet.getCommand() + " from " + ipAddress);

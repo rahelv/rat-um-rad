@@ -33,6 +33,7 @@ public class ClientInputListener implements Runnable {
     private BufferedReader bufferedReader;
     private String ipAddress;
     private UsernameReceivedListener usernameReceivedListener;
+    private Thread thread; //Thread whose run method is in this class
 
     public ClientInputListener(Socket socket,
                                InputPacketGateway inputPacketGateway,
@@ -103,5 +104,13 @@ public class ClientInputListener implements Runnable {
     public void close() throws IOException {
         // TODO: close thread in which client input listener is running
         inputStream.close();
+    }
+
+    public void setThread(Thread thread) {
+        this.thread = thread;
+    }
+
+    public Thread getThread() {
+        return thread;
     }
 }

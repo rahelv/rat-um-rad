@@ -9,18 +9,29 @@ import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
+import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.DestinationCardCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.CityCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.GameMapCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ClientPacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketContentCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ServerPacketCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerEndResultCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -530,5 +541,33 @@ public class PacketCoderTest {
 
         // assert
         assertEquals(highscores, result.getContent());
+    }
+
+    /**
+     * This tests doesn't necessarily need to pass.
+     * It's written to undertand the behaviour of the communication between server and client in order to detect the origin of NullPointerExceptions.
+     */
+    @Test
+    void encodingNullThrowsErrorMessage() {
+        Packet packet = null;
+        PacketCoder<ServerCommand> serverCoder = new ServerPacketCoder(PacketContentCoder.defaultPacketContentCoder());
+
+        assertThrows(NullPointerException.class, () -> {
+            serverCoder.encode(packet, 0);
+        });
+    }
+
+    /**
+     * This tests doesn't necessarily need to pass.
+     * It's written to undertand the behaviour of the communication between server and client in order to detect the origin of NullPointerExceptions.
+     */
+    @Test
+    void decodeNullThrowsErrorMessage() {
+        String encoded = null;
+        PacketCoder<ClientCommand> clientCoder = new ClientPacketCoder(PacketContentCoder.defaultPacketContentCoder());
+
+        assertThrows(NullPointerException.class, () -> {
+            clientCoder.decode(encoded, 0);
+        });
     }
 }

@@ -68,7 +68,7 @@ public class ClientConnectionsHandler {
                 serverPingPongRunner);
         clientInputListener.setUsernameReceivedListener(username -> {
             // only start output connection, when username received
-            ClientOutput clientOutput = new ClientOutput(socket, ipAddress, serverPacketCoder);
+            ClientOutput clientOutput = new ClientOutput(socket, ipAddress, serverPacketCoder, connectionPool);
             connectionPool.addConnection(ipAddress, new Connection(socket, clientOutput, clientInputListener));
             // username counts as PONG, because this means, that the client is connected
             serverPingPongRunner.setPongArrived(ipAddress);
@@ -76,6 +76,7 @@ public class ClientConnectionsHandler {
         });
 
         Thread t = new Thread(clientInputListener);
+        clientInputListener.setThread(t);
         t.start();
     }
 }
