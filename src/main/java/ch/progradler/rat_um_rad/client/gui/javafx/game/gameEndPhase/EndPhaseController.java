@@ -2,9 +2,14 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase;
 
 import ch.progradler.rat_um_rad.client.services.GameService;
 import ch.progradler.rat_um_rad.client.services.IGameService;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 
 public class EndPhaseController {
@@ -17,12 +22,7 @@ public class EndPhaseController {
     public Label winnerScoreLabel;
     public Label totalScore;
     Stage stage;
-    private IGameService gameService;
     private EndPhaseModel endPhaseModel;
-
-    public EndPhaseController() {
-        this.gameService = new GameService();
-    }
 
     public void initData(EndPhaseModel endPhaseModel, Stage stage) {
         this.endPhaseModel = endPhaseModel;
@@ -42,5 +42,12 @@ public class EndPhaseController {
 
         winnerScoreLabel.setText(endPhaseModel.getWinnerScore());
         winnerNameLabel.setText(endPhaseModel.getWinnerName());
+    }
+
+    @FXML
+    private void returnToStartupPage(ActionEvent event) throws IOException {
+        Platform.runLater(() -> {
+            endPhaseModel.getListener().controllerChanged("showStartupPage");
+        });
     }
 }

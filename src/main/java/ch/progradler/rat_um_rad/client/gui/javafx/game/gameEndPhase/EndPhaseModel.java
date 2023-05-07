@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase;
 
+import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.shared.models.game.ClientGame;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EndPhaseModel {
+    private final ControllerChangeListener<?> listener;
     ObservableList<String> rankingList;
     ClientGame clientGame;
     String myTotalScore;
@@ -24,7 +26,8 @@ public class EndPhaseModel {
     int winnerScore;
     String winnerName;
 
-    public EndPhaseModel(ClientGame clientGame) {
+    public EndPhaseModel(ClientGame clientGame, ControllerChangeListener<?> listener) {
+        this.listener = listener;
         this.clientGame = clientGame;
         rankingList = FXCollections.observableArrayList();
         playersInfo();
@@ -104,5 +107,9 @@ public class EndPhaseModel {
 
     public String getWinnerScore() {
         return winnerScore + " points";
+    }
+
+    public ControllerChangeListener<?> getListener() {
+        return listener;
     }
 }
