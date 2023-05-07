@@ -1,12 +1,8 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom;
 
-import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.services.IUserService;
 import ch.progradler.rat_um_rad.client.services.UserService;
-import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
-import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -51,14 +47,14 @@ public class ChatRoomController extends VBox {
     }
 
     /**
-     * whisper chat form : WHISPER<>ToUsername<>chatContent
+     * whisper chat form : {@literal WHISPER<>ToUsername<>chatContent}
      * when user wants to send whisper chat, he/she should enter message in this form:
      * ToUsername can be found in activities
-     * WHISPER<>smith<>how many cards do you have
+     * {@literal WHISPER<>smith<>}how many cards do you have
      * <p>
-     * broadcast chat form : BROADCAST<>chatContent
+     * broadcast chat form : {@literal BROADCAST<>chatContent}
      * when user wants to send broadcast message to all clients ,he/she should enter message in this form:
-     * BROADCAST<>I like this game
+     *  {@literal BROADCAST<>}I like this game
      *
      * @param event send chat message to server through userService
      */
