@@ -87,7 +87,7 @@ public class RoadActionHandler extends ActionHandler<String> {
         player.setWheelsRemaining(player.getWheelsRemaining() - road.getRequiredWheels());
         player.setScore(player.getScore() + GameConfig.scoreForRoadBuild(road.getRequiredWheels()));
 
-        // TODO: check if has very few wheels left -> send info that game will finish soon
+        // TODO: optional, check if has very few wheels left -> send info that game will finish soon
 
         game.getRoadsBuilt().put(road.getId(), ipAddress);
     }

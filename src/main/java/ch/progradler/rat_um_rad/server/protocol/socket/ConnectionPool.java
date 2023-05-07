@@ -32,8 +32,8 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     public void sendPacket(String ipAddress, Packet<ServerCommand> packet) {
         IConnection connection = connections.get(ipAddress);
         if (connection == null) {
-            LOGGER.info("No connection for IP-address {} found! Packet not sent.", ipAddress);
-            return; // TODO: test
+            LOGGER.warn("No connection for IP-address {} found! Packet not sent.", ipAddress);
+            return;
         }
         connection.sendPacketToClient(packet);
     }

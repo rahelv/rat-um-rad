@@ -26,7 +26,7 @@ public class TakeWheelCardsActionHandler extends ActionHandler<Object> {
     @Override
     protected String validate(Game game, String ipAddress, Object dontUseActionData) {
         WheelCardDeck wheelCardDeck = game.getDecksOfGame().getWheelCardDeck();
-        if (wheelCardDeck.getDeckOfCards().size() < 1) { //if there are not enough wheelCards in deck
+        if (wheelCardDeck.getDeckOfCards().size() < 2) { //if there are not enough wheelCards in deck
             //TODO: implement and test
         }
         return null;
