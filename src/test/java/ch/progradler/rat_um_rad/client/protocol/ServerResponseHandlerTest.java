@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
-import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeController;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
@@ -18,8 +17,6 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class ServerResponseHandlerTest {
-    @Mock
-    PackagePresenter mockPackagePresenter;
     @Mock
     ClientPingPongRunner mockClientPingPongRunner;
 
