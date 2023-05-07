@@ -28,6 +28,7 @@ public class Client {
      *
      * @param host     : ip of the server
      * @param port     : port of the server socket
+     *
      * @param username
      */
     public void start(String host, int port, String username) { //TODO: handle initial username
