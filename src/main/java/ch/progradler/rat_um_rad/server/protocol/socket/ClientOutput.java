@@ -21,7 +21,7 @@ public class ClientOutput {
     private final String ipAddress;
     private final Coder<Packet<ServerCommand>> packetCoder;
     private Socket socket;
-    private OutputStream out; //TODO: implement using own serialization
+    private OutputStream out;
     private PrintWriter printWriter;
     private ConnectionPoolInfo connectionPoolInfo;
     private static final Logger LOGGER = LogManager.getLogger();
@@ -35,7 +35,8 @@ public class ClientOutput {
             out = socket.getOutputStream();
             printWriter = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace(); //TODO: error management
+            e.printStackTrace();
+            //TODO Possibly add improved exception handling
         }
     }
 

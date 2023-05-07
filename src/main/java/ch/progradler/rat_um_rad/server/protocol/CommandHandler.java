@@ -38,7 +38,6 @@ public class CommandHandler implements InputPacketGateway {
      * commands in the switch cases or the used methods in the code block for each case.
      */
     synchronized public void handleCommand(Packet<ClientCommand> packet, String ipAddress) {
-        // TODO: unittest
         // TODO: is it enough to just synchronize this method?
 
         if (packet.getCommand() != ClientCommand.PONG)
@@ -79,19 +78,10 @@ public class CommandHandler implements InputPacketGateway {
             case REQUEST_WHEEL_CARDS -> {
                 gameService.takeWheelCardFromDeck(ipAddress);
             }
-            case BUILD_ROAD -> handleBuildRoadPacket(packet, ipAddress);
+            case BUILD_ROAD -> gameService.buildRoad(ipAddress, (String) packet.getContent());
             case REQUEST_SHORT_DESTINATION_CARDS -> gameService.requestShortDestinationCards(ipAddress);
             case REQUEST_HIGHSCORES -> gameService.requestHighscores(ipAddress);
             default -> throw new IllegalStateException("Unexpected value: " + packet.getCommand());
-        }
-    }
-
-    private void handleBuildRoadPacket(Packet<ClientCommand> packet, String ipAddress) {
-        if (packet.getContentType() == ContentType.BUILD_ROAD_INFO) {
-            BuildRoadInfo buildRoadInfo = (BuildRoadInfo) packet.getContent();
-            gameService.buildGreyRoad(ipAddress, buildRoadInfo.getRoadId(), buildRoadInfo.getColor());
-        } else {
-            gameService.buildRoad(ipAddress, (String) packet.getContent());
         }
     }
 }
