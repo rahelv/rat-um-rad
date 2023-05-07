@@ -30,7 +30,7 @@ public class UserService implements IUserService {
     private final UsernameValidator usernameValidator;
 
     /**
-     * Constructor for Testing purposes. TODO: decide if usernamevalidator should be given as parameter in normal constructor.
+     * Constructor for Testing purposes.
      *
      * @param outputPacketGateway
      * @param userRepository
@@ -49,15 +49,16 @@ public class UserService implements IUserService {
         LOGGER.info("Registering user " + ipAddress + ", " + username);
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
         if (!usernameValidator.isUsernameValid(chosenUsername)) {
-            Packet.Server errorPacket = new Packet.Server(ServerCommand.INVALID_ACTION_FATAL, ErrorResponse.USERNAME_INVALID, ContentType.STRING); //TODO: on client, user has to enter username again
+            Packet.Server errorPacket = new Packet.Server(
+                    ServerCommand.INVALID_ACTION_FATAL, ErrorResponse.USERNAME_INVALID, ContentType.STRING);
             outputPacketGateway.sendPacket(ipAddress, errorPacket);
             return;
         }
         userRepository.addUsername(chosenUsername, ipAddress);
-        Packet.Server confirmPacket = new Packet.Server(ServerCommand.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE); //TODO: change packet to UsernameChangeConfirmation
+        Packet.Server confirmPacket = new Packet.Server(ServerCommand.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE);
         outputPacketGateway.sendPacket(ipAddress, confirmPacket);
         Packet.Server broadCastPacket = new Packet.Server(ServerCommand.NEW_USER, chosenUsername, ContentType.STRING);
-        //TODO: send packet containing usernames of current logged in users?
+        //TODO: possibly send packet containing usernames of current logged in users?
         broadcastExcludingUser(broadCastPacket, ipAddress);
 
         //update online players on client
@@ -76,7 +77,7 @@ public class UserService implements IUserService {
         }
         String chosenUsername = checkUsernameAndSuggestAlternative(username);
         userRepository.updateUsername(chosenUsername, ipAddress);
-        Packet.Server confirmPacket = new Packet.Server(ServerCommand.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE); //TODO: change packet to UsernameChangeConfirmation
+        Packet.Server confirmPacket = new Packet.Server(ServerCommand.USERNAME_CONFIRMED, new UsernameChange(username, chosenUsername), ContentType.USERNAME_CHANGE);
         outputPacketGateway.sendPacket(ipAddress, confirmPacket);
         Packet.Server broadCastPacket = new Packet.Server(ServerCommand.CHANGED_USERNAME,
                 new UsernameChange(oldName, chosenUsername),

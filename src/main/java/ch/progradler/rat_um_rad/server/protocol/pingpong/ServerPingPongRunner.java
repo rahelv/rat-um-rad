@@ -58,7 +58,7 @@ public class ServerPingPongRunner implements Runnable {
             Thread.sleep(TIME_FOR_DISCONNECT * SECOND);
         } catch (InterruptedException e) {
             e.printStackTrace();
-            //TODO Exception handling
+            //TODO Possibly add improved exception handling
         }
     }
 }

@@ -25,8 +25,6 @@ public interface IGameService {
      */
     void joinGame(String ipAddress, String gameIp);
 
-    void exitGame(String ipAddress);
-
     /**
      * This method is used in the game {@link GameStatus#PREPARATION} as well as in {@link GameStatus#STARTED}.
      */
@@ -36,29 +34,13 @@ public interface IGameService {
 
     void buildRoad(String ipAddress, String roadId);
 
-    /**
-     * The user can choose the color of wheelCards he wants to use to build that road when the road
-     * is grey.
-     */
-    void buildGreyRoad(String ipAddress, String roadId, WheelColor color);
-
     void takeWheelCardFromDeck(String ipAddress);
 
-    void takeOpenWheelCard(String ipAddress, WheelCard wheelCard);
 
     /**
      * TODO: explain what this method does.
      */
     void handleConnectionLoss(String ipAddress);
-
-    void wantToFinishGame(String ipAddress);
-
-    /**
-     * In order to finish the game in a hypothetical dead end of the game, this method can be called.
-     * If it's called from every player where no player called dontWantToFinishGame() anymore, the
-     * game gets the state FINISHED.
-     */
-    void dontWantToFinishGame(String ipAddress);
 
     /**
      * @param ipAddress of client who requested list of game instances that have not yet started.
