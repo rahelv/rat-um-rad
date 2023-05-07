@@ -3,6 +3,8 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game;
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.ownPlayerOverview.OwnPlayerOverviewController;
@@ -29,6 +31,8 @@ public class GameController {
     private OwnPlayerOverviewController ownPlayerOverviewController = new OwnPlayerOverviewController();
     @FXML
     private GameMapController gameMapController = new GameMapController();
+    @FXML
+    private ChatRoomController chatRoomController = new ChatRoomController();
 
     /**
      * 1. Warten auf Spieler in Lobby
@@ -91,10 +95,11 @@ public class GameController {
      * @param gameModel
      * @param stage
      */
-    public void initData(GameModel gameModel, Stage stage) {
+    public void initData(GameModel gameModel, Stage stage, ChatRoomModel chatRoomModel) {
         this.stage = stage;
         this.gameModel = gameModel;
         this.activityController.initData(new ActivityModel());
+        this.chatRoomController.initData(chatRoomModel);
         this.playerOverviewController.initData(new PlayerOverviewModel());
         this.playerOverviewController.updatePlayerOverview(gameModel.getClientGame().getOtherPlayers());
         this.ownPlayerOverviewController.initData(new OwnPlayerOverviewModel());

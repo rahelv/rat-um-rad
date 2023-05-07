@@ -7,7 +7,7 @@ import ch.progradler.rat_um_rad.shared.protocol.coder.CoderHelper;
 import java.util.List;
 
 /**
- * Database for {@link List<Highscore>>}.
+ * Database for {@link List<Highscore>}.
  */
 public class HighscoresDatabase extends Database<List<Highscore>> {
     private final Coder<Highscore> coder;

@@ -18,10 +18,4 @@ public class MainMenuController implements Initializable {
     public void openHandbook(ActionEvent event) {
         HandbookPopup handbookPopup = new HandbookPopup(); //TODO: only open once
     }
-
-    @FXML
-    public void refreshPage(ActionEvent event) {
-        //TODO: reload page and model data
-        System.out.println("page refreshed");
-    }
 }

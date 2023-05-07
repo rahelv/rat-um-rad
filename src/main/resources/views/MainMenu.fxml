@@ -9,8 +9,5 @@
         <Menu text="Help">
             <MenuItem text="Handbook" onAction="#openHandbook"></MenuItem>
         </Menu>
-        <Menu text="Refresh">
-            <MenuItem text="TODO: remove" onAction="#refreshPage"></MenuItem>
-        </Menu>
     </MenuBar>
 </AnchorPane>

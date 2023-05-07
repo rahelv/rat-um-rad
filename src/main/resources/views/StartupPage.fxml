@@ -4,27 +4,25 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" pickOnBounds="false" prefHeight="400.0" prefWidth="600.0"
-            xmlns="http://javafx.com/javafx/19">
-    <fx:include source="MainMenu.fxml" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                AnchorPane.rightAnchor="0.0"/>
-    <VBox layoutY="28.0" pickOnBounds="false" prefHeight="470.0" prefWidth="208.0" AnchorPane.topAnchor="30.0"
-          AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0">
-        <Label prefHeight="75.0" prefWidth="315.0" text="Rat um Rad" textAlignment="CENTER">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19">
+    <fx:include source="MainMenu.fxml" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
+    <VBox AnchorPane.topAnchor="50.0" AnchorPane.leftAnchor="200.0" spacing="10.0">
+        <Label prefHeight="75.0" text="Rat um Rad">
             <font>
                 <Font name="Arial Black" size="36.0"/>
             </font>
         </Label>
-        <HBox>
-            <Label fx:id="welcomeLabel" prefHeight="28.0" prefWidth="236.0"/>
+
+        <HBox spacing="10">
+            <Label fx:id="welcomeLabel" prefHeight="28.0"/>
             <Button onAction="#changeUsernameButtonTriggered" text="Change username"/>
         </HBox>
-        <LobbyController fx:id="lobbyController"></LobbyController>
-        <HBox spacing="5">
-            <Button fx:id="showAllGamesButton" onAction="#showAllGamesAction" text="show all games"/>
+        <LobbyController fx:id="lobbyController"/>
+        <HBox spacing="5" alignment="CENTER">
             <Button fx:id="createGameButton" onAction="#createGameAction" text="create game"/>
+            <Button fx:id="showAllGamesButton" onAction="#showAllGamesAction" text="show all games"/>
             <Button fx:id="highScoresButton" onAction="#showHighScores" text="show HighScores"/>
-            <Button fx:id="currentPlayersLabelButton"></Button>
+            <Button fx:id="currentPlayersLabelButton"/>
         </HBox>
     </VBox>
 </AnchorPane>

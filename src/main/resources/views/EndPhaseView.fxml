@@ -95,4 +95,5 @@
             <Font size="14.0"/>
         </font>
     </Label>
+    <Button AnchorPane.topAnchor="50" AnchorPane.rightAnchor="105" onAction="#returnToStartupPage" text="Return To Startup Page"/>
 </AnchorPane>

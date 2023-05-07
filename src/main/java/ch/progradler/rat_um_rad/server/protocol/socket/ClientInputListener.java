@@ -50,7 +50,7 @@ public class ClientInputListener implements Runnable {
             inputStream = socket.getInputStream();
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace(); //TODO: error management
+            e.printStackTrace();
             LOGGER.warn("Failed to connect with client. Removing client...");
             clientDisconnectedListener.onDisconnected(ipAddress);
         }
@@ -71,10 +71,6 @@ public class ClientInputListener implements Runnable {
                 String encodedPacket = StreamUtils.readStringsFromStream(bufferedReader);
                 Packet<ClientCommand> packet = packetCoder.decode(encodedPacket, 0);
                 inputPacketGateway.handleCommand(packet, ipAddress);
-                // TODO: unittest
-
-                //TODO: implement QUIT scenario (with break)
-                //important to remove client from pool so server doesn't crash
             }
         } catch (SocketException e) {
             inputPacketGateway.handleCommand(new Packet.Client(ClientCommand.USER_SOCKET_DISCONNECTED,
@@ -84,7 +80,6 @@ public class ClientInputListener implements Runnable {
                     " disconnected from socket connection!");
             clientDisconnectedListener.onDisconnected(ipAddress);
         } catch (Exception e) {
-            // TODO: remove in stream and socket connection for this client?
             e.printStackTrace();
         }
     }

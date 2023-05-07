@@ -104,7 +104,6 @@ public class GameService implements IGameService {
 
     @Override
     public void joinGame(String ipAddress, String gameId) {
-        // TODO: check if player not already in other game?
         Game game = gameRepository.getGame(gameId);
         if (game.getStatus() == WAITING_FOR_PLAYERS) {
             addPlayerAndSaveGame(ipAddress, game);
@@ -137,11 +136,6 @@ public class GameService implements IGameService {
         Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
         game.getPlayers().put(ipAddress, newPlayer);
         gameRepository.updateGame(game);
-    }
-
-    @Override
-    public void exitGame(String ipAddress) {
-        //TODO: implement
     }
 
     @Override
@@ -228,11 +222,6 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void buildGreyRoad(String ipAddress, String roadId, WheelColor color) {
-        //TODO: implement
-    }
-
-    @Override
     public void takeWheelCardFromDeck(String ipAddress) {
         LOGGER.info("Player " + ipAddress + " attempting to take wheelCards.");
         actionHandlerFactory.createTakeWheelCardsActionHandler().handle(ipAddress, "");
@@ -243,22 +232,7 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void takeOpenWheelCard(String ipAdress, WheelCard wheelCard) {
-        //TODO: implement
-    }
-
-    @Override
     public void handleConnectionLoss(String ipAddress) {
-        //TODO: implement
-    }
-
-    @Override
-    public void wantToFinishGame(String ipAddress) {
-        //TODO: implement
-    }
-
-    @Override
-    public void dontWantToFinishGame(String ipAddress) {
         //TODO: implement
     }
 

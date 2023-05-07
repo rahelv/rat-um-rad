@@ -8,11 +8,13 @@ import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 
@@ -85,6 +87,7 @@ public class OwnPlayerOverviewController extends VBox {
         Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
+
         public WheelCardCell() {
             super();
             hbox.getChildren().addAll(nameLabel, pane);
@@ -96,7 +99,7 @@ public class OwnPlayerOverviewController extends VBox {
             setText(null);
             setGraphic(null);
             if (item != null && !empty) {
-                hbox.setBackground(new Background(new BackgroundFill(UiUtil.wheelCardColor(item.getColor()),CornerRadii.EMPTY, Insets.EMPTY)));
+                hbox.setBackground(new Background(new BackgroundFill(Color.valueOf(item.getColor().toString()), CornerRadii.EMPTY, Insets.EMPTY)));
                 nameLabel.setText(item.getColor().toString()); //TODO: check if color is correctly converted to string
                 setGraphic(hbox);
             }
