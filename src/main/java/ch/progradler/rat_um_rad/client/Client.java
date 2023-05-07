@@ -1,7 +1,5 @@
 package ch.progradler.rat_um_rad.client;
 
-import ch.progradler.rat_um_rad.client.command_line.presenter.CommandLinePresenter;
-import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
@@ -80,8 +78,7 @@ public class Client {
     private void startServerListener(Socket socket,
                                      Coder<Packet<ServerCommand>> packetCoder,
                                      ClientPingPongRunner clientPingPongRunner) {
-        PackagePresenter presenter = new CommandLinePresenter();
-        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner);
+        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(clientPingPongRunner);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
 
         InputPacketGatewaySingleton.setInputPacketGateway(inputPacketGateway);

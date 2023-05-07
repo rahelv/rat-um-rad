@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
-import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
@@ -27,11 +26,9 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
     public static final Logger LOGGER = LogManager.getLogger();
 
     private final List<ServerResponseListener<?>> listeners = new ArrayList<>();
-    private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
 
-    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner) {
-        this.presenter = presenter;
+    public ServerResponseHandler(ClientPingPongRunner clientPingPongRunner) {
         this.clientPingPongRunner = clientPingPongRunner;
     }
 
@@ -124,7 +121,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 List<Highscore> highScores = (List<Highscore>) packet.getContent();
                 notifyListenersOfType(highScores, ServerCommand.SEND_HIGHSCORES);
             }
-            default -> presenter.display(packet);
+            default -> System.out.println(packet.getContent());
         }
     }
 

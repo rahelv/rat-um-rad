@@ -27,7 +27,7 @@ class ServerResponseHandlerTest {
 
     @BeforeEach
     void setUp() {
-        serverResponseHandler = new ServerResponseHandler(mockPackagePresenter, mockClientPingPongRunner);
+        serverResponseHandler = new ServerResponseHandler(mockClientPingPongRunner);
     }
 
     @Test
