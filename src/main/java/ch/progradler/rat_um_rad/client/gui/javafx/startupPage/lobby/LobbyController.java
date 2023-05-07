@@ -6,14 +6,11 @@ import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 
 import java.io.IOException;
 
-public class LobbyController extends GridPane {
+public class LobbyController extends VBox {
     @FXML
     private ListView<GameBase> openGamesListView;
     @FXML

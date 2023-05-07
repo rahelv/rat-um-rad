@@ -69,7 +69,7 @@ public class StartupPageController {
         this.usernameChangeModel = usernameChangeModel;
         this.startupPageModel = startupPageModel;
         this.stage = stage;
-        welcomeLabel.setText("Herzlich Willkommen " + usernameChangeModel.getCurrentUsername() + " !");
+        welcomeLabel.setText("Welcome " + usernameChangeModel.getCurrentUsername() + " !");
 
         this.lobbyController.initData(lobbyModel);
         try {
