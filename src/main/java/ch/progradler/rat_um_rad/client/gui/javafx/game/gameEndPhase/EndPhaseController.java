@@ -1,7 +1,5 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase;
 
-import ch.progradler.rat_um_rad.client.services.GameService;
-import ch.progradler.rat_um_rad.client.services.IGameService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

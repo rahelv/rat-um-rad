@@ -78,7 +78,6 @@ public class EndPhaseModel {
             sumNotAchievedScore = sumNotAchievedScore + destinationCard.getPoints();
         }
         this.scoreOfNotAchievedShorts = sumNotAchievedScore;
-        //TODO : infos of long destination cards should be given from server
     }
 
     public String getMyTotalScore() {
