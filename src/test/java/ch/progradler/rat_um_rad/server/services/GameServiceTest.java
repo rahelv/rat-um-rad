@@ -296,8 +296,6 @@ class GameServiceTest {
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
                     .thenReturn(game);
-            utilities.when(() -> GameServiceUtil.validateAndHandleActionPrecondition(
-                    ipAddress, game, mockOutputPacketGateway)).thenReturn(true);
 
             gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
 
@@ -445,6 +443,40 @@ class GameServiceTest {
             gameService.selectShortDestinationCards(ipAddress, cardIds);
 
             verify(selectDestinationCardsActionHandler).handle(ipAddress, cardIds);
+        }
+    }
+
+    @Test
+    void handleConnectionLossDoesNothingIfPlayerInNoGame() {
+        String ipAddress = "ipAddressA";
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(null);
+
+            gameService.handleConnectionLoss(ipAddress);
+
+            verifyNoInteractions(mockOutputPacketGateway);
+            verifyNoInteractions(mockGameRepository);
+        }
+    }
+
+    @Test
+    void handleConnectionLossSetsStatusToFinishedOfGameAndSendsNotificationToPlayers() {
+        String ipAddress = "ipAddressA";
+        Game game = mock(Game.class);
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(game);
+
+            gameService.handleConnectionLoss(ipAddress);
+
+            verify(game).setStatus(FINISHED);
+            verify(mockGameRepository).updateGame(game);
+
+            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway,
+                    GAME_ENDED_BY_PLAYER_DISCONNECTION));
         }
     }
 

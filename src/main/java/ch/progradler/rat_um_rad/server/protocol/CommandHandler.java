@@ -5,10 +5,8 @@ import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
-import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,8 +36,6 @@ public class CommandHandler implements InputPacketGateway {
      * commands in the switch cases or the used methods in the code block for each case.
      */
     synchronized public void handleCommand(Packet<ClientCommand> packet, String ipAddress) {
-        // TODO: is it enough to just synchronize this method?
-
         if (packet.getCommand() != ClientCommand.PONG)
             LOGGER.info("Received client command " + packet.getCommand() + " from " + ipAddress);
 
@@ -52,7 +48,10 @@ public class CommandHandler implements InputPacketGateway {
             case REGISTER_USER -> userService.handleNewUser((String) packet.getContent(), ipAddress);
             case SEND_BROADCAST_CHAT -> userService.handleBroadCastMessageFromUser((String) packet.getContent(), ipAddress);
             case SEND_GAME_INTERNAL_CHAT -> userService.handleGameInternalMessageFromUser((String) packet.getContent(), ipAddress);
-            case USER_SOCKET_DISCONNECTED -> userService.handleUserDisconnected(ipAddress);
+            case USER_SOCKET_DISCONNECTED -> {
+                userService.handleUserDisconnected(ipAddress);
+                gameService.handleConnectionLoss(ipAddress);
+            }
             case PONG -> {
                 serverPingPongRunner.setPongArrived(ipAddress);
             }
