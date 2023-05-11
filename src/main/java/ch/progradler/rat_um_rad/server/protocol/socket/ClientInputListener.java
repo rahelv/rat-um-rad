@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.server.protocol.socket;
 
 import ch.progradler.rat_um_rad.server.gateway.InputPacketGateway;
+import ch.progradler.rat_um_rad.server.protocol.ClientConnectionsHandler;
 import ch.progradler.rat_um_rad.server.protocol.ClientDisconnectedListener;
 import ch.progradler.rat_um_rad.server.protocol.UsernameReceivedListener;
 import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
@@ -21,7 +22,8 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Listens to incoming commands from a specific client via socket stream. For each client, there is one such a input listener.
+ * Listens to incoming commands from a specific client via socket stream.
+ * For each client, there is one such input listener-instance and thus a {@link Thread}.
  */
 public class ClientInputListener implements Runnable {
     public static final Logger LOGGER = LogManager.getLogger();
@@ -61,10 +63,13 @@ public class ClientInputListener implements Runnable {
         this.usernameReceivedListener = usernameReceivedListener;
     }
 
+    /**
+     * This method expects the username first and then starts listening. This is because the conneciton is only
+     * set up when the username is recieved and thus, no further communication between server and client should be there.
+     */
     @Override
     public void run() {
         try {
-            //expects the username first
             readUsername();
 
             while (true) {
@@ -84,6 +89,10 @@ public class ClientInputListener implements Runnable {
         }
     }
 
+    /**
+     * The method {@link UsernameReceivedListener#onUsernameReceived(String)} sets up the connection.
+     * See in {@link ClientConnectionsHandler} for the concrete implementation.
+     */
     private void readUsername() throws IOException {
         String usernamePacketEncoded = StreamUtils.readStringsFromStream(bufferedReader);
 
