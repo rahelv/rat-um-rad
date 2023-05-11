@@ -9,7 +9,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-
+/**
+ * game ranking will be shown in Listview, as well as own game achievements (such as numbers of achieved destination card,
+ * scores in total etc.) will be shown detailed in table format
+ */
 public class EndPhaseController {
     public ListView<String> rankingListView;
     public Label achievedGoalCardsNum;

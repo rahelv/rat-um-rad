@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * Activity: Username + ausgeführte Aktivität
- * TODO: wo werden Activities generiert ?
  */
 public class ActivityModel {
     ObservableList<String> latestActivities = FXCollections.observableArrayList();

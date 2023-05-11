@@ -8,7 +8,6 @@ import javafx.collections.ObservableList;
 import java.util.List;
 
 public class ChooseCardModel {
-    //TODO: private String type;
     private final ControllerChangeListener<?> listener;
     private DestinationCard longDestinationCard;
 
