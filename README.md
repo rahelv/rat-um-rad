@@ -4,8 +4,8 @@
 
 ## Über das Spiel
 
-Rat um Rad ist ein digitales Brettspiel für 3-5 Spieler. Die Spieler bauen Strecken auf einem Streckennetz der Stadt Basel. 
-Ziel ist es möglichst lange Strecken zu bilden und als erster alle Spielsteine verbaut zu haben.
+Rat um Rad ist ein digitales Brettspiel für 3-5 Spieler. Die Spieler bauen Strecken auf einem Streckennetz der Stadt
+Basel. Ziel ist es möglichst lange Strecken zu bilden und als erster alle Spielsteine verbaut zu haben.
 
 ## Entwicklung
 
@@ -23,6 +23,9 @@ gestartet werden kann.
 
 ### JAR & Javadoc
 
+Die JAR-Version des letzten Meilensteins kann auch einfach von [unserer Website](https://rat-um-rad.web.app/)
+heruntergeladen werden.
+
 Um ein JAR-File und die Javacod zu erstellen, öffne das Repository im Terminal und gebe
 `gradlew build-cs108` ein. Um die Jar-File auszuführen, gehe in den [build/libs](./build/libs) Order und führe die
 JAR-File mit z.B. `java -jar rat-um-rad-0.0.1-ALPHA.jar server 9090` aus. Um die Javadoc anzuschauen, gehe in
@@ -32,13 +35,13 @@ einem Browser.
 ### Server Input Parameter
 
 | Befehl          | Beschreibung                                                                                       |
-|-----------------|----------------------------------------------------------------------------------------------------|
+| --------------- | -------------------------------------------------------------------------------------------------- |
 | server \<port\> | startet den Server und erstellt das Socket, welches auf dem gewählten Port auf Verbindungen wartet |
 | server          | zu Testzwecken, startet den Server mit Default-Parameter Port: 8090                                |
 
 ### Client Input Parameter
 
-| Befehl                 | Beschreibung                                                                                                                 |
-|------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| client \<hostaddress\>:\<port\> [\<username\>] | startet den Client und stellt eine socket-Verbindung zur gewählten Host-IP-Adresse des Servers und Port her. Der username ist optional und der Client wird (falls angegeben) damit eingeloggt.  |
-| client                 | zu Testzwecken, startet der Client mit Default-Parametern Host: localhost und Port: 8090                                     |
+| Befehl                                         | Beschreibung                                                                                                                                                                                   |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| client \<hostaddress\>:\<port\> [\<username\>] | startet den Client und stellt eine socket-Verbindung zur gewählten Host-IP-Adresse des Servers und Port her. Der username ist optional und der Client wird (falls angegeben) damit eingeloggt. |
+| client                                         | zu Testzwecken, startet der Client mit Default-Parametern Host: localhost und Port: 8090                                                                                                       |
