@@ -121,7 +121,11 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 List<Highscore> highScores = (List<Highscore>) packet.getContent();
                 notifyListenersOfType(highScores, ServerCommand.SEND_HIGHSCORES);
             }
-            default -> System.out.println(packet.getContent());
+            default -> {
+                LOGGER.info("A packet with content " + packet.getContent() + " arrived in Server without matching any Client-Commands.");
+                //Printing so that developers can see it.
+                System.out.println(packet.getContent());
+            }
         }
     }
 

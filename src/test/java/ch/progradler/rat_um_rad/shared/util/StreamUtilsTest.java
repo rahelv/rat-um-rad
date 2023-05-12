@@ -65,7 +65,6 @@ public class StreamUtilsTest {
         String actualString = outputStream.toString(StandardCharsets.UTF_8);
 
         Assertions.assertEquals(testSendStr + System.lineSeparator(), actualString);
-        System.out.println();
     }
 
     @Test

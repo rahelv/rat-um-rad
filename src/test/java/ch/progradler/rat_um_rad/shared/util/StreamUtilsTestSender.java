@@ -33,7 +33,7 @@ public class StreamUtilsTestSender implements Runnable {
                     StreamUtils.writeStringToStream(StreamUtilsTest.SENT1, printWriter);
                     StreamUtilsTest.communicate = true;
                     while (StreamUtilsTest.communicate) {
-                        Thread.sleep(200);
+                        Thread.sleep(400);
                     }
                     StreamUtils.writeStringToStream(StreamUtilsTest.SENT2, printWriter);
                     StreamUtilsTest.communicate = true;
@@ -41,20 +41,20 @@ public class StreamUtilsTestSender implements Runnable {
                 case TEST_3 -> {
                     StreamUtils.writeStringToStream(StreamUtilsTest.SENT1, printWriter);
                     StreamUtilsTest.communicate = true;
-                    Thread.sleep(400);
+                    Thread.sleep(800);
                     StreamUtils.writeStringToStream(StreamUtilsTest.SENT2, printWriter);
                 }
                 case TEST_4 -> {
-                    Thread.sleep(400);
+                    Thread.sleep(800);
                     StreamUtils.writeStringToStream(StreamUtilsTest.SENT1, printWriter);
                     StreamUtils.writeStringToStream(StreamUtilsTest.SENT2, printWriter);
                     StreamUtilsTest.communicate = true;
                 }
                 case TEST_5 -> {
-                    Thread.sleep(400);
+                    Thread.sleep(800);
                     StreamUtils.writeStringToStream(StreamUtilsTest.SENT1, printWriter);
                     StreamUtilsTest.communicate = true;
-                    Thread.sleep(400);
+                    Thread.sleep(800);
                     StreamUtils.writeStringToStream(StreamUtilsTest.SENT2, printWriter);
                 }
             }

@@ -1,9 +1,17 @@
 package ch.progradler.rat_um_rad.shared.models;
 
+import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 
 import java.util.Objects;
 
+/**
+ * As activities the three activities that can be done by the players in the {@link GameStatus#STARTED} (and the one in {@link GameStatus#PREPARATION}) are understood.
+ * That are:
+ * - Take WheelCards
+ * - Take DestinationCards
+ * - Build a road.
+ */
 public class Activity {
     private final String username;
     private final ServerCommand command;
