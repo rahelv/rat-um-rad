@@ -10,6 +10,8 @@ import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -25,6 +27,7 @@ public class ClientConnectionsHandler {
     public final ConnectionPool connectionPool = new ConnectionPool();
     private final Coder<Packet<ServerCommand>> serverPacketCoder;
     private final Coder<Packet<ClientCommand>> clientPacketCoder;
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public ClientConnectionsHandler(Coder<Packet<ServerCommand>> serverPacketCoder, Coder<Packet<ClientCommand>> clientPacketCoder) {
         this.serverPacketCoder = serverPacketCoder;
@@ -37,7 +40,7 @@ public class ClientConnectionsHandler {
     public void start(int port, InputPacketGateway inputPacketGateway, ServerPingPongRunner serverPingPongRunner) {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            System.out.format("Server listening on port %d\n", port);
+            LOGGER.info("Server listening on port %d\n", port);
 
             while (true) { //keeps running
                 acceptNewClient(inputPacketGateway, serverSocket, serverPingPongRunner);
@@ -58,6 +61,8 @@ public class ClientConnectionsHandler {
 
     private void setupConnection(Socket socket, InputPacketGateway inputPacketGateway, ServerPingPongRunner serverPingPongRunner) {
         String ipAddress = socket.getRemoteSocketAddress().toString();
+        LOGGER.info("Connected to client with ipAddress: " + ipAddress);
+        //Printing so that developers can see it.
         System.out.println("Connected to client with ipAddress: " + ipAddress);
 
         ClientInputListener clientInputListener = new ClientInputListener(socket,

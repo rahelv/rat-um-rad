@@ -25,7 +25,7 @@ public class StreamUtilsTestReceiver implements Runnable {
             switch (StreamUtilsTest.TEST_NUMBER) {
                 case TEST_1 -> {
                     while (!StreamUtilsTest.communicate) {
-                        Thread.sleep(200);
+                        Thread.sleep(400);
                     }
                     StreamUtilsTest.RECEIVED1 = StreamUtils.readStringsFromStream(bufferedReader);
                     StreamUtilsTest.isReceived1 = true;
@@ -34,20 +34,20 @@ public class StreamUtilsTestReceiver implements Runnable {
                 }
                 case TEST_2 -> {
                     while (!StreamUtilsTest.communicate) {
-                        Thread.sleep(200);
+                        Thread.sleep(400);
                     }
                     StreamUtilsTest.RECEIVED1 = StreamUtils.readStringsFromStream(bufferedReader);
                     StreamUtilsTest.isReceived1 = true;
                     StreamUtilsTest.communicate = false;
                     while (!StreamUtilsTest.communicate) {
-                        Thread.sleep(200);
+                        Thread.sleep(400);
                     }
                     StreamUtilsTest.RECEIVED2 = StreamUtils.readStringsFromStream(bufferedReader);
                     StreamUtilsTest.isReceived2 = true;
                 }
                 case TEST_3 -> {
                     while (!StreamUtilsTest.communicate) {
-                        Thread.sleep(200);
+                        Thread.sleep(400);
                     }
                     StreamUtilsTest.RECEIVED1 = StreamUtils.readStringsFromStream(bufferedReader);
                     StreamUtilsTest.isReceived1 = true;
@@ -58,7 +58,7 @@ public class StreamUtilsTestReceiver implements Runnable {
                     StreamUtilsTest.RECEIVED1 = StreamUtils.readStringsFromStream(bufferedReader);
                     StreamUtilsTest.isReceived1 = true;
                     while (!StreamUtilsTest.communicate) {
-                        Thread.sleep(200);
+                        Thread.sleep(400);
                     }
                     StreamUtilsTest.RECEIVED2 = StreamUtils.readStringsFromStream(bufferedReader);
                     StreamUtilsTest.isReceived2 = true;
@@ -67,7 +67,7 @@ public class StreamUtilsTestReceiver implements Runnable {
                     StreamUtilsTest.RECEIVED1 = StreamUtils.readStringsFromStream(bufferedReader);
                     StreamUtilsTest.isReceived1 = true;
                     while (!StreamUtilsTest.communicate) {
-                        Thread.sleep(200);
+                        Thread.sleep(400);
                     }
                     StreamUtilsTest.RECEIVED2 = StreamUtils.readStringsFromStream(bufferedReader);
                     StreamUtilsTest.isReceived2 = true;

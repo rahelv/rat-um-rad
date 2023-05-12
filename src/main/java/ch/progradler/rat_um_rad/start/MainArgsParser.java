@@ -1,5 +1,8 @@
 package ch.progradler.rat_um_rad.start;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Responsible for parsing the input arguments to start the application into a {@link MainArgs} object.
  */
@@ -10,6 +13,7 @@ public class MainArgsParser {
 
     private static final String SERVER_COMMAND = "server";
     private static final String CLIENT_COMMAND = "client";
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public static MainArgs parseArgs(String[] args) {
         if (args.length == 0) throw new IllegalArgumentException("No args given!");
@@ -29,12 +33,14 @@ public class MainArgsParser {
         String[] hostAndPort = hostAndPortString.split(":");
         String host = hostAndPort[0];
         if (host.isEmpty()) {
+            LOGGER.warn("No host address defined in args. Using default host " + LOCAL_HOST);
             System.out.println("No host address defined in args. Using default host " + LOCAL_HOST);
             host = LOCAL_HOST;
         }
 
         int port;
         if (hostAndPort.length < 2) {
+            LOGGER.warn("No port defined in args. Using default port %d\n", DEFAULT_PORT);
             System.out.format("No port defined in args. Using default port %d\n", DEFAULT_PORT);
             port = DEFAULT_PORT;
         } else port = getPort(hostAndPort[1]);
@@ -45,6 +51,7 @@ public class MainArgsParser {
     private static MainArgs parseServerArgs(String[] args) {
         int port;
         if (args.length < 2) {
+            LOGGER.warn("No port defined in args. Using default port %d\n", DEFAULT_PORT);
             System.out.format("No port defined in args. Using default port %d\n", DEFAULT_PORT);
             port = DEFAULT_PORT;
         } else port = getPort(args[1]);
@@ -55,6 +62,7 @@ public class MainArgsParser {
         try {
             return Integer.parseInt(portString);
         } catch (NumberFormatException e) {
+            LOGGER.warn("Badly formatted port defined in args (%s). Using default port %d\n", portString, DEFAULT_PORT);
             System.out.format("Badly formatted port defined in args (%s). Using default port %d\n", portString, DEFAULT_PORT);
             return DEFAULT_PORT;
         }
