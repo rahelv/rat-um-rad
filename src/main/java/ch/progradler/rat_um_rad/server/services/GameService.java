@@ -229,10 +229,6 @@ public class GameService implements IGameService {
         actionHandlerFactory.createTakeWheelCardsActionHandler().handle(ipAddress, "");
     }
 
-    private void handleNotEnoughWheelcards() {
-        //TODO: implement
-    }
-
     @Override
     public void handleConnectionLoss(String ipAddress) {
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);

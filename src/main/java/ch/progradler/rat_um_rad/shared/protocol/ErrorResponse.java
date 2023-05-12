@@ -14,4 +14,5 @@ public class ErrorResponse {
     public static final String ROAD_DOES_NOT_EXIST = "Road does not exist.";
     public static final String NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD = "Invalid action. You don't have enough cards of correct color to build on road!";
     public static final String NOT_ENOUGH_WHEELS_TO_BUILD_ROAD = "Invalid action. You don't have enough wheels to build on road!";
+    public static final String NOT_ENOUGH_WHEELCARDS_IN_DECK = "There are not enough wheelcards in the deck. Take another action.";
 }
