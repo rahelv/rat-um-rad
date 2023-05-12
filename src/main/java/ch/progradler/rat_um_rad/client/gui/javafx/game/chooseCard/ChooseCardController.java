@@ -84,6 +84,9 @@ public class ChooseCardController {
         }
     }
 
+    /**
+     * after destination Card is chosen,scene should be changed to gameView
+     * */
     private void destinationCardsSelectedReturnToGame(ClientGame clientGame) throws IOException {
         Platform.runLater(() -> {
             chooseCardModel.getListener().returnToGame(clientGame);

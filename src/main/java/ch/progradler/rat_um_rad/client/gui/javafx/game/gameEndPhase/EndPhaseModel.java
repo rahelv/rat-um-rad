@@ -39,7 +39,7 @@ public class EndPhaseModel {
     }
 
     /**
-     * descending sort based on scores,first 5 players, who have the highest scores, will be saved in rankingList.
+     * descending sort based on scores,players' scores will be saved in rankingList.
      */
     private void playersInfo() {
         List<PlayerBase> allPlayers = new ArrayList<>(this.clientGame.getOtherPlayers());
@@ -78,7 +78,6 @@ public class EndPhaseModel {
             sumNotAchievedScore = sumNotAchievedScore + destinationCard.getPoints();
         }
         this.scoreOfNotAchievedShorts = sumNotAchievedScore;
-        //TODO : infos of long destination cards should be given from server
     }
 
     public String getMyTotalScore() {

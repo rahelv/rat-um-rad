@@ -1,7 +1,5 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase;
 
-import ch.progradler.rat_um_rad.client.services.GameService;
-import ch.progradler.rat_um_rad.client.services.IGameService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,7 +9,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-
+/**
+ * game ranking will be shown in Listview, as well as own game achievements (such as numbers of achieved destination card,
+ * scores in total etc.) will be shown detailed in table format
+ */
 public class EndPhaseController {
     public ListView<String> rankingListView;
     public Label achievedGoalCardsNum;

@@ -10,6 +10,10 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+/**
+ * update internal chat , whisper chat and broadcast chat to chatMessageList,which is bound with chatPaneListView in
+ * {@link ChatRoomController}
+ */
 public class ChatRoomModel {
     ObservableList<ChatMessage> chatMessageList;
     private StringProperty textInputContent;
