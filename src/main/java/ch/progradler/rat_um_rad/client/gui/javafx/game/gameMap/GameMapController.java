@@ -12,6 +12,7 @@ import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -20,6 +21,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,8 @@ public class GameMapController extends GridPane {
     private Pane mapPane;
     @FXML
     private Group mapObjectsGroup;
-
+    private URL soundURL;
+    private AudioClip audioClip;
 
     public GameMapController() {
         this.gameService = new GameService();
@@ -55,6 +58,9 @@ public class GameMapController extends GridPane {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+        this.soundURL = GameMapController.class.getClassLoader().getResource("soundEffect.mp3");
+        this.audioClip = new AudioClip(soundURL.toExternalForm());
+
     }
 
     public void initData(GameMapModel gameMapModel) {
@@ -130,6 +136,8 @@ public class GameMapController extends GridPane {
         roadLine.setOnMouseClicked(event -> {
             try {
                 this.gameService.buildRoad(road.getId());
+                audioClip.play();
+                audioClip.setCycleCount(1);
             } catch (IOException e) {
                 e.printStackTrace(); //TODO: signal failure to user an let him build the road again
             }

@@ -18,4 +18,8 @@ public class MainMenuController implements Initializable {
     public void openHandbook(ActionEvent event) {
         HandbookPopup handbookPopup = new HandbookPopup(); //TODO: only open once
     }
+    @FXML
+    public void openIconLinks(ActionEvent event){
+        IconLinksPopup iconLinksPopup = new IconLinksPopup();
+    }
 }
