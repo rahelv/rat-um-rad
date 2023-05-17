@@ -70,7 +70,7 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
             // only remove if successfully closed connection
             connections.remove(ipAddress);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn("Failed to close connection to client " + ipAddress, e);
         }
     }
 
@@ -80,7 +80,7 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     }
 
     public String getIpOfThread(Thread thread) {
-        for (String ipAddress: connections.keySet()) {
+        for (String ipAddress : connections.keySet()) {
             if (connections.get(ipAddress).getThread() == thread) {
                 return ipAddress;
             }

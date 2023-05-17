@@ -20,14 +20,12 @@ import java.nio.charset.StandardCharsets;
 public class ClientOutput {
     private final String ipAddress;
     private final Coder<Packet<ServerCommand>> packetCoder;
-    private Socket socket;
     private OutputStream out;
     private PrintWriter printWriter;
-    private ConnectionPoolInfo connectionPoolInfo;
+    private final ConnectionPoolInfo connectionPoolInfo;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public ClientOutput(Socket socket, String ipAddress, Coder<Packet<ServerCommand>> packetCoder, ConnectionPoolInfo connectionPoolInfo) {
-        this.socket = socket;
         this.packetCoder = packetCoder;
         this.ipAddress = ipAddress;
         this.connectionPoolInfo = connectionPoolInfo;
@@ -35,18 +33,17 @@ public class ClientOutput {
             out = socket.getOutputStream();
             printWriter = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace();
-            //TODO Possibly add improved exception handling
+            LOGGER.error("Failed to create output stream to client " + ipAddress, e);
         }
     }
 
     public void sendPacketToClient(Packet<ServerCommand> packet) {
-        Packet notMeantToBeNull = packet;
         String sendStr = packetCoder.encode(packet, 0);
         if (sendStr == null) {
-            LOGGER.info("Thread of player with ipAddress "+connectionPoolInfo.getIpOfThread(Thread.currentThread())+" sends string equals null in method sendPacket(). Command was "+notMeantToBeNull.getCommand()+", ContentType was "+ notMeantToBeNull.getContentType()+" and content was "+ notMeantToBeNull.getContent());
-            //printed in console so that developers see that
-            System.out.println("\033[0;31m" + "Thread of player with ipAddress "+connectionPoolInfo.getIpOfThread(Thread.currentThread())+" sends string equals null in method sendPacket(). Command was "+notMeantToBeNull.getCommand()+", ContentType was "+ notMeantToBeNull.getContentType()+" and content was "+ notMeantToBeNull.getContent() + "\033[0m");
+            LOGGER.warn("Thread of player with ipAddress " + connectionPoolInfo.getIpOfThread(Thread.currentThread()) + " sends string equals null in method sendPacket(). Command was "
+                    + packet.getCommand()
+                    + ", ContentType was " + packet.getContentType()
+                    + " and content was " + packet.getContent());
             return;
         }
 

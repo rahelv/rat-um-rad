@@ -40,13 +40,13 @@ public class ClientConnectionsHandler {
     public void start(int port, InputPacketGateway inputPacketGateway, ServerPingPongRunner serverPingPongRunner) {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            LOGGER.info("Server listening on port %d\n", port);
+            LOGGER.info("Server listening on port {}", port);
 
             while (true) { //keeps running
                 acceptNewClient(inputPacketGateway, serverSocket, serverPingPongRunner);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to create server socket.", e);
         }
     }
 
@@ -55,15 +55,13 @@ public class ClientConnectionsHandler {
             Socket socket = serverSocket.accept();
             setupConnection(socket, inputPacketGateway, serverPingPongRunner);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn("Failed to accept client connection.", e);
         }
     }
 
     private void setupConnection(Socket socket, InputPacketGateway inputPacketGateway, ServerPingPongRunner serverPingPongRunner) {
         String ipAddress = socket.getRemoteSocketAddress().toString();
         LOGGER.info("Connected to client with ipAddress: " + ipAddress);
-        //Printing so that developers can see it.
-        System.out.println("Connected to client with ipAddress: " + ipAddress);
 
         ClientInputListener clientInputListener = new ClientInputListener(socket,
                 inputPacketGateway,
