@@ -41,7 +41,6 @@ public class Client {
             OutputPacketGatewaySingleton.setOutputPacketGateway(serverOutput);
 
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
-            //startCommandHandler(userService, host, usernameHandler, username);
             startServerListener(socket, PacketCoder.defaultServerPacketCoder(), clientPingPongRunner);
 
             Application.launch(GUI.class, username);
@@ -88,5 +87,3 @@ public class Client {
         t.start();
     }
 }
-
-//TODO: stop all threads when logging out

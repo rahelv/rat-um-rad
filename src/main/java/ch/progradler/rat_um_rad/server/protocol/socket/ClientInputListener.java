@@ -52,8 +52,7 @@ public class ClientInputListener implements Runnable {
             inputStream = socket.getInputStream();
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace();
-            LOGGER.warn("Failed to connect with client. Removing client...");
+            LOGGER.warn("Failed to connect with client. Removing client...", e);
             clientDisconnectedListener.onDisconnected(ipAddress);
         }
 
@@ -81,11 +80,10 @@ public class ClientInputListener implements Runnable {
             inputPacketGateway.handleCommand(new Packet.Client(ClientCommand.USER_SOCKET_DISCONNECTED,
                     null,
                     ContentType.NONE), ipAddress);
-            System.out.println("Client " + ipAddress +
-                    " disconnected from socket connection!");
+            LOGGER.info("Client " + ipAddress + " disconnected from socket connection!");
             clientDisconnectedListener.onDisconnected(ipAddress);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
     }
 

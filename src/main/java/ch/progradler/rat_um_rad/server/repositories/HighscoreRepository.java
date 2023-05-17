@@ -2,6 +2,8 @@ package ch.progradler.rat_um_rad.server.repositories;
 
 import ch.progradler.rat_um_rad.shared.database.Database;
 import ch.progradler.rat_um_rad.shared.models.Highscore;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
@@ -13,6 +15,8 @@ import java.util.List;
  * Saves highscores to database.
  */
 public class HighscoreRepository implements IHighscoreRepository {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private static final String DATABASE_KEY = "highscores.txt";
 
     private final Database<List<Highscore>> database;
@@ -29,7 +33,7 @@ public class HighscoreRepository implements IHighscoreRepository {
         try {
             database.save(highscores, DATABASE_KEY);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn("Failed to save highscores to database", e);
         }
     }
 
@@ -41,7 +45,8 @@ public class HighscoreRepository implements IHighscoreRepository {
             } catch (NoSuchFileException e) {
                 highscores = new ArrayList<>();
             } catch (IOException e) {
-                e.printStackTrace();
+                highscores = new ArrayList<>();
+                LOGGER.warn("Failed to read highscores from database", e);
             }
         }
         return highscores;
