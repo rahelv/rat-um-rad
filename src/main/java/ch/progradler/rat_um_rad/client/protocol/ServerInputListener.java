@@ -5,6 +5,9 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.Coder;
 import ch.progradler.rat_um_rad.shared.util.StreamUtils;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.stage.Modality;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -46,6 +50,17 @@ public class ServerInputListener implements Runnable {
             String encodedPacket;
             try {
                 encodedPacket = StreamUtils.readStringsFromStream(bufferedReader);
+            } catch (SocketException e) {
+                Platform.runLater(() -> {
+                    Alert errorAlert = new Alert(Alert.AlertType.WARNING);
+                    errorAlert.setTitle("Server Disconnect.");
+                    errorAlert.setHeaderText("The server has disconnected. The application will be closed now.");
+                    errorAlert.setContentText("Please try restarting the application to play again."); //TODO: display different text according to error thrown
+                    errorAlert.initModality(Modality.APPLICATION_MODAL);
+                    errorAlert.showAndWait();
+                    System.exit(0);
+                });
+                break;
             } catch (IOException e) {
                 e.printStackTrace();
                 LOGGER.info("There was an IOException while trying to readStringsFromStream");

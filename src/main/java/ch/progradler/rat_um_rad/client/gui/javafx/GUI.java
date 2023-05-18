@@ -242,10 +242,6 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
 
     @Override
     public void showWinner(ClientGame game) {
-        /** ShowWinnerModel showWinnerModel = new ShowWinnerModel(game);
-         this.loadFXMLView("/views/ShowWinnerView.fxml", this.showWinnerController);
-         this.showWinnerController.initData(showWinnerModel, this.window);
-         this.window.show();**/
         EndPhaseModel endPhaseModel = new EndPhaseModel(game, this);
         this.loadFXMLView("/views/EndPhaseView.fxml", this.endPhaseController);
         this.endPhaseController.initData(endPhaseModel, this.window);
