@@ -16,6 +16,8 @@ public class GameBase {
     private final String creatorPlayerIpAddress;
     private final int requiredPlayerCount;
     private final List<Activity> activities;
+    private final List<String> playerNames;
+
     /**
      * Saves information on roads which have been built by which player.
      * Keys are road ids and values are player ip addresses.
@@ -25,7 +27,7 @@ public class GameBase {
     private int turn;
 
     public GameBase(String id, GameStatus status, GameMap map, String creatorPlayerIpAddress, int requiredPlayerCount) {
-        this(id, status, map, new Date() /* now */, creatorPlayerIpAddress, requiredPlayerCount, 0, new HashMap<>(), new ArrayList<>());
+        this(id, status, map, new Date() /* now */, creatorPlayerIpAddress, requiredPlayerCount, 0, new HashMap<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     public GameBase(String id,
@@ -36,7 +38,8 @@ public class GameBase {
                     int requiredPlayerCount,
                     int turn,
                     Map<String, String> roadsBuilt,
-                    List<Activity> activities) {
+                    List<Activity> activities,
+                    List<String> playerNames) {
         this.id = id;
         this.status = status;
         this.map = map;
@@ -46,6 +49,7 @@ public class GameBase {
         this.turn = turn;
         this.activities = activities;
         this.roadsBuilt = roadsBuilt;
+        this.playerNames = playerNames;
     }
 
     public String getId() {
@@ -92,16 +96,21 @@ public class GameBase {
         return activities;
     }
 
+
+    public List<String> getPlayerNames() {
+        return playerNames;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof GameBase)) return false;
         GameBase gameBase = (GameBase) o;
-        return requiredPlayerCount == gameBase.requiredPlayerCount && turn == gameBase.turn && id.equals(gameBase.id) && status == gameBase.status && map.equals(gameBase.map) && createdAt.equals(gameBase.createdAt) && creatorPlayerIpAddress.equals(gameBase.creatorPlayerIpAddress) && activities.equals(gameBase.activities) && roadsBuilt.equals(gameBase.roadsBuilt);
+        return requiredPlayerCount == gameBase.requiredPlayerCount && turn == gameBase.turn && id.equals(gameBase.id) && map.equals(gameBase.map) && createdAt.equals(gameBase.createdAt) && creatorPlayerIpAddress.equals(gameBase.creatorPlayerIpAddress) && activities.equals(gameBase.activities) && playerNames.equals(gameBase.playerNames) && roadsBuilt.equals(gameBase.roadsBuilt) && status == gameBase.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, activities, roadsBuilt);
+        return Objects.hash(id, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, activities, playerNames, roadsBuilt, status, turn);
     }
 }

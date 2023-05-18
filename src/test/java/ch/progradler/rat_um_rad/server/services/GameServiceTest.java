@@ -144,6 +144,7 @@ class GameServiceTest {
         expected.setColor(creator.getColor()); // color is randomly generated so has to be the same
 
         assertEquals(expected, creator);
+        assertEquals(Collections.singletonList(creatorName), game.getPlayerNames());
     }
 
     @Test
@@ -180,16 +181,22 @@ class GameServiceTest {
     @Test
     void requestToJoinWaitingGameWorksAndSendsUpdateMessageToAllPlayers() {
         String ipAddressJoiner = "ipAddressJoiner";
-
+        String joinerName = "Player B";
         String gameId = "idA";
         Game game = mock(Game.class);
         when(mockGameRepository.getGame(gameId)).thenReturn(game);
+
         Map<String, Player> playerMap = new HashMap<>();
         when(game.getPlayers()).thenReturn(playerMap);
         when(game.getStatus()).thenReturn(WAITING_FOR_PLAYERS);
+        List<String> playerNames = new ArrayList<>();
+        when(game.getPlayerNames()).thenReturn(playerNames);
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.createNewPlayer(ipAddressJoiner, mockUserRepository, new ArrayList<>()))
+                    .thenReturn(new Player(joinerName, PlayerColor.LIGHT_GREEN, 0, 45, 2));
             gameService.joinGame(ipAddressJoiner, gameId);
+            assertEquals(Collections.singletonList(joinerName), playerNames); // name was added
             verify(mockOutputPacketGateway, never()).sendPacket(ipAddressJoiner, new Packet.Server(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, NEW_PLAYER));
         }
@@ -249,6 +256,8 @@ class GameServiceTest {
                     .thenReturn(clientGameForJoiner);
             utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressB))
                     .thenReturn(clientGameB);
+            utilities.when(() -> GameServiceUtil.createNewPlayer(eq(ipAddressJoiner), eq(mockUserRepository), any()))
+                    .thenReturn(new Player("joinerName", PlayerColor.LIGHT_GREEN, 0, 45, 2));
 
             gameService.joinGame(ipAddressJoiner, gameId);
 

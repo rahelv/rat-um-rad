@@ -9,25 +9,16 @@ import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
-import ch.progradler.rat_um_rad.shared.protocol.coder.cards_and_decks.DestinationCardCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.game.CityCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.game.GameMapCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.game.PointCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.game.RoadCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ClientPacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketContentCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ServerPacketCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.player.PlayerEndResultCoder;
-import ch.progradler.rat_um_rad.shared.protocol.coder.player.VisiblePlayerCoder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,6 +60,7 @@ public class PacketCoderTest {
         Player player = new Player("own player", PlayerColor.LIGHT_GREEN, 4, 5, 1,
                 Arrays.asList(new WheelCard(40)), destinationCard, new ArrayList<>());
         List<Activity> activities = Collections.singletonList(new Activity("John", ServerCommand.GAME_JOINED));
+        List<String> playerNames = Arrays.asList("Player a", "Player b");
 
         PlayerEndResult endResultOtherPlayer = new PlayerEndResult(Collections.singletonList(destinationCard), new ArrayList<>(), false);
 
@@ -76,7 +68,7 @@ public class PacketCoderTest {
                 new Date(2023, Calendar.MAY, 14, 4, 4, 4), "creator", 4, Arrays.asList(
                 new VisiblePlayer("Player1", PlayerColor.LILA, 4, 20, 0,
                         "ip", 5, 3, endResultOtherPlayer)
-        ), player, 30, new HashMap<>(), activities);
+        ), player, 30, new HashMap<>(), activities, playerNames);
 
 
         ServerCommand command = ServerCommand.GAME_CREATED;
@@ -325,8 +317,8 @@ public class PacketCoderTest {
         Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
 
         List<GameBase> content = Arrays.asList(
-                new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>()),
-                new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>())
+                new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>(), new ArrayList<>()),
+                new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>(), new ArrayList<>())
         );
 
         ServerCommand command = ServerCommand.SEND_STARTED_GAMES;
@@ -357,8 +349,8 @@ public class PacketCoderTest {
         Date createdAt1 = new Date(2022, Calendar.JUNE, 4, 9, 44, 50);
         Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
 
-        GameBase game1 = new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>());
-        GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>());
+        GameBase game1 = new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>(), new ArrayList<>());
+        GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>(), new ArrayList<>());
 
 
         ServerCommand command = ServerCommand.SEND_STARTED_GAMES;

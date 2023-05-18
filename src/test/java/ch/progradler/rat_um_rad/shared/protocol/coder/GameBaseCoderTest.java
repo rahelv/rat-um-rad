@@ -43,8 +43,9 @@ class GameBaseCoderTest {
         int turn = 13;
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
         Activity activity1 = new Activity("hans", ServerCommand.GAME_JOINED);
+        List<String> playerNames = Arrays.asList("Player a", "Player b");
 
-        GameBase game = new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn, roadsBuilt, Collections.singletonList(activity1));
+        GameBase game = new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn, roadsBuilt, Collections.singletonList(activity1), playerNames);
 
         String encodedActivity1 = "encodedActivity1";
         when(activityCoder.encode(activity1, level + 2)).thenReturn(encodedActivity1);
@@ -60,7 +61,8 @@ class GameBaseCoderTest {
                 String.valueOf(requiredPlayerCount),
                 String.valueOf(turn),
                 CoderHelper.encodeStringMap(level + 1, roadsBuilt),
-                CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedActivity1)));
+                CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedActivity1)),
+                CoderHelper.encodeStringList(level + 1, playerNames));
         assertEquals(expected, encoded);
     }
 
@@ -78,6 +80,7 @@ class GameBaseCoderTest {
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
         Activity activity1 = new Activity("hans", ServerCommand.GAME_JOINED);
         List<Activity> activities = Collections.singletonList(activity1);
+        List<String> playerNames = Arrays.asList("Player a", "Player b");
 
         String encodedMap = "encodedMap";
         String encodedActivity1 = "encodedActivity1";
@@ -94,10 +97,11 @@ class GameBaseCoderTest {
                 String.valueOf(requiredPlayerCount),
                 String.valueOf(turn),
                 CoderHelper.encodeStringMap(level + 1, roadsBuilt),
-                CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedActivity1)));
+                CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedActivity1)),
+                CoderHelper.encodeStringList(level + 1, playerNames));
 
         GameBase decoded = gameBaseCoder.decode(encoded, level);
-        GameBase expected = new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn, roadsBuilt, activities);
+        GameBase expected = new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn, roadsBuilt, activities, playerNames);
         assertEquals(expected, decoded);
     }
 }

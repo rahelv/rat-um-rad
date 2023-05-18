@@ -85,6 +85,7 @@ public class GameService implements IGameService {
                         creatorIpAddress,
                         requiredPlayerCount,
                         players);
+                gameCreated.getPlayerNames().add(creator.getName());
                 gameRepository.addGame(gameCreated);
                 created = true;
             } catch (IGameRepository.DuplicateIdException e) {
@@ -135,6 +136,7 @@ public class GameService implements IGameService {
                 .stream().map((PlayerBase::getColor)).toList();
         Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
         game.getPlayers().put(ipAddress, newPlayer);
+        game.getPlayerNames().add(newPlayer.getName());
         gameRepository.updateGame(game);
     }
 
@@ -232,7 +234,7 @@ public class GameService implements IGameService {
     @Override
     public void handleConnectionLoss(String ipAddress) {
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
-        if(game != null){
+        if (game != null) {
             game.setStatus(FINISHED);
             gameRepository.updateGame(game);
             GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_ENDED_BY_PLAYER_DISCONNECTION);
