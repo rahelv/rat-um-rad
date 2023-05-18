@@ -84,6 +84,27 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         /**
          * Listener for INVALID_ACTION_FATAL. creates a popup with the error message when an error is thrown.
          */
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
+            @Override
+            public void serverResponseReceived(ClientGame game) {
+                //TODO: call popup and display error message
+                Platform.runLater(() -> {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Player Disconnected.");
+                    errorAlert.setHeaderText("a player disconnected.");
+                    errorAlert.setContentText("The Game ends now. You will be returned to the startup page.");
+                    errorAlert.initModality(Modality.APPLICATION_MODAL);
+                    errorAlert.showAndWait();
+                    controllerChanged("showStartupPage");
+                });
+            }
+
+            @Override
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_ENDED_BY_PLAYER_DISCONNECTION;
+            }
+        });
+
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<String>() {
             @Override
             public void serverResponseReceived(String error) {

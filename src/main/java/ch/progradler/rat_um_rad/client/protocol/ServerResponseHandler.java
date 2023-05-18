@@ -121,6 +121,10 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 List<Highscore> highScores = (List<Highscore>) packet.getContent();
                 notifyListenersOfType(highScores, ServerCommand.SEND_HIGHSCORES);
             }
+            case GAME_ENDED_BY_PLAYER_DISCONNECTION -> {
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, ServerCommand.GAME_ENDED_BY_PLAYER_DISCONNECTION);
+            }
             default -> {
                 LOGGER.info("A packet with content " + packet.getContent() + " arrived in Server without matching any Client-Commands.");
                 //Printing so that developers can see it.
