@@ -154,7 +154,7 @@ class ActionHandlerTest {
 
         GameMap mockGameMap = mock(GameMap.class);
         Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, new Date(), "creator", 3, new HashMap<>(),
-                turn, new HashMap<>(), activities, decksOfGame);
+                turn, new HashMap<>(), activities, decksOfGame, new ArrayList<>());
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(IP_ADDRESS, mockGameRepository))

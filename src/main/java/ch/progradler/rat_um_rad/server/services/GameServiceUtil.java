@@ -53,7 +53,8 @@ public class GameServiceUtil {
                 game.getPlayers().get(forPlayerIpAddress),
                 game.getTurn(),
                 game.getRoadsBuilt(),
-                game.getActivities());
+                game.getActivities(),
+                game.getPlayerNames());
     }
 
     static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<PlayerColor> takenColors) {

@@ -25,8 +25,9 @@ public class ClientGame extends GameBase {
                       Player ownPlayer,
                       int turn,
                       Map<String, String> roadsBuilt,
-                      List<Activity> activities) {
-        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt, activities);
+                      List<Activity> activities,
+                      List<String> playerNames) {
+        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt, activities, playerNames);
         this.otherPlayers = otherPlayers;
         this.ownPlayer = ownPlayer;
     }

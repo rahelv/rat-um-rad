@@ -111,7 +111,7 @@ class GameEndUtilTest {
         Map<String, Player> players = Map.of(ip1, player1, ip2, player2);
 
         Game game = new Game("game1", GameStatus.STARTED, gameMap, new Date(), "creator",
-                2, players, 20, roadsBuilt, new ArrayList<>(), decksOfGame);
+                2, players, 20, roadsBuilt, new ArrayList<>(), decksOfGame, new ArrayList<>());
 
         new GameEndUtil().updateScoresAndEndResult(game);
 

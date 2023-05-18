@@ -28,9 +28,9 @@ public class GameOverviewController {
     @FXML
     private Button backToLobbyButton;
     @FXML
-    private ListView onGoingListView;
+    private ListView<GameBase> onGoingListView;
     @FXML
-    private ListView finishedGamesListView;
+    private ListView<GameBase> finishedGamesListView;
 
     private IGameService gameService;
     private GameOverviewModel gameOverviewModel;
@@ -103,15 +103,12 @@ public class GameOverviewController {
         Pane pane = new Pane();
         HBox hbox = new HBox();
         Label nameLabel = new Label();
-        Button listPlayersButton = new Button("players");
+        Label playerNamesLabel = new Label();
 
         public Cell() {
             super();
-            hbox.getChildren().addAll(nameLabel, pane, listPlayersButton);
-            hbox.setHgrow(pane, Priority.ALWAYS);
-            listPlayersButton.setOnAction(event -> {
-                //TODO: listing all players in this game
-            });
+            hbox.getChildren().addAll(nameLabel, pane, playerNamesLabel);
+            HBox.setHgrow(pane, Priority.ALWAYS);
         }
 
         protected void updateItem(GameBase item, boolean empty) {
@@ -120,6 +117,7 @@ public class GameOverviewController {
             setGraphic(null);
             if (item != null && !empty) {
                 nameLabel.setText(item.getId());
+                playerNamesLabel.setText(String.join(", ", item.getPlayerNames()));
                 setGraphic(hbox);
             }
         }

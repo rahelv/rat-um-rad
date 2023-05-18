@@ -61,8 +61,9 @@ class GameServiceUtilTest {
         );
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
         List<Activity> activities = new ArrayList<>();
+        List<String> playerNames = Arrays.asList("Player a", "Player b");
 
-        Game game = new Game(gameId, status, map, createdAt, creatorIp, requiredPlayerCount, players, turn, roadsBuilt, activities);
+        Game game = new Game(gameId, status, map, createdAt, creatorIp, requiredPlayerCount, players, turn, roadsBuilt, activities, playerNames);
         String forPlayerIp = otherPlayerIp;
 
         ClientGame expected = new ClientGame(gameId,
@@ -75,7 +76,8 @@ class GameServiceUtilTest {
                 otherPlayer,
                 turn,
                 roadsBuilt,
-                activities);
+                activities,
+                playerNames);
 
         assertEquals(expected, GameServiceUtil.toClientGame(game, forPlayerIp));
     }
@@ -142,13 +144,14 @@ class GameServiceUtilTest {
 
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
         List<Activity> activities = new ArrayList<>();
+        List<String> playerNames = Arrays.asList("Player a", "Player b");
 
         // wrong status
-        Game game1 = new Game(gameId, FINISHED, GameMap.defaultMap(), null, "playerB", 4, players1, 0, roadsBuilt, activities);
+        Game game1 = new Game(gameId, FINISHED, GameMap.defaultMap(), null, "playerB", 4, players1, 0, roadsBuilt, activities, playerNames);
         // no in there
-        Game game2 = new Game(gameId, STARTED, GameMap.defaultMap(), null, "playerD", 4, players2, 3, roadsBuilt, activities);
+        Game game2 = new Game(gameId, STARTED, GameMap.defaultMap(), null, "playerD", 4, players2, 3, roadsBuilt, activities, playerNames);
 
-        Game game3 = new Game(gameId, STARTED, GameMap.defaultMap(), null, "playerB", 4, players1, 0, roadsBuilt, activities);
+        Game game3 = new Game(gameId, STARTED, GameMap.defaultMap(), null, "playerB", 4, players1, 0, roadsBuilt, activities, playerNames);
 
         when(mockGameRepository.getAllGames()).thenReturn(Arrays.asList(game1, game2, game3));
 

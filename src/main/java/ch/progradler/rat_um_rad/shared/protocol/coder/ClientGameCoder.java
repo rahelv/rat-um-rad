@@ -47,7 +47,8 @@ public class ClientGameCoder implements Coder<ClientGame> {
                 ownPlayerEncoded,
                 String.valueOf(clientGame.getTurn()),
                 encodeStringMap(level + 1, clientGame.getRoadsBuilt()),
-                activitiesEncoded
+                activitiesEncoded,
+                encodeStringList(level + 1, clientGame.getPlayerNames())
         );
     }
 
@@ -68,8 +69,9 @@ public class ClientGameCoder implements Coder<ClientGame> {
         int turn = Integer.parseInt(fields.get(8));
         Map<String, String> roadsBuilt = decodeStringMap(level + 1, fields.get(9));
         List<Activity> activities = decodeList(activityCoder, fields.get(10), level + 1);
+        List<String> playerNames = decodeStringList(level + 1, fields.get(11));
 
         return new ClientGame(gameId, status, map, createdAt, creatorIpAddress,
-                requiredPlayerCount, otherPlayers, ownPlayer, turn, roadsBuilt, activities);
+                requiredPlayerCount, otherPlayers, ownPlayer, turn, roadsBuilt, activities, playerNames);
     }
 }

@@ -139,7 +139,7 @@ class RoadActionHandlerTest {
 
         Game game = new Game("game1", GameStatus.STARTED, map, new Date(),
                 "creator", 3,
-                Map.of(ipAddress, player), 4, roadsBuilt, activities, mock(DecksOfGame.class));
+                Map.of(ipAddress, player), 4, roadsBuilt, activities, mock(DecksOfGame.class), new ArrayList<>());
 
         // act
         roadActionHandler.updateGameState(game, ipAddress, toBuild.getId());
