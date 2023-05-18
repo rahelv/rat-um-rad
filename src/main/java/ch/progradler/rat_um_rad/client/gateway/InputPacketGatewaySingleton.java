@@ -1,5 +1,8 @@
 package ch.progradler.rat_um_rad.client.gateway;
 
+/**
+ * InputPacketGateway is a Singleton, so we can add Listeners for ServerResponses.
+ */
 public class InputPacketGatewaySingleton {
     private static ServerInputPacketGateway inputPacketGateway;
 

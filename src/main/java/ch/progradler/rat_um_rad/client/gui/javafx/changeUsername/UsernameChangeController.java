@@ -40,6 +40,9 @@ public class UsernameChangeController {
     private IUserService userService;
 
     public UsernameChangeController() {
+        /**
+         * Listener for ServerCommand USERNAME_CONFIRMED, so the UsernameChangeController knows when the username was successfully changed.
+         */
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<UsernameChange>() {
             @Override
             public void serverResponseReceived(UsernameChange content) {
