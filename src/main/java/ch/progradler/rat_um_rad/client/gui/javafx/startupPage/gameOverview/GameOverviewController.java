@@ -11,10 +11,7 @@ import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -102,12 +99,12 @@ public class GameOverviewController {
     static class Cell extends ListCell<GameBase> {
         Pane pane = new Pane();
         HBox hbox = new HBox();
+        Button listPlayersButton = new Button("players");
         Label nameLabel = new Label();
-        Label playerNamesLabel = new Label();
 
         public Cell() {
             super();
-            hbox.getChildren().addAll(nameLabel, pane, playerNamesLabel);
+            hbox.getChildren().addAll(nameLabel, pane, listPlayersButton);
             HBox.setHgrow(pane, Priority.ALWAYS);
         }
 
@@ -117,7 +114,7 @@ public class GameOverviewController {
             setGraphic(null);
             if (item != null && !empty) {
                 nameLabel.setText(item.getId());
-                playerNamesLabel.setText(String.join(", ", item.getPlayerNames()));
+                listPlayersButton.setTooltip(new Tooltip(String.join(", ", item.getPlayerNames())));
                 setGraphic(hbox);
             }
         }

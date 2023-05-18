@@ -57,13 +57,13 @@ public class LobbyController extends VBox {
     class Cell extends ListCell<GameBase> {
         Pane pane = new Pane();
         HBox hbox = new HBox();
+        Button listPlayersButton = new Button("players");
         Label nameLabel = new Label();
-        Label playerNamesLabel = new Label();
         Button enterGameButton = new Button("join");
 
         public Cell() {
             super();
-            hbox.getChildren().addAll(nameLabel, pane, playerNamesLabel, enterGameButton);
+            hbox.getChildren().addAll(nameLabel, pane, listPlayersButton, enterGameButton);
             HBox.setHgrow(pane, Priority.ALWAYS);
             enterGameButton.setOnAction(event -> {
                 try {
@@ -80,7 +80,7 @@ public class LobbyController extends VBox {
             setGraphic(null);
             if (item != null && !empty) {
                 nameLabel.setText(item.getId());
-                playerNamesLabel.setText(String.join(", ", item.getPlayerNames()));
+                listPlayersButton.setTooltip(new Tooltip(String.join(", ", item.getPlayerNames())));
                 setGraphic(hbox);
             }
         }
