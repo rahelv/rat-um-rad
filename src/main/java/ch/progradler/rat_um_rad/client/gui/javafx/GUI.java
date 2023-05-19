@@ -87,7 +87,6 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
             @Override
             public void serverResponseReceived(ClientGame game) {
-                //TODO: call popup and display error message
                 Platform.runLater(() -> {
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                     errorAlert.setTitle("Player Disconnected.");
