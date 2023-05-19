@@ -200,6 +200,7 @@ public class GameService implements IGameService {
         String error = actionValidator.validate(new Action<>(game, ipAddress, null));
         if (error != null) {
             GameServiceUtil.sendInvalidActionResponse(ipAddress, error, outputPacketGateway);
+            return;
         }
 
         List<DestinationCard> available = game.getDecksOfGame().getShortDestinationCardDeck().getCardDeck();
