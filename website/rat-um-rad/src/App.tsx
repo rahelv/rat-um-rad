@@ -17,10 +17,27 @@ function App() {
         >
           Download JAR
         </a>
+        <a
+          className="App-link"
+          href="https://firebasestorage.googleapis.com/v0/b/rat-um-rad.appspot.com/o/Rat%20um%20Rad%20Manual.pdf?alt=media&token=ff12dd34-7897-474f-a017-dbcd04ddba07"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Download Manual
+        </a>
+
+        <h3>Trailer</h3>
+
+        <video width="640" height="480" controls>
+          <source
+            src="https://firebasestorage.googleapis.com/v0/b/rat-um-rad.appspot.com/o/trailer.mp4?alt=media&token=0afa5084-074a-4571-bf07-ed1bec10c641"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
       </header>
     </div>
   );
 }
 
 export default App;
-
