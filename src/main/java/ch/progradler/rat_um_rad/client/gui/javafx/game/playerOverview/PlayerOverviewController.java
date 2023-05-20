@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game.playerOverview;
 
 import ch.progradler.rat_um_rad.client.gui.javafx.game.UiUtil;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.game.Player;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -39,8 +40,8 @@ public class PlayerOverviewController extends VBox {
         this.playerOverviewListView.setCellFactory(param -> new PlayerOverviewCell()); //TODO: find a better way to handle buttonAction from Cell
     }
 
-    public void updatePlayerOverview(List<VisiblePlayer> players) {
-        this.playerOverviewModel.updatePlayers(players);
+    public void updatePlayerOverview(Player ownPlayer, List<VisiblePlayer> players) {
+        this.playerOverviewModel.updatePlayers(ownPlayer, players);
     }
 
     static class PlayerOverviewCell extends ListCell<VisiblePlayer> {

@@ -101,7 +101,7 @@ public class GameController {
         this.activityController.initData(new ActivityModel());
         this.chatRoomController.initData(chatRoomModel);
         this.playerOverviewController.initData(new PlayerOverviewModel());
-        this.playerOverviewController.updatePlayerOverview(gameModel.getClientGame().getOtherPlayers());
+        this.playerOverviewController.updatePlayerOverview(gameModel.getClientGame().getOwnPlayer(), gameModel.getClientGame().getOtherPlayers());
         this.ownPlayerOverviewController.initData(new OwnPlayerOverviewModel());
         this.ownPlayerOverviewController.updatePlayer(gameModel.getClientGame().getOwnPlayer());
         this.gameModel.setClientGame(gameModel.getClientGame());
@@ -116,7 +116,7 @@ public class GameController {
             this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
             this.gameMapController.updateGameMapModelWithMap(content);
             this.activityController.updateActivities(content.getActivities());
-            this.playerOverviewController.updatePlayerOverview(content.getOtherPlayers());
+            this.playerOverviewController.updatePlayerOverview(content.getOwnPlayer(), content.getOtherPlayers());
             this.ownPlayerOverviewController.updatePlayer(content.getOwnPlayer());
             this.stage.show();
         });
