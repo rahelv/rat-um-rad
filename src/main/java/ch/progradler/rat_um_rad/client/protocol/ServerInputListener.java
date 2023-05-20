@@ -54,8 +54,8 @@ public class ServerInputListener implements Runnable {
                 Platform.runLater(() -> {
                     Alert errorAlert = new Alert(Alert.AlertType.WARNING);
                     errorAlert.setTitle("Server Disconnect.");
-                    errorAlert.setHeaderText("The server has disconnected. The application will be closed now.");
-                    errorAlert.setContentText("Please try restarting the application to play again."); //TODO: display different text according to error thrown
+                    errorAlert.setHeaderText("You are disconnected from the server. The application will be closed now.");
+                    errorAlert.setContentText("Please try restarting the application to play again.");
                     errorAlert.initModality(Modality.APPLICATION_MODAL);
                     errorAlert.showAndWait();
                     System.exit(0);

@@ -194,7 +194,7 @@ public class GameServiceUtil {
     }
 
     /**
-     * @return Whether or not it is the player's turn in the game.
+     * @return Whether it is the player's turn in the game.
      */
     public static boolean isPlayersTurn(Game game, String playerIp) {
         int turn = game.getTurn();
