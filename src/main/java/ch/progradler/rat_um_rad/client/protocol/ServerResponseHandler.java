@@ -1,6 +1,5 @@
 package ch.progradler.rat_um_rad.client.protocol;
 
-import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
 import ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRunner;
 import ch.progradler.rat_um_rad.client.utils.listeners.ServerResponseListener;
@@ -27,11 +26,9 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
     public static final Logger LOGGER = LogManager.getLogger();
 
     private final List<ServerResponseListener<?>> listeners = new ArrayList<>();
-    private final PackagePresenter presenter;
     private final ClientPingPongRunner clientPingPongRunner;
 
-    public ServerResponseHandler(PackagePresenter presenter, ClientPingPongRunner clientPingPongRunner) {
-        this.presenter = presenter;
+    public ServerResponseHandler(ClientPingPongRunner clientPingPongRunner) {
         this.clientPingPongRunner = clientPingPongRunner;
     }
 
@@ -102,7 +99,7 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 ClientGame clientGame = (ClientGame) packet.getContent();
                 notifyListenersOfType(clientGame, ServerCommand.GAME_UPDATED); //updated ClientGame is sent to Controller, so it can display the new state
             }
-            case GAME_STARTED_SELECT_DESTINATION_CARDS -> { //TODO: soll auch benutzt werden um während dem Spiel karten zu ziehen
+            case GAME_STARTED_SELECT_DESTINATION_CARDS -> {
                 Object content = packet.getContent();
                 ContentType contentType = packet.getContentType();
                 notifyListenersOfType(content, ServerCommand.GAME_STARTED_SELECT_DESTINATION_CARDS);
@@ -124,7 +121,15 @@ public class ServerResponseHandler implements ServerInputPacketGateway {
                 List<Highscore> highScores = (List<Highscore>) packet.getContent();
                 notifyListenersOfType(highScores, ServerCommand.SEND_HIGHSCORES);
             }
-            default -> presenter.display(packet);
+            case GAME_ENDED_BY_PLAYER_DISCONNECTION -> {
+                ClientGame clientGame = (ClientGame) packet.getContent();
+                notifyListenersOfType(clientGame, ServerCommand.GAME_ENDED_BY_PLAYER_DISCONNECTION);
+            }
+            default -> {
+                LOGGER.info("A packet with content " + packet.getContent() + " arrived in Server without matching any Client-Commands.");
+                //Printing so that developers can see it.
+                System.out.println(packet.getContent());
+            }
         }
     }
 

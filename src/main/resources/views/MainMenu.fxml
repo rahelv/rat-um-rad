@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.MainMenuController">
-    <MenuBar AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="0.0">
+<AnchorPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.progradler.rat_um_rad.client.gui.javafx.mainMenu.MainMenuController">
+    <MenuBar prefWidth="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <Menu text="Help">
-            <MenuItem text="Handbook" onAction="#openHandbook"></MenuItem>
-        </Menu>
-        <Menu text="Refresh">
-            <MenuItem text="TODO: remove" onAction="#refreshPage"></MenuItem>
+            <MenuItem onAction="#openHandbook" text="Handbook" />
+            <MenuItem mnemonicParsing="false" onAction="#openIconLinks" text="iconLinks" />
         </Menu>
     </MenuBar>
 </AnchorPane>

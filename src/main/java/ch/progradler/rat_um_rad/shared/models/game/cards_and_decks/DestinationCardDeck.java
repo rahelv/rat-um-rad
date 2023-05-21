@@ -21,9 +21,10 @@ public class DestinationCardDeck implements CardDeck {
 
     /**
      * Factory Method to create deck with only short destination cards
+     *
      * @param map must be the {@link GameMap#defaultMap()}
      */
-    public static DestinationCardDeck   shortDestinations(GameMap map) {
+    public static DestinationCardDeck shortDestinations(GameMap map) {
         Map<String, City> cities = new HashMap<>();
         map.getCities().forEach((city -> cities.put(city.getId(), city)));
 
@@ -56,6 +57,7 @@ public class DestinationCardDeck implements CardDeck {
 
     /**
      * Factory Method to create deck with only short destination cards
+     *
      * @param map must be the {@link GameMap#defaultMap()}
      */
     public static DestinationCardDeck longDestinations(GameMap map) {

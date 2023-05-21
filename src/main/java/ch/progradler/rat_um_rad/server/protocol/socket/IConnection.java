@@ -12,4 +12,5 @@ public interface IConnection {
     void sendPacketToClient(Packet<ServerCommand> packet);
 
     void close() throws IOException;
+    Thread getThread();
 }

@@ -41,8 +41,8 @@ public class ChatMessage {
         return Objects.hash(username, message);
     }
 
-   @Override
+    @Override
     public String toString() {
         return this.username + ": " + this.message;
-   }
+    }
 }

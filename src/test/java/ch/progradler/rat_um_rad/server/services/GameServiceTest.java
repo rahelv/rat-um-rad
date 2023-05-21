@@ -5,14 +5,12 @@ import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IHighscoreRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
-import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandler;
 import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandlerFactory;
-import ch.progradler.rat_um_rad.server.services.action_handlers.SelectDestinationCardsActionHandler;
-import ch.progradler.rat_um_rad.server.validation.SelectDestinationCardsValidator;
 import ch.progradler.rat_um_rad.server.services.action_handlers.RoadActionHandler;
+import ch.progradler.rat_um_rad.server.services.action_handlers.SelectDestinationCardsActionHandler;
 import ch.progradler.rat_um_rad.server.services.action_handlers.TakeWheelCardsActionHandler;
+import ch.progradler.rat_um_rad.server.validation.SelectDestinationCardsValidator;
 import ch.progradler.rat_um_rad.shared.models.Highscore;
-import ch.progradler.rat_um_rad.shared.models.Point;
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DecksOfGame;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
@@ -146,6 +144,7 @@ class GameServiceTest {
         expected.setColor(creator.getColor()); // color is randomly generated so has to be the same
 
         assertEquals(expected, creator);
+        assertEquals(Collections.singletonList(creatorName), game.getPlayerNames());
     }
 
     @Test
@@ -182,16 +181,22 @@ class GameServiceTest {
     @Test
     void requestToJoinWaitingGameWorksAndSendsUpdateMessageToAllPlayers() {
         String ipAddressJoiner = "ipAddressJoiner";
-
+        String joinerName = "Player B";
         String gameId = "idA";
         Game game = mock(Game.class);
         when(mockGameRepository.getGame(gameId)).thenReturn(game);
+
         Map<String, Player> playerMap = new HashMap<>();
         when(game.getPlayers()).thenReturn(playerMap);
         when(game.getStatus()).thenReturn(WAITING_FOR_PLAYERS);
+        List<String> playerNames = new ArrayList<>();
+        when(game.getPlayerNames()).thenReturn(playerNames);
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.createNewPlayer(ipAddressJoiner, mockUserRepository, new ArrayList<>()))
+                    .thenReturn(new Player(joinerName, PlayerColor.LIGHT_GREEN, 0, 45, 2));
             gameService.joinGame(ipAddressJoiner, gameId);
+            assertEquals(Collections.singletonList(joinerName), playerNames); // name was added
             verify(mockOutputPacketGateway, never()).sendPacket(ipAddressJoiner, new Packet.Server(INVALID_ACTION_FATAL, ErrorResponse.JOINING_NOT_POSSIBLE, STRING));
             utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway, NEW_PLAYER));
         }
@@ -251,6 +256,8 @@ class GameServiceTest {
                     .thenReturn(clientGameForJoiner);
             utilities.when(() -> GameServiceUtil.toClientGame(game, ipAddressB))
                     .thenReturn(clientGameB);
+            utilities.when(() -> GameServiceUtil.createNewPlayer(eq(ipAddressJoiner), eq(mockUserRepository), any()))
+                    .thenReturn(new Player("joinerName", PlayerColor.LIGHT_GREEN, 0, 45, 2));
 
             gameService.joinGame(ipAddressJoiner, gameId);
 
@@ -298,8 +305,6 @@ class GameServiceTest {
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
                     .thenReturn(game);
-            utilities.when(() -> GameServiceUtil.validateAndHandleActionPrecondition(
-                    ipAddress, game, mockOutputPacketGateway)).thenReturn(true);
 
             gameService.selectShortDestinationCards(ipAddress, selectedCardIds);
 
@@ -447,6 +452,40 @@ class GameServiceTest {
             gameService.selectShortDestinationCards(ipAddress, cardIds);
 
             verify(selectDestinationCardsActionHandler).handle(ipAddress, cardIds);
+        }
+    }
+
+    @Test
+    void handleConnectionLossDoesNothingIfPlayerInNoGame() {
+        String ipAddress = "ipAddressA";
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(null);
+
+            gameService.handleConnectionLoss(ipAddress);
+
+            verifyNoInteractions(mockOutputPacketGateway);
+            verifyNoInteractions(mockGameRepository);
+        }
+    }
+
+    @Test
+    void handleConnectionLossSetsStatusToFinishedOfGameAndSendsNotificationToPlayers() {
+        String ipAddress = "ipAddressA";
+        Game game = mock(Game.class);
+
+        try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
+            utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(ipAddress, mockGameRepository))
+                    .thenReturn(game);
+
+            gameService.handleConnectionLoss(ipAddress);
+
+            verify(game).setStatus(FINISHED);
+            verify(mockGameRepository).updateGame(game);
+
+            utilities.verify(() -> GameServiceUtil.notifyPlayersOfGameUpdate(game, mockOutputPacketGateway,
+                    GAME_ENDED_BY_PLAYER_DISCONNECTION));
         }
     }
 

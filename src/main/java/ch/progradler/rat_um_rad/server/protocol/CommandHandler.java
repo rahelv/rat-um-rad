@@ -5,10 +5,8 @@ import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
 import ch.progradler.rat_um_rad.server.services.IGameService;
 import ch.progradler.rat_um_rad.server.services.IUserService;
 import ch.progradler.rat_um_rad.shared.models.ChatMessage;
-import ch.progradler.rat_um_rad.shared.models.game.BuildRoadInfo;
 import ch.progradler.rat_um_rad.shared.models.game.GameStatus;
 import ch.progradler.rat_um_rad.shared.protocol.ClientCommand;
-import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,9 +35,7 @@ public class CommandHandler implements InputPacketGateway {
      * For more information on the protocol, read the corresponding document or read the javadoc of the
      * commands in the switch cases or the used methods in the code block for each case.
      */
-    public void handleCommand(Packet<ClientCommand> packet, String ipAddress) {
-        // TODO: unittest
-
+    synchronized public void handleCommand(Packet<ClientCommand> packet, String ipAddress) {
         if (packet.getCommand() != ClientCommand.PONG)
             LOGGER.info("Received client command " + packet.getCommand() + " from " + ipAddress);
 
@@ -52,7 +48,10 @@ public class CommandHandler implements InputPacketGateway {
             case REGISTER_USER -> userService.handleNewUser((String) packet.getContent(), ipAddress);
             case SEND_BROADCAST_CHAT -> userService.handleBroadCastMessageFromUser((String) packet.getContent(), ipAddress);
             case SEND_GAME_INTERNAL_CHAT -> userService.handleGameInternalMessageFromUser((String) packet.getContent(), ipAddress);
-            case USER_SOCKET_DISCONNECTED -> userService.handleUserDisconnected(ipAddress);
+            case USER_SOCKET_DISCONNECTED -> {
+                userService.handleUserDisconnected(ipAddress);
+                gameService.handleConnectionLoss(ipAddress);
+            }
             case PONG -> {
                 serverPingPongRunner.setPongArrived(ipAddress);
             }
@@ -78,19 +77,10 @@ public class CommandHandler implements InputPacketGateway {
             case REQUEST_WHEEL_CARDS -> {
                 gameService.takeWheelCardFromDeck(ipAddress);
             }
-            case BUILD_ROAD -> handleBuildRoadPacket(packet, ipAddress);
+            case BUILD_ROAD -> gameService.buildRoad(ipAddress, (String) packet.getContent());
             case REQUEST_SHORT_DESTINATION_CARDS -> gameService.requestShortDestinationCards(ipAddress);
-            case REQUEST_HIGHSCORES ->  gameService.requestHighscores(ipAddress);
+            case REQUEST_HIGHSCORES -> gameService.requestHighscores(ipAddress);
             default -> throw new IllegalStateException("Unexpected value: " + packet.getCommand());
-        }
-    }
-
-    private void handleBuildRoadPacket(Packet<ClientCommand> packet, String ipAddress) {
-        if (packet.getContentType() == ContentType.BUILD_ROAD_INFO) {
-            BuildRoadInfo buildRoadInfo = (BuildRoadInfo) packet.getContent();
-            gameService.buildGreyRoad(ipAddress, buildRoadInfo.getRoadId(), buildRoadInfo.getColor());
-        } else {
-            gameService.buildRoad(ipAddress, (String) packet.getContent());
         }
     }
 }

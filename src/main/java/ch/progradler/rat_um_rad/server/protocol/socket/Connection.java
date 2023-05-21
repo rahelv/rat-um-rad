@@ -29,4 +29,8 @@ public class Connection implements IConnection {
         clientInputListener.close();
         socket.close();
     }
+    @Override
+    public Thread getThread() {
+        return clientInputListener.getThread();
+    }
 }

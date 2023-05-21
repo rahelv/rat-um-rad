@@ -1,5 +1,8 @@
 package ch.progradler.rat_um_rad.shared.models.game;
 
+/**
+ * The city-ids actually used in this game are stored here.
+ */
 public class CityId {
     public final static String PHARMA = "Pharmazentrum";
     public final static String BIBLIOTHEK = "Bibliothek";

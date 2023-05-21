@@ -1,5 +1,6 @@
 package ch.progradler.rat_um_rad.client.gui.javafx.game.ownPlayerOverview;
 
+import ch.progradler.rat_um_rad.client.gui.javafx.game.UiUtil;
 import ch.progradler.rat_um_rad.shared.models.game.City;
 import ch.progradler.rat_um_rad.shared.models.game.Player;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
@@ -7,13 +8,13 @@ import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 
@@ -98,6 +99,7 @@ public class OwnPlayerOverviewController extends VBox {
             setText(null);
             setGraphic(null);
             if (item != null && !empty) {
+                hbox.setBackground(new Background(new BackgroundFill(Color.valueOf(item.getColor().toString()), CornerRadii.EMPTY, Insets.EMPTY)));
                 nameLabel.setText(item.getColor().toString()); //TODO: check if color is correctly converted to string
                 setGraphic(hbox);
             }

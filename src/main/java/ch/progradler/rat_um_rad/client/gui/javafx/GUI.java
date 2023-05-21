@@ -5,12 +5,11 @@ import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeC
 import ch.progradler.rat_um_rad.client.gui.javafx.changeUsername.UsernameChangeModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.GameController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.GameModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.chooseCard.ChooseCardController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.chooseCard.ChooseCardModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase.EndPhaseController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase.EndPhaseModel;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase.ShowWinnerController;
-import ch.progradler.rat_um_rad.client.gui.javafx.game.gameEndPhase.ShowWinnerModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageController;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.StartupPageModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.startupPage.createGame.CreateGameController;
@@ -44,6 +43,8 @@ import java.util.List;
  */
 public class GUI extends Application implements ControllerChangeListener<UsernameChangeController> {
     public static final Logger LOGGER = LogManager.getLogger();
+    Stage window;
+    Scene mainScene;
     private UsernameChangeModel usernameChangeModel;
     private UsernameChangeController usernameChangeController;
     private StartupPageModel startupPageModel;
@@ -57,12 +58,10 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     private GameController gameController;
     private ChooseCardModel chooseCardModel;
     private ChooseCardController chooseCardController;
-    private ShowWinnerController showWinnerController;
     private EndPhaseController endPhaseController;
     private HighScoreModel highScoreModel;
     private HighScoreController highScoreController;
-    Stage window;
-    Scene mainScene;
+    private ChatRoomModel chatRoomModel;
 
     /**
      * Launching this method will not work on some platforms.
@@ -85,6 +84,26 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         /**
          * Listener for INVALID_ACTION_FATAL. creates a popup with the error message when an error is thrown.
          */
+        InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
+            @Override
+            public void serverResponseReceived(ClientGame game) {
+                Platform.runLater(() -> {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Player Disconnected.");
+                    errorAlert.setHeaderText("a player disconnected.");
+                    errorAlert.setContentText("The Game ends now. You will be returned to the startup page.");
+                    errorAlert.initModality(Modality.APPLICATION_MODAL);
+                    errorAlert.showAndWait();
+                    controllerChanged("showStartupPage");
+                });
+            }
+
+            @Override
+            public ServerCommand forCommand() {
+                return ServerCommand.GAME_ENDED_BY_PLAYER_DISCONNECTION;
+            }
+        });
+
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<String>() {
             @Override
             public void serverResponseReceived(String error) {
@@ -147,7 +166,6 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
         this.gameController = new GameController();
         this.startupPageController = new StartupPageController();
         this.chooseCardController = new ChooseCardController();
-        this.showWinnerController = new ShowWinnerController();
         this.endPhaseController = new EndPhaseController();
         this.highScoreController = new HighScoreController();
     }
@@ -219,7 +237,8 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     public void gameCreated(ClientGame content) {
         this.loadFXMLView("/views/game/GameView.fxml", this.gameController);
         this.gameModel = new GameModel(this, content); //TODO: gameController which is given to fxmlview also updated ??
-        this.gameController.initData(this.gameModel, this.window);
+        this.chatRoomModel = new ChatRoomModel();
+        this.gameController.initData(this.gameModel, this.window, this.chatRoomModel);
 
         this.window.show();
     }
@@ -237,17 +256,13 @@ public class GUI extends Application implements ControllerChangeListener<Usernam
     public void returnToGame(ClientGame clientGame) {
         this.gameModel.setClientGame(clientGame);
         this.loadFXMLView("/views/game/GameView.fxml", this.gameController);
-        gameController.initData(this.gameModel, this.window);
+        gameController.initData(this.gameModel, this.window, this.chatRoomModel);
         this.window.show();
     }
 
     @Override
     public void showWinner(ClientGame game) {
-       /** ShowWinnerModel showWinnerModel = new ShowWinnerModel(game);
-        this.loadFXMLView("/views/ShowWinnerView.fxml", this.showWinnerController);
-        this.showWinnerController.initData(showWinnerModel, this.window);
-        this.window.show();**/
-        EndPhaseModel endPhaseModel = new EndPhaseModel(game);
+        EndPhaseModel endPhaseModel = new EndPhaseModel(game, this);
         this.loadFXMLView("/views/EndPhaseView.fxml", this.endPhaseController);
         this.endPhaseController.initData(endPhaseModel, this.window);
         this.window.show();

@@ -10,12 +10,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserRepositoryTest {
-    private UserRepository userRepository;
-
     private static final String NAME_1 = "John";
     private static final String IP_ADDRESS_1 = "clientJ";
     private static final String NAME_2 = "Albert";
     private static final String IP_ADDRESS_2 = "clientA";
+    private UserRepository userRepository;
 
     @BeforeEach
     public void initUserRepository() {

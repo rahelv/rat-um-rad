@@ -3,22 +3,19 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.layout.GridPane?>
-
-<fx:root type="GridPane" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:id="lobbyController">
-   <GridPane vgap="10" hgap="10">
-      <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="Lobby (open games)">
-         <font>
-            <Font name="Arial Bold" size="13.0" />
-         </font>
-      </Label>
-      <ScrollPane GridPane.rowIndex="1" GridPane.columnIndex="0" prefHeight="300">
-         <content>
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="VBox" xmlns="http://javafx.com/javafx/19" fx:id="lobbyController" spacing="10.0">
+    <Label text="Open Games">
+        <font>
+            <Font name="Arial Bold" size="15.0"/>
+        </font>
+    </Label>
+    <ScrollPane prefHeight="300" fitToWidth="true">
+        <content>
             <ListView fx:id="openGamesListView"/>
-         </content>
-      </ScrollPane>
-   </GridPane>
+        </content>
+    </ScrollPane>
 </fx:root>
 
 

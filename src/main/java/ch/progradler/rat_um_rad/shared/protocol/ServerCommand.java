@@ -32,4 +32,5 @@ public enum ServerCommand {
     WHEEL_CARDS_CHOSEN,
     GAME_ENDED,
     SEND_HIGHSCORES,
+    GAME_ENDED_BY_PLAYER_DISCONNECTION,
 }

@@ -23,10 +23,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.FINISHED;
 import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.PREPARATION;
-import static ch.progradler.rat_um_rad.shared.models.game.GameStatus.STARTED;
 import static ch.progradler.rat_um_rad.shared.protocol.ContentType.STRING;
-import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.*;
 import static ch.progradler.rat_um_rad.shared.protocol.ServerCommand.*;
 import static ch.progradler.rat_um_rad.shared.util.GameConfig.SHORT_DEST_CARDS_AT_START_COUNT;
 
@@ -54,7 +53,8 @@ public class GameServiceUtil {
                 game.getPlayers().get(forPlayerIpAddress),
                 game.getTurn(),
                 game.getRoadsBuilt(),
-                game.getActivities());
+                game.getActivities(),
+                game.getPlayerNames());
     }
 
     static Player createNewPlayer(String ipAddress, IUserRepository userRepository, List<PlayerColor> takenColors) {
@@ -82,6 +82,7 @@ public class GameServiceUtil {
     public static Game getCurrentGameOfPlayer(String playerIpAddress, IGameRepository mockGameRepository) {
         List<Game> allGames = mockGameRepository.getAllGames();
         for (Game game : allGames) {
+            if (game.getStatus() == FINISHED) continue;
             if (game.getPlayers().containsKey(playerIpAddress)) return game;
         }
         return null;
@@ -193,7 +194,7 @@ public class GameServiceUtil {
     }
 
     /**
-     * @return Whether or not it is the player's turn in the game.
+     * @return Whether it is the player's turn in the game.
      */
     public static boolean isPlayersTurn(Game game, String playerIp) {
         int turn = game.getTurn();
@@ -202,27 +203,6 @@ public class GameServiceUtil {
         int playerOrder = players.get(playerIp).getPlayingOrder();
 
         return turn % playerCount == playerOrder;
-    }
-
-    /**
-     * @return whether or not action is generally valid.
-     */
-    public static boolean validateAndHandleActionPrecondition(String ipAddress, Game game, OutputPacketGateway outputPacketGateway) {
-        if (game == null) {
-            sendInvalidActionResponse(ipAddress, PLAYER_IN_NO_GAME, outputPacketGateway);
-            return false;
-        }
-
-        if (game.getStatus() != STARTED) {
-            sendInvalidActionResponse(ipAddress, GAME_NOT_STARTED, outputPacketGateway);
-            return false;
-        }
-
-        if (!GameServiceUtil.isPlayersTurn(game, ipAddress)) { //TODO: uses this method when cards are selected but in the beginning it's nobodys turn!!!
-            sendInvalidActionResponse(ipAddress, NOT_PLAYERS_TURN, outputPacketGateway);
-            return false;
-        }
-        return true;
     }
 
     public static void sendInvalidActionResponse(String ipAddress, String errorMessage, OutputPacketGateway outputPacketGateway) {

@@ -10,12 +10,10 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;

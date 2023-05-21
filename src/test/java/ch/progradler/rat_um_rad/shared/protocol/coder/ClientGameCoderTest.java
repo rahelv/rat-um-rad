@@ -52,6 +52,7 @@ class ClientGameCoderTest {
         List<VisiblePlayer> otherPlayers = Collections.singletonList(otherPlayer);
         Map<String, String> roadsBuilt = Map.of("road1", "playerA", "road4", "playerB");
         Activity activity1 = new Activity("hans", ServerCommand.GAME_JOINED);
+        List<String> playerNames = Arrays.asList("Player a", "Player b");
 
         ClientGame game = new ClientGame(gameId,
                 status,
@@ -63,7 +64,8 @@ class ClientGameCoderTest {
                 ownPlayer,
                 turn,
                 roadsBuilt,
-                Collections.singletonList(activity1));
+                Collections.singletonList(activity1),
+                playerNames);
 
         when(gameMapCoderMock.encode(map, level + 1)).thenReturn("encoded/map");
         String encodedVisiblePlayer = "encoded/visible/player";
@@ -86,7 +88,8 @@ class ClientGameCoderTest {
                 encodedPlayer,
                 String.valueOf(turn),
                 CoderHelper.encodeStringMap(level + 1, roadsBuilt),
-                CoderHelper.encodeStringList(level + 2, Collections.singletonList(encodedActivity1)));
+                CoderHelper.encodeStringList(level + 2, Collections.singletonList(encodedActivity1)),
+                CoderHelper.encodeStringList(level + 1, playerNames));
         assertEquals(expected, encoded);
     }
 
@@ -118,6 +121,7 @@ class ClientGameCoderTest {
         when(playerCoderMock.decode(encodedPlayer, level + 1)).thenReturn(ownPlayer);
         String encodedActivity1 = "encodedActivity1";
         when(activityCoderMock.decode(encodedActivity1, level + 2)).thenReturn(activity1);
+        List<String> playerNames = Arrays.asList("Player a", "Player b");
 
         String encoded = CoderHelper.encodeFields(level,
                 gameId,
@@ -130,7 +134,8 @@ class ClientGameCoderTest {
                 encodedPlayer,
                 String.valueOf(turn),
                 CoderHelper.encodeStringMap(level + 1, roadsBuilt),
-                CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedActivity1)));
+                CoderHelper.encodeStringList(level + 1, Collections.singletonList(encodedActivity1)),
+                CoderHelper.encodeStringList(level + 1, playerNames));
 
         ClientGame decoded = clientGameCoder.decode(encoded, level);
 
@@ -144,7 +149,8 @@ class ClientGameCoderTest {
                 ownPlayer,
                 turn,
                 roadsBuilt,
-                activities);
+                activities,
+                playerNames);
         assertEquals(expected, decoded);
     }
 }

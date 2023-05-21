@@ -11,19 +11,13 @@ import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class GameOverviewController {
     @FXML
@@ -31,9 +25,9 @@ public class GameOverviewController {
     @FXML
     private Button backToLobbyButton;
     @FXML
-    private ListView onGoingListView;
+    private ListView<GameBase> onGoingListView;
     @FXML
-    private ListView finishedGamesListView;
+    private ListView<GameBase> finishedGamesListView;
 
     private IGameService gameService;
     private GameOverviewModel gameOverviewModel;
@@ -102,19 +96,16 @@ public class GameOverviewController {
         finishedGamesListView.setCellFactory(param -> new GameOverviewController.Cell());
     }
 
-    static class Cell extends ListCell<GameBase>{
+    static class Cell extends ListCell<GameBase> {
         Pane pane = new Pane();
         HBox hbox = new HBox();
-        Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
+        Label nameLabel = new Label();
 
         public Cell() {
             super();
             hbox.getChildren().addAll(nameLabel, pane, listPlayersButton);
-            hbox.setHgrow(pane, Priority.ALWAYS);
-            listPlayersButton.setOnAction(event -> {
-                //TODO: listing all players in this game
-            });
+            HBox.setHgrow(pane, Priority.ALWAYS);
         }
 
         protected void updateItem(GameBase item, boolean empty) {
@@ -123,6 +114,7 @@ public class GameOverviewController {
             setGraphic(null);
             if (item != null && !empty) {
                 nameLabel.setText(item.getId());
+                listPlayersButton.setTooltip(new Tooltip(String.join(", ", item.getPlayerNames())));
                 setGraphic(hbox);
             }
         }

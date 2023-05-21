@@ -1,7 +1,7 @@
 package ch.progradler.rat_um_rad.shared.protocol;
 
 /**
- * These are the error messages sent from server to client if a packet with command {@link ClientCommand#INVALID_ACTION_FATAL} is thrown.
+ * These are the error messages sent from server to client if a packet with command {@link ServerCommand#INVALID_ACTION_FATAL} is thrown.
  */
 public class ErrorResponse {
     public static final String JOINING_NOT_POSSIBLE = "Joining game is not possible. Refresh game list.";
@@ -14,4 +14,5 @@ public class ErrorResponse {
     public static final String ROAD_DOES_NOT_EXIST = "Road does not exist.";
     public static final String NOT_ENOUGH_CARDS_OF_REQUIRED_COLOR_TO_BUILD_ROAD = "Invalid action. You don't have enough cards of correct color to build on road!";
     public static final String NOT_ENOUGH_WHEELS_TO_BUILD_ROAD = "Invalid action. You don't have enough wheels to build on road!";
+    public static final String NOT_ENOUGH_WHEELCARDS_IN_DECK = "There are not enough wheelcards in the deck. Take another action.";
 }

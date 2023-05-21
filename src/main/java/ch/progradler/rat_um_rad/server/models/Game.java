@@ -30,8 +30,9 @@ public class Game extends GameBase {
                 int turn,
                 Map<String, String> roadsBuilt,
                 List<Activity> activities,
-                DecksOfGame decksOfGame) {
-        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt, activities);
+                DecksOfGame decksOfGame,
+                List<String> playerNames) {
+        super(id, status, map, createdAt, creatorPlayerIpAddress, requiredPlayerCount, turn, roadsBuilt, activities, playerNames);
         this.decksOfGame = decksOfGame;
         this.players = players;
     }
@@ -58,7 +59,8 @@ public class Game extends GameBase {
                 Map<String, Player> players,
                 int turn,
                 Map<String, String> roadsBuilt,
-                List<Activity> activities) {
+                List<Activity> activities,
+                List<String> playerNames) {
         this(id,
                 status,
                 map,
@@ -69,7 +71,8 @@ public class Game extends GameBase {
                 turn,
                 roadsBuilt,
                 activities,
-                DecksOfGame.startingDecks(map));
+                DecksOfGame.startingDecks(map),
+                playerNames);
     }
 
     public DecksOfGame getDecksOfGame() {

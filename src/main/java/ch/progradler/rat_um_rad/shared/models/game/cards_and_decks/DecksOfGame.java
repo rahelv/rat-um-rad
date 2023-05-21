@@ -34,28 +34,28 @@ public class DecksOfGame {
         return wheelCardDeck;
     }
 
-    public WheelCardDeck getDiscardDeck() {
-        return discardDeck;
-    }
-
-    public DestinationCardDeck getLongDestinationCardDeck() {
-        return longDestinationCardDeck;
-    }
-
-    public DestinationCardDeck getShortDestinationCardDeck() {
-        return shortDestinationCardDeck;
-    }
-
     public void setWheelCardDeck(WheelCardDeck wheelCardDeck) {
         this.wheelCardDeck = wheelCardDeck;
+    }
+
+    public WheelCardDeck getDiscardDeck() {
+        return discardDeck;
     }
 
     public void setDiscardDeck(WheelCardDeck discardDeck) {
         this.discardDeck = discardDeck;
     }
 
+    public DestinationCardDeck getLongDestinationCardDeck() {
+        return longDestinationCardDeck;
+    }
+
     public void setLongDestinationCardDeck(DestinationCardDeck longDestinationCardDeck) {
         this.longDestinationCardDeck = longDestinationCardDeck;
+    }
+
+    public DestinationCardDeck getShortDestinationCardDeck() {
+        return shortDestinationCardDeck;
     }
 
     public void setShortDestinationCardDeck(DestinationCardDeck shortDestinationCardDeck) {

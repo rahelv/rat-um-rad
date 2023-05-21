@@ -3,6 +3,8 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game;
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.activity.ActivityModel;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomController;
+import ch.progradler.rat_um_rad.client.gui.javafx.game.chatRoom.ChatRoomModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapController;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap.GameMapModel;
 import ch.progradler.rat_um_rad.client.gui.javafx.game.ownPlayerOverview.OwnPlayerOverviewController;
@@ -18,9 +20,9 @@ import javafx.fxml.FXML;
 import javafx.stage.Stage;
 
 public class GameController {
-    private GameService gameService;
     Stage stage;
     GameModel gameModel;
+    private GameService gameService;
     @FXML
     private ActivityController activityController = new ActivityController();
     @FXML
@@ -29,13 +31,16 @@ public class GameController {
     private OwnPlayerOverviewController ownPlayerOverviewController = new OwnPlayerOverviewController();
     @FXML
     private GameMapController gameMapController = new GameMapController();
+    @FXML
+    private ChatRoomController chatRoomController = new ChatRoomController();
+
     /**
      * 1. Warten auf Spieler in Lobby
      * 2. Game Startet
      * 3. --> Karten wählen
      * 4. --> Farbe zugewiesen, Radkarten bekommen etc.
      * 5. Karte anzeigen
-     * */
+     */
     public GameController() {
         this.gameService = new GameService();
         InputPacketGatewaySingleton.getInputPacketGateway().addListener(new ServerResponseListener<ClientGame>() {
@@ -90,12 +95,13 @@ public class GameController {
      * @param gameModel
      * @param stage
      */
-    public void initData(GameModel gameModel, Stage stage) {
+    public void initData(GameModel gameModel, Stage stage, ChatRoomModel chatRoomModel) {
         this.stage = stage;
         this.gameModel = gameModel;
         this.activityController.initData(new ActivityModel());
+        this.chatRoomController.initData(chatRoomModel);
         this.playerOverviewController.initData(new PlayerOverviewModel());
-        this.playerOverviewController.updatePlayerOverview(gameModel.getClientGame().getOtherPlayers());
+        this.playerOverviewController.updatePlayerOverview(gameModel.getClientGame().getOwnPlayer(), gameModel.getClientGame().getOtherPlayers());
         this.ownPlayerOverviewController.initData(new OwnPlayerOverviewModel());
         this.ownPlayerOverviewController.updatePlayer(gameModel.getClientGame().getOwnPlayer());
         this.gameModel.setClientGame(gameModel.getClientGame());
@@ -110,7 +116,7 @@ public class GameController {
             this.gameMapController.initData(new GameMapModel(content)); //TODO: maybe only call after game is started (in serverresponsehandler)
             this.gameMapController.updateGameMapModelWithMap(content);
             this.activityController.updateActivities(content.getActivities());
-            this.playerOverviewController.updatePlayerOverview(content.getOtherPlayers());
+            this.playerOverviewController.updatePlayerOverview(content.getOwnPlayer(), content.getOtherPlayers());
             this.ownPlayerOverviewController.updatePlayer(content.getOwnPlayer());
             this.stage.show();
         });

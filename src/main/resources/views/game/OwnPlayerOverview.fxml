@@ -2,13 +2,14 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.layout.VBox?>
-
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.ScrollBar?>
 <?import javafx.scene.control.ScrollPane?>
-<fx:root type="VBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:id="ownPlayerOverviewController">
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<fx:root fx:id="ownPlayerOverviewController" type="VBox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <Label alignment="CENTER" text="my Cards and Stuff">
         <font>
             <Font name="Arial Black" size="15.0" />
@@ -18,20 +19,34 @@
         <VBox>
             <Label>DestinationCards</Label>
             <ScrollPane fitToWidth="true">
-                <ListView prefHeight="100.0" prefWidth="250" orientation="HORIZONTAL" fx:id="destinationCardListView"></ListView>
+                <ListView fx:id="destinationCardListView" orientation="HORIZONTAL" prefHeight="100.0" prefWidth="250.0" />
             </ScrollPane>
         </VBox>
         <VBox>
             <Label>WheelCards</Label>
             <ScrollPane fitToWidth="true">
-                <ListView prefHeight="100.0"  orientation="HORIZONTAL" fx:id="wheelCardListView"></ListView>
+                <ListView fx:id="wheelCardListView" orientation="HORIZONTAL" prefHeight="100.0" />
             </ScrollPane>
         </VBox>
     </HBox>
     <HBox>
-        <Label text="wheelCount: "></Label>
-        <Label fx:id="wheelCount"></Label>
-        <Label text="  score: "></Label>
-        <Label fx:id="playerScore"></Label>
+        <Label text="wheelCount: ">
+         <graphic>
+            <ImageView fitHeight="17.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/bikeWheel.png" />
+               </image>
+            </ImageView>
+         </graphic></Label>
+        <Label fx:id="wheelCount" />
+        <Label text="  score: ">
+         <graphic>
+            <ImageView fitHeight="19.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/score.jpeg" />
+               </image>
+            </ImageView>
+         </graphic></Label>
+        <Label fx:id="playerScore" />
     </HBox>
 </fx:root>

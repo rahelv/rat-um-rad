@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game.playerOverview;
 
 import ch.progradler.rat_um_rad.client.gui.javafx.game.UiUtil;
 import ch.progradler.rat_um_rad.shared.models.VisiblePlayer;
+import ch.progradler.rat_um_rad.shared.models.game.Player;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -9,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,9 +40,10 @@ public class PlayerOverviewController extends VBox {
         this.playerOverviewListView.setCellFactory(param -> new PlayerOverviewCell()); //TODO: find a better way to handle buttonAction from Cell
     }
 
-    public void updatePlayerOverview(List<VisiblePlayer> players) {
-        this.playerOverviewModel.updatePlayers(players);
+    public void updatePlayerOverview(Player ownPlayer, List<VisiblePlayer> players) {
+        this.playerOverviewModel.updatePlayers(ownPlayer, players);
     }
+
     static class PlayerOverviewCell extends ListCell<VisiblePlayer> {
         Pane pane = new Pane();
         HBox hbox = new HBox();

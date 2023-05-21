@@ -32,7 +32,8 @@ public class GameBaseCoder implements Coder<GameBase> {
                 String.valueOf(game.getRequiredPlayerCount()),
                 String.valueOf(game.getTurn()),
                 encodeStringMap(level + 1, game.getRoadsBuilt()),
-                activitiesEncoded
+                activitiesEncoded,
+                encodeStringList(level + 1, game.getPlayerNames())
         );
     }
 
@@ -48,7 +49,8 @@ public class GameBaseCoder implements Coder<GameBase> {
         int turn = Integer.parseInt(fields.get(6));
         Map<String, String> roadsBuilt = decodeStringMap(level + 1, fields.get(7));
         List<Activity> activities = decodeList(activityCoder, fields.get(8), level + 1);
+        List<String> playerNames = decodeStringList(level + 1, fields.get(9));
 
-        return new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn, roadsBuilt, activities);
+        return new GameBase(id, status, map, createdAt, creatorPlayerIp, requiredPlayerCount, turn, roadsBuilt, activities, playerNames);
     }
 }

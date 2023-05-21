@@ -32,14 +32,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ActionHandlerTest {
-    private final String actionData = "someAction";
     private static final String IP_ADDRESS = "clientA";
-
-    private String validateResult = null;
-    private boolean canEndGame = false;
-    private ServerCommand command = ServerCommand.ROAD_BUILT;
-    private boolean updateGameStateCalled = false;
-
+    private final String actionData = "someAction";
+    private final DecksOfGame decksOfGame = mock(DecksOfGame.class);
     @Mock
     IGameRepository mockGameRepository;
     @Mock
@@ -52,10 +47,11 @@ class ActionHandlerTest {
     HighscoreManager mockHighscoreManager;
     @Mock
     Validator<Action<String>> mockActionValidator;
-
+    private String validateResult = null;
+    private boolean canEndGame = false;
+    private ServerCommand command = ServerCommand.ROAD_BUILT;
+    private boolean updateGameStateCalled = false;
     private ActionHandler<String> actionHandler;
-
-    private final DecksOfGame decksOfGame = mock(DecksOfGame.class);
 
     @BeforeEach
     void setUp() {
@@ -158,7 +154,7 @@ class ActionHandlerTest {
 
         GameMap mockGameMap = mock(GameMap.class);
         Game game = new Game("gameId", GameStatus.STARTED, mockGameMap, new Date(), "creator", 3, new HashMap<>(),
-                turn, new HashMap<>(), activities, decksOfGame);
+                turn, new HashMap<>(), activities, decksOfGame, new ArrayList<>());
 
         try (MockedStatic<GameServiceUtil> utilities = Mockito.mockStatic(GameServiceUtil.class)) {
             utilities.when(() -> GameServiceUtil.getCurrentGameOfPlayer(IP_ADDRESS, mockGameRepository))

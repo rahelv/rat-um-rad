@@ -3,6 +3,7 @@ image: gradle:7.2.0-jdk17
 stages:
   - build
   - test
+  - build-cs108
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
@@ -32,3 +33,13 @@ test:
     when: always
     reports:
       junit: build/test-results/test/**/TEST-*.xml
+
+build-cs108:
+  stage: build-cs108
+  script: gradle build-cs108
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle

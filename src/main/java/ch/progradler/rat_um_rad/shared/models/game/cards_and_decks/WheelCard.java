@@ -18,12 +18,21 @@ public class WheelCard {
         this.cardID = cardID;
     }
 
+    /**
+     * @return Mutable list of all wheel cards
+     */
+    public static List<WheelCard> all() {
+        return new ArrayList<>(Stream.iterate(0, n -> n + 1)
+                .limit(GameConfig.TOTAL_WHEEL_CARD_COUNT).map(WheelCard::new).toList());
+    }
+
     public int getCardID() {
         return cardID;
     }
 
     /**
      * Uses same principle as determining if is players turn (total players count, playing order, turn)
+     *
      * @return the index of the color in {@link WheelColor}s
      */
     private int colorIndicator() {
@@ -32,14 +41,6 @@ public class WheelCard {
 
     public WheelColor getColor() {
         return WheelColor.values()[colorIndicator()];
-    }
-
-    /**
-     * @return Mutable list of all wheel cards
-     */
-    public static List<WheelCard> all() {
-        return new ArrayList<>(Stream.iterate(0, n -> n + 1)
-                .limit(GameConfig.TOTAL_WHEEL_CARD_COUNT).map(WheelCard::new).toList());
     }
 
     @Override

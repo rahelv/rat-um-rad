@@ -14,11 +14,11 @@ import java.util.Comparator;
 import java.util.List;
 
 public class OwnPlayerOverviewModel {
-    //TODO: implement "Stapel"
-    private Player ownPlayer;
-    //TODO: LongDestinationCard, WheelCount (+ Color)
+
     private final ObservableList<DestinationCard> destinationCards = FXCollections.observableArrayList();
     private final ObservableList<WheelCard> wheelCards = FXCollections.observableArrayList();
+
+    private Player ownPlayer;
     private IntegerProperty wheelCount = new SimpleIntegerProperty(this, "wheelCount");
     private IntegerProperty playerScore = new SimpleIntegerProperty(this, "playerScore");
 
@@ -57,5 +57,8 @@ public class OwnPlayerOverviewModel {
     public IntegerProperty wheelCountProperty() {
         return wheelCount;
     }
-    public IntegerProperty playerScoreProperty() {return playerScore;}
+
+    public IntegerProperty playerScoreProperty() {
+        return playerScore;
+    }
 }

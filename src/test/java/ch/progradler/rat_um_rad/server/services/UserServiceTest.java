@@ -282,7 +282,7 @@ public class UserServiceTest {
                 ipAddressPlayerC, playerC
         );
 
-        Game game1 = new Game("gameA", null, GameMap.defaultMap(), null, "playerB", 4, players, 0, new HashMap<>(), new ArrayList<>());
+        Game game1 = new Game("gameA", null, GameMap.defaultMap(), null, "playerB", 4, players, 0, new HashMap<>(), new ArrayList<>(), new ArrayList<>());
 
         when(gameRepositoryMock.getAllGames()).thenReturn(Collections.singletonList(game1));
 
@@ -311,7 +311,7 @@ public class UserServiceTest {
         String ipAddress = "clientJ";
 
         Map<String, Player> players = Map.of();
-        Game game1 = new Game("gameA", null, GameMap.defaultMap(), null, "playerB", 4, players, 0, new HashMap<>(), new ArrayList<>());
+        Game game1 = new Game("gameA", null, GameMap.defaultMap(), null, "playerB", 4, players, 0, new HashMap<>(), new ArrayList<>(), new ArrayList<>());
 
         when(gameRepositoryMock.getAllGames()).thenReturn(Collections.singletonList(game1));
 

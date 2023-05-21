@@ -1,7 +1,5 @@
 package ch.progradler.rat_um_rad.client;
 
-import ch.progradler.rat_um_rad.client.command_line.presenter.CommandLinePresenter;
-import ch.progradler.rat_um_rad.client.command_line.presenter.PackagePresenter;
 import ch.progradler.rat_um_rad.client.gateway.InputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gateway.OutputPacketGatewaySingleton;
 import ch.progradler.rat_um_rad.client.gateway.ServerInputPacketGateway;
@@ -30,6 +28,7 @@ public class Client {
      *
      * @param host     : ip of the server
      * @param port     : port of the server socket
+     *
      * @param username
      */
     public void start(String host, int port, String username) { //TODO: handle initial username
@@ -42,7 +41,6 @@ public class Client {
             OutputPacketGatewaySingleton.setOutputPacketGateway(serverOutput);
 
             ClientPingPongRunner clientPingPongRunner = startClientPingPong(serverOutput);
-            //startCommandHandler(userService, host, usernameHandler, username);
             startServerListener(socket, PacketCoder.defaultServerPacketCoder(), clientPingPongRunner);
 
             Application.launch(GUI.class, username);
@@ -80,8 +78,7 @@ public class Client {
     private void startServerListener(Socket socket,
                                      Coder<Packet<ServerCommand>> packetCoder,
                                      ClientPingPongRunner clientPingPongRunner) {
-        PackagePresenter presenter = new CommandLinePresenter();
-        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(presenter, clientPingPongRunner);
+        ServerInputPacketGateway inputPacketGateway = new ServerResponseHandler(clientPingPongRunner);
         ServerInputListener listener = new ServerInputListener(socket, inputPacketGateway, packetCoder);
 
         InputPacketGatewaySingleton.setInputPacketGateway(inputPacketGateway);
@@ -90,5 +87,3 @@ public class Client {
         t.start();
     }
 }
-
-//TODO: stop all threads when logging out

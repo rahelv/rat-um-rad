@@ -12,11 +12,11 @@ import java.nio.charset.StandardCharsets;
 public class StreamUtilsTest {
     public final static String SENT1 = "hello/world![#|?!&&/$$£üäö";
     public final static String SENT2 = "/$$£üäöDifferent";
+    public static final int PORT = 6666;
     public static String RECEIVED1;
     public static String RECEIVED2;
     public static boolean isReceived1;
     public static boolean isReceived2;
-    public static final int PORT = 6666;
     /**
      * Since the test {@link StreamUtilsTest#readAndSendWorkTogether()} uses two Threads for sending and receiving
      * strings, both threads must be closed. To ensure that none of them is closed too early, they will check
@@ -65,7 +65,6 @@ public class StreamUtilsTest {
         String actualString = outputStream.toString(StandardCharsets.UTF_8);
 
         Assertions.assertEquals(testSendStr + System.lineSeparator(), actualString);
-        System.out.println();
     }
 
     @Test

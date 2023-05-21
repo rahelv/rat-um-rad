@@ -1,6 +1,7 @@
 package ch.progradler.rat_um_rad.server.protocol.socket;
 
 import ch.progradler.rat_um_rad.server.gateway.InputPacketGateway;
+import ch.progradler.rat_um_rad.server.protocol.ClientConnectionsHandler;
 import ch.progradler.rat_um_rad.server.protocol.ClientDisconnectedListener;
 import ch.progradler.rat_um_rad.server.protocol.UsernameReceivedListener;
 import ch.progradler.rat_um_rad.server.protocol.pingpong.ServerPingPongRunner;
@@ -19,21 +20,22 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
- * Listens to incoming commands from a specific client via socket stream. For each client, there is one such a input listener.
+ * Listens to incoming commands from a specific client via socket stream.
+ * For each client, there is one such input listener-instance and thus a {@link Thread}.
  */
 public class ClientInputListener implements Runnable {
     public static final Logger LOGGER = LogManager.getLogger();
     private final InputPacketGateway inputPacketGateway;
+    private final Coder<Packet<ClientCommand>> packetCoder;
+    private final ClientDisconnectedListener clientDisconnectedListener;
+    private final ServerPingPongRunner serverPingPongRunner;
     private InputStream inputStream;
     private BufferedReader bufferedReader;
-    private final Coder<Packet<ClientCommand>> packetCoder;
     private String ipAddress;
-    private final ClientDisconnectedListener clientDisconnectedListener;
     private UsernameReceivedListener usernameReceivedListener;
-    private final ServerPingPongRunner serverPingPongRunner;
+    private Thread thread; //Thread whose run method is in this class
 
     public ClientInputListener(Socket socket,
                                InputPacketGateway inputPacketGateway,
@@ -50,8 +52,7 @@ public class ClientInputListener implements Runnable {
             inputStream = socket.getInputStream();
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace(); //TODO: error management
-            LOGGER.warn("Failed to connect with client. Removing client...");
+            LOGGER.warn("Failed to connect with client. Removing client...", e);
             clientDisconnectedListener.onDisconnected(ipAddress);
         }
 
@@ -61,34 +62,35 @@ public class ClientInputListener implements Runnable {
         this.usernameReceivedListener = usernameReceivedListener;
     }
 
+    /**
+     * This method expects the username first and then starts listening. This is because the conneciton is only
+     * set up when the username is recieved and thus, no further communication between server and client should be there.
+     */
     @Override
     public void run() {
         try {
-            //expects the username first
             readUsername();
 
             while (true) {
                 String encodedPacket = StreamUtils.readStringsFromStream(bufferedReader);
                 Packet<ClientCommand> packet = packetCoder.decode(encodedPacket, 0);
                 inputPacketGateway.handleCommand(packet, ipAddress);
-                // TODO: unittest
-
-                //TODO: implement QUIT scenario (with break)
-                //important to remove client from pool so server doesn't crash
             }
         } catch (SocketException e) {
             inputPacketGateway.handleCommand(new Packet.Client(ClientCommand.USER_SOCKET_DISCONNECTED,
                     null,
                     ContentType.NONE), ipAddress);
-            System.out.println("Client " + ipAddress +
-                    " disconnected from socket connection!");
+            LOGGER.info("Client " + ipAddress + " disconnected from socket connection!");
             clientDisconnectedListener.onDisconnected(ipAddress);
         } catch (Exception e) {
-            // TODO: remove in stream and socket connection for this client?
-            e.printStackTrace();
+            LOGGER.error(e);
         }
     }
 
+    /**
+     * The method {@link UsernameReceivedListener#onUsernameReceived(String)} sets up the connection.
+     * See in {@link ClientConnectionsHandler} for the concrete implementation.
+     */
     private void readUsername() throws IOException {
         String usernamePacketEncoded = StreamUtils.readStringsFromStream(bufferedReader);
 
@@ -104,5 +106,13 @@ public class ClientInputListener implements Runnable {
     public void close() throws IOException {
         // TODO: close thread in which client input listener is running
         inputStream.close();
+    }
+
+    public void setThread(Thread thread) {
+        this.thread = thread;
+    }
+
+    public Thread getThread() {
+        return thread;
     }
 }

@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Holds all client connections.
  */
-public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedListener {
+public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedListener, ConnectionPoolInfo {
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -32,8 +32,8 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     public void sendPacket(String ipAddress, Packet<ServerCommand> packet) {
         IConnection connection = connections.get(ipAddress);
         if (connection == null) {
-            LOGGER.info("No connection for IP-address {} found! Packet not sent.", ipAddress);
-            return; // TODO: test
+            LOGGER.warn("No connection for IP-address {} found! Packet not sent.", ipAddress);
+            return;
         }
         connection.sendPacketToClient(packet);
     }
@@ -56,7 +56,7 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
     @Override
     public void broadcast(Packet<ServerCommand> packet) {
         final List<String> clientsForBroadCast = new ArrayList<>(connections.keySet());
-        for(String ipAddress : clientsForBroadCast) {
+        for (String ipAddress : clientsForBroadCast) {
             sendPacket(ipAddress, packet);
         }
     }
@@ -70,12 +70,21 @@ public class ConnectionPool implements OutputPacketGateway, ClientDisconnectedLi
             // only remove if successfully closed connection
             connections.remove(ipAddress);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn("Failed to close connection to client " + ipAddress, e);
         }
     }
 
     @Override
     public void onDisconnected(String ipAddress) {
         removeConnection(ipAddress);
+    }
+
+    public String getIpOfThread(Thread thread) {
+        for (String ipAddress : connections.keySet()) {
+            if (connections.get(ipAddress).getThread() == thread) {
+                return ipAddress;
+            }
+        }
+        return null;
     }
 }

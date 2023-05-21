@@ -17,9 +17,8 @@ import static ch.progradler.rat_um_rad.client.protocol.pingpong.ClientPingPongRu
  */
 public class ClientPingPongHandler {
     public static final Logger LOGGER = LogManager.getLogger();
-
-    private boolean pingArrived = false;
     private final OutputPacketGateway outputPacketGateway;
+    private boolean pingArrived = false;
 
     /**
      * @param outputPacketGateway is the serverOutput instance.
@@ -28,12 +27,12 @@ public class ClientPingPongHandler {
         this.outputPacketGateway = outputPacketGateway;
     }
 
-    public void setPingArrived(boolean pingArrived) {
-        this.pingArrived = pingArrived;
-    }
-
     public boolean isPingArrived() {
         return pingArrived;
+    }
+
+    public void setPingArrived(boolean pingArrived) {
+        this.pingArrived = pingArrived;
     }
 
     /**

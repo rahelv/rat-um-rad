@@ -24,8 +24,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for Choosing DestinationCards (either in the beginning of the game or throughout gameplay)
+ */
 public class ChooseCardController {
 
+    List<String> selectedRoadIdList = new ArrayList<>();
     private Stage stage;
     @FXML
     private Button chooseCardsButton;
@@ -33,7 +37,6 @@ public class ChooseCardController {
     private ListView cardsListView;
     private ChooseCardModel chooseCardModel;
     private IGameService gameService;
-    List<String> selectedRoadIdList = new ArrayList<>();
 
     public ChooseCardController() {
         this.gameService = new GameService();
@@ -84,12 +87,18 @@ public class ChooseCardController {
         }
     }
 
+    /**
+     * after destination Card is chosen,scene should be changed to gameView
+     * */
     private void destinationCardsSelectedReturnToGame(ClientGame clientGame) throws IOException {
         Platform.runLater(() -> {
             chooseCardModel.getListener().returnToGame(clientGame);
         });
     }
 
+    /**
+     * DestinationCardCell for the corresponding ListView that displays all the cards.
+     */
     private class DestinationCardCell extends CheckBoxListCell<DestinationCard> {
         StringConverter<DestinationCard> stringConverter = new StringConverter<>() {
             @Override

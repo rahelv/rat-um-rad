@@ -11,10 +11,8 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameRepositoryTest {
-    private GameRepository gameRepository;
-
     private static final String GAME_ID_1 = "game1";
-
+    private GameRepository gameRepository;
     private Game game1;
 
     @BeforeEach

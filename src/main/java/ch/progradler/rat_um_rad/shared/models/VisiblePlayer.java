@@ -1,8 +1,8 @@
 package ch.progradler.rat_um_rad.shared.models;
 
 import ch.progradler.rat_um_rad.shared.models.game.PlayerBase;
-import ch.progradler.rat_um_rad.shared.models.game.PlayerEndResult;
 import ch.progradler.rat_um_rad.shared.models.game.PlayerColor;
+import ch.progradler.rat_um_rad.shared.models.game.PlayerEndResult;
 
 import java.util.Objects;
 

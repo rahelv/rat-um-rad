@@ -11,6 +11,7 @@ import ch.progradler.rat_um_rad.shared.protocol.Packet;
 import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ClientPacketCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketCoder;
+import ch.progradler.rat_um_rad.shared.protocol.coder.packet.PacketContentCoder;
 import ch.progradler.rat_um_rad.shared.protocol.coder.packet.ServerPacketCoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +60,7 @@ public class PacketCoderTest {
         Player player = new Player("own player", PlayerColor.LIGHT_GREEN, 4, 5, 1,
                 Arrays.asList(new WheelCard(40)), destinationCard, new ArrayList<>());
         List<Activity> activities = Collections.singletonList(new Activity("John", ServerCommand.GAME_JOINED));
+        List<String> playerNames = Arrays.asList("Player a", "Player b");
 
         PlayerEndResult endResultOtherPlayer = new PlayerEndResult(Collections.singletonList(destinationCard), new ArrayList<>(), false);
 
@@ -65,7 +68,7 @@ public class PacketCoderTest {
                 new Date(2023, Calendar.MAY, 14, 4, 4, 4), "creator", 4, Arrays.asList(
                 new VisiblePlayer("Player1", PlayerColor.LILA, 4, 20, 0,
                         "ip", 5, 3, endResultOtherPlayer)
-        ), player, 30, new HashMap<>(), activities);
+        ), player, 30, new HashMap<>(), activities, playerNames);
 
 
         ServerCommand command = ServerCommand.GAME_CREATED;
@@ -314,8 +317,8 @@ public class PacketCoderTest {
         Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
 
         List<GameBase> content = Arrays.asList(
-                new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>()),
-                new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>())
+                new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>(), new ArrayList<>()),
+                new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>(), new ArrayList<>())
         );
 
         ServerCommand command = ServerCommand.SEND_STARTED_GAMES;
@@ -346,8 +349,8 @@ public class PacketCoderTest {
         Date createdAt1 = new Date(2022, Calendar.JUNE, 4, 9, 44, 50);
         Date createdAt2 = new Date(2022, Calendar.JUNE, 5, 0, 0, 0);
 
-        GameBase game1 = new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>());
-        GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>());
+        GameBase game1 = new GameBase("game1", GameStatus.STARTED, GameMap.defaultMap(), createdAt1, "creator1", 5, 3, new HashMap<>(), new ArrayList<>(), new ArrayList<>());
+        GameBase game2 = new GameBase("game2", GameStatus.STARTED, GameMap.defaultMap(), createdAt2, "creator2", 4, 0, new HashMap<>(), new ArrayList<>(), new ArrayList<>());
 
 
         ServerCommand command = ServerCommand.SEND_STARTED_GAMES;
@@ -530,5 +533,33 @@ public class PacketCoderTest {
 
         // assert
         assertEquals(highscores, result.getContent());
+    }
+
+    /**
+     * This tests doesn't necessarily need to pass.
+     * It's written to undertand the behaviour of the communication between server and client in order to detect the origin of NullPointerExceptions.
+     */
+    @Test
+    void encodingNullThrowsErrorMessage() {
+        Packet packet = null;
+        PacketCoder<ServerCommand> serverCoder = new ServerPacketCoder(PacketContentCoder.defaultPacketContentCoder());
+
+        assertThrows(NullPointerException.class, () -> {
+            serverCoder.encode(packet, 0);
+        });
+    }
+
+    /**
+     * This tests doesn't necessarily need to pass.
+     * It's written to undertand the behaviour of the communication between server and client in order to detect the origin of NullPointerExceptions.
+     */
+    @Test
+    void decodeNullThrowsErrorMessage() {
+        String encoded = null;
+        PacketCoder<ClientCommand> clientCoder = new ClientPacketCoder(PacketContentCoder.defaultPacketContentCoder());
+
+        assertThrows(NullPointerException.class, () -> {
+            clientCoder.decode(encoded, 0);
+        });
     }
 }

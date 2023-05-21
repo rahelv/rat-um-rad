@@ -2,13 +2,12 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game.chooseCard;
 
 import ch.progradler.rat_um_rad.client.utils.listeners.ControllerChangeListener;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import java.util.List;
 
 public class ChooseCardModel {
-    //TODO: private String type;
     private final ControllerChangeListener<?> listener;
     private DestinationCard longDestinationCard;
 
@@ -19,6 +18,7 @@ public class ChooseCardModel {
         this.listener = listener;
         this.destinationCardList = FXCollections.observableArrayList();
     }
+
     public ControllerChangeListener<?> getListener() {
         return listener;
     }

@@ -54,16 +54,16 @@ public class PlayerBase {
         return wheelsRemaining;
     }
 
+    public void setWheelsRemaining(int wheelsRemaining) {
+        this.wheelsRemaining = wheelsRemaining;
+    }
+
     public int getPlayingOrder() {
         return playingOrder;
     }
 
     public void setPlayingOrder(int playingOrder) {
         this.playingOrder = playingOrder;
-    }
-
-    public void setWheelsRemaining(int wheelsRemaining) {
-        this.wheelsRemaining = wheelsRemaining;
     }
 
     public PlayerEndResult getEndResult() {

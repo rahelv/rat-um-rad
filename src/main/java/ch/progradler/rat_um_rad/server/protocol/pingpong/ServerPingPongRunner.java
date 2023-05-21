@@ -12,7 +12,7 @@ import static ch.progradler.rat_um_rad.shared.util.TimeUtils.SECOND;
  * pong-messages or not. If not, the client is removed from connections.
  */
 public class ServerPingPongRunner implements Runnable {
-    public static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     /**
      * Time in seconds until a client is seen as disconnected
      */
@@ -57,8 +57,7 @@ public class ServerPingPongRunner implements Runnable {
         try {
             Thread.sleep(TIME_FOR_DISCONNECT * SECOND);
         } catch (InterruptedException e) {
-            e.printStackTrace();
-            //TODO Exception handling
+            LOGGER.warn("Failed to wait time for disconnect.", e);
         }
     }
 }

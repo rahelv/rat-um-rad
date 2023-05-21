@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.Group?>
-<fx:root type="GridPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:id="gameMapController">
-<HBox GridPane.rowIndex="0" GridPane.columnIndex="0" spacing="5">
-    <Label fx:id="gameID"></Label>
-    <Label fx:id="status"></Label>
-    <Label fx:id="requiredPlayers"></Label>
-</HBox>
-<HBox GridPane.rowIndex="4" spacing="5">
-    <Button text="Request WheelCards" onAction="#requestWheelCards"></Button>
-    <Button text="Select Destination Cards" onAction="#selectDestinationCards"></Button>
-    <Label text=" or select a road to build"></Label>
-</HBox>
-<Pane GridPane.rowIndex="5" prefWidth="500" prefHeight="350" fx:id="mapPane">
-    <Group fx:id="mapObjectsGroup">
-        <ImageView fitWidth="500" fitHeight="350">
-            <image>
-                <Image url="@/images/basel_ohne_labels.png"></Image>
-            </image>
-        </ImageView>
-    </Group>
-</Pane>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="GridPane" xmlns="http://javafx.com/javafx" fx:id="gameMapController">
+    <HBox GridPane.rowIndex="0" GridPane.columnIndex="0" spacing="5">
+        <Label fx:id="gameID"></Label>
+        <Label fx:id="status"></Label>
+        <Label fx:id="requiredPlayers"></Label>
+    </HBox>
+    <HBox GridPane.rowIndex="4" spacing="5">
+        <Label fx:id="playerTurn" text="your turn" textFill="green"></Label>
+        <Button text="Request WheelCards" onAction="#requestWheelCards"></Button>
+        <Button text="Select Destination Cards" onAction="#selectDestinationCards"></Button>
+        <Label text=" or select a road to build"></Label>
+    </HBox>
+    <Pane GridPane.rowIndex="5" prefWidth="500" prefHeight="350" fx:id="mapPane">
+        <Group fx:id="mapObjectsGroup">
+            <ImageView fitWidth="500" fitHeight="350">
+                <image>
+                    <Image url="@/images/basel_ohne_labels.png"></Image>
+                </image>
+            </ImageView>
+        </Group>
+    </Pane>
 </fx:root>

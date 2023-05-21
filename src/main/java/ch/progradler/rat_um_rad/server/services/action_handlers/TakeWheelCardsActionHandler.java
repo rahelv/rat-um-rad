@@ -12,6 +12,8 @@ import ch.progradler.rat_um_rad.shared.protocol.ServerCommand;
 
 import java.util.List;
 
+import static ch.progradler.rat_um_rad.shared.protocol.ErrorResponse.NOT_ENOUGH_WHEELCARDS_IN_DECK;
+
 /**
  * Handles take wheel cards from deck action.
  */
@@ -26,8 +28,8 @@ public class TakeWheelCardsActionHandler extends ActionHandler<Object> {
     @Override
     protected String validate(Game game, String ipAddress, Object dontUseActionData) {
         WheelCardDeck wheelCardDeck = game.getDecksOfGame().getWheelCardDeck();
-        if (wheelCardDeck.getDeckOfCards().size() < 1) { //if there are not enough wheelCards in deck
-            //TODO: implement and test
+        if (wheelCardDeck.getDeckOfCards().size() < 2) { //if there are not enough wheelCards in deck
+            return NOT_ENOUGH_WHEELCARDS_IN_DECK;
         }
         return null;
     }

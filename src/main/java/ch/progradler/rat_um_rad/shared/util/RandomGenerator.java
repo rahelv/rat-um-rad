@@ -43,7 +43,7 @@ public class RandomGenerator {
         return result.toString();
     }
 
-    public static void shuffle(List<?> list){
+    public static void shuffle(List<?> list) {
         Collections.shuffle(list);
     }
 }

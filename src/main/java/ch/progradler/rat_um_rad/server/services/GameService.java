@@ -1,17 +1,17 @@
 package ch.progradler.rat_um_rad.server.services;
 
 import ch.progradler.rat_um_rad.server.gateway.OutputPacketGateway;
+import ch.progradler.rat_um_rad.server.models.Action;
 import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.server.repositories.IGameRepository;
 import ch.progradler.rat_um_rad.server.repositories.IHighscoreRepository;
 import ch.progradler.rat_um_rad.server.repositories.IUserRepository;
 import ch.progradler.rat_um_rad.server.services.action_handlers.ActionHandlerFactory;
+import ch.progradler.rat_um_rad.server.validation.ActionValidator;
 import ch.progradler.rat_um_rad.server.validation.SelectDestinationCardsValidator;
 import ch.progradler.rat_um_rad.shared.models.Activity;
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.DestinationCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelCard;
-import ch.progradler.rat_um_rad.shared.models.game.cards_and_decks.WheelColor;
 import ch.progradler.rat_um_rad.shared.protocol.ContentType;
 import ch.progradler.rat_um_rad.shared.protocol.ErrorResponse;
 import ch.progradler.rat_um_rad.shared.protocol.Packet;
@@ -85,6 +85,7 @@ public class GameService implements IGameService {
                         creatorIpAddress,
                         requiredPlayerCount,
                         players);
+                gameCreated.getPlayerNames().add(creator.getName());
                 gameRepository.addGame(gameCreated);
                 created = true;
             } catch (IGameRepository.DuplicateIdException e) {
@@ -104,7 +105,6 @@ public class GameService implements IGameService {
 
     @Override
     public void joinGame(String ipAddress, String gameId) {
-        // TODO: check if player not already in other game?
         Game game = gameRepository.getGame(gameId);
         if (game.getStatus() == WAITING_FOR_PLAYERS) {
             addPlayerAndSaveGame(ipAddress, game);
@@ -136,12 +136,8 @@ public class GameService implements IGameService {
                 .stream().map((PlayerBase::getColor)).toList();
         Player newPlayer = GameServiceUtil.createNewPlayer(ipAddress, userRepository, takenColors);
         game.getPlayers().put(ipAddress, newPlayer);
+        game.getPlayerNames().add(newPlayer.getName());
         gameRepository.updateGame(game);
-    }
-
-    @Override
-    public void exitGame(String ipAddress) {
-        //TODO: implement
     }
 
     @Override
@@ -200,7 +196,10 @@ public class GameService implements IGameService {
     public void requestShortDestinationCards(String ipAddress) {
         // TODO: add more checks and unit test
         Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
-        if (!GameServiceUtil.validateAndHandleActionPrecondition(ipAddress, game, outputPacketGateway)) {
+        ActionValidator<?> actionValidator = new ActionValidator<>();
+        String error = actionValidator.validate(new Action<>(game, ipAddress, null));
+        if (error != null) {
+            GameServiceUtil.sendInvalidActionResponse(ipAddress, error, outputPacketGateway);
             return;
         }
 
@@ -228,38 +227,19 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void buildGreyRoad(String ipAddress, String roadId, WheelColor color) {
-        //TODO: implement
-    }
-
-    @Override
     public void takeWheelCardFromDeck(String ipAddress) {
         LOGGER.info("Player " + ipAddress + " attempting to take wheelCards.");
         actionHandlerFactory.createTakeWheelCardsActionHandler().handle(ipAddress, "");
     }
 
-    private void handleNotEnoughWheelcards() {
-        //TODO: implement
-    }
-
-    @Override
-    public void takeOpenWheelCard(String ipAdress, WheelCard wheelCard) {
-        //TODO: implement
-    }
-
     @Override
     public void handleConnectionLoss(String ipAddress) {
-        //TODO: implement
-    }
-
-    @Override
-    public void wantToFinishGame(String ipAddress) {
-        //TODO: implement
-    }
-
-    @Override
-    public void dontWantToFinishGame(String ipAddress) {
-        //TODO: implement
+        Game game = GameServiceUtil.getCurrentGameOfPlayer(ipAddress, gameRepository);
+        if (game != null) {
+            game.setStatus(FINISHED);
+            gameRepository.updateGame(game);
+            GameServiceUtil.notifyPlayersOfGameUpdate(game, outputPacketGateway, GAME_ENDED_BY_PLAYER_DISCONNECTION);
+        }
     }
 
     @Override

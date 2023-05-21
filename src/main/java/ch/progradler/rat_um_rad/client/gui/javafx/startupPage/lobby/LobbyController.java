@@ -6,14 +6,14 @@ import ch.progradler.rat_um_rad.shared.models.game.GameBase;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
-public class LobbyController extends GridPane {
+public class LobbyController extends VBox {
     @FXML
     private ListView<GameBase> openGamesListView;
     @FXML
@@ -57,14 +57,14 @@ public class LobbyController extends GridPane {
     class Cell extends ListCell<GameBase> {
         Pane pane = new Pane();
         HBox hbox = new HBox();
-        Label nameLabel = new Label();
         Button listPlayersButton = new Button("players");
+        Label nameLabel = new Label();
         Button enterGameButton = new Button("join");
 
         public Cell() {
             super();
             hbox.getChildren().addAll(nameLabel, pane, listPlayersButton, enterGameButton);
-            hbox.setHgrow(pane, Priority.ALWAYS);
+            HBox.setHgrow(pane, Priority.ALWAYS);
             enterGameButton.setOnAction(event -> {
                 try {
                     gameService.joinGame(getItem().getId());
@@ -72,8 +72,6 @@ public class LobbyController extends GridPane {
                     throw new RuntimeException(e);
                 }
             });
-            listPlayersButton.setDisable(true);
-            //TODO: add List OF Players in Game to GameBase. listPlayersButton.setTooltip(getItem().get);
         }
 
         protected void updateItem(GameBase item, boolean empty) {
@@ -82,6 +80,7 @@ public class LobbyController extends GridPane {
             setGraphic(null);
             if (item != null && !empty) {
                 nameLabel.setText(item.getId());
+                listPlayersButton.setTooltip(new Tooltip(String.join(", ", item.getPlayerNames())));
                 setGraphic(hbox);
             }
         }
