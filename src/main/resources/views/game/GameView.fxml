@@ -10,7 +10,7 @@
             xmlns="http://javafx.com/javafx/19">
     <fx:include source="../MainMenu.fxml" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
                 AnchorPane.rightAnchor="0.0"/>
-    <VBox AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="50.0">
+    <VBox AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="40.0">
         <GameMapController fx:id="gameMapController"></GameMapController>
         <OwnPlayerOverviewController fx:id="ownPlayerOverviewController"></OwnPlayerOverviewController>
     </VBox>

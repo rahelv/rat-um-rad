@@ -2,6 +2,7 @@ package ch.progradler.rat_um_rad.client.gui.javafx.game.gameMap;
 
 import ch.progradler.rat_um_rad.client.gui.javafx.game.UiUtil;
 import ch.progradler.rat_um_rad.client.services.GameService;
+import ch.progradler.rat_um_rad.server.models.Game;
 import ch.progradler.rat_um_rad.shared.models.Point;
 import ch.progradler.rat_um_rad.shared.models.game.*;
 import javafx.application.Platform;
@@ -41,6 +42,8 @@ public class GameMapController extends GridPane {
     @FXML
     private Label requiredPlayers;
     @FXML
+    private Label playerTurn;
+    @FXML
     private Pane mapPane;
     @FXML
     private Group mapObjectsGroup;
@@ -60,7 +63,6 @@ public class GameMapController extends GridPane {
         }
         this.soundURL = GameMapController.class.getClassLoader().getResource("soundEffect.mp3");
         this.audioClip = new AudioClip(soundURL.toExternalForm());
-
     }
 
     public void initData(GameMapModel gameMapModel) {
@@ -70,6 +72,7 @@ public class GameMapController extends GridPane {
             gameID.setText("Game ID: " + this.gameMapModel.getGameID());
             status.setText("Status: " + this.gameMapModel.getStatus().toString());
             requiredPlayers.setText("Required Players: " + this.gameMapModel.getRequiredPlayers());
+            playerTurn.setVisible(gameMapModel.isPlayersTurn());
         });
         this.gameMapModel.updateFields();
     }

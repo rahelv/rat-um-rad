@@ -12,6 +12,7 @@
         <Label fx:id="requiredPlayers"></Label>
     </HBox>
     <HBox GridPane.rowIndex="4" spacing="5">
+        <Label fx:id="playerTurn" text="your turn" textFill="green"></Label>
         <Button text="Request WheelCards" onAction="#requestWheelCards"></Button>
         <Button text="Select Destination Cards" onAction="#selectDestinationCards"></Button>
         <Label text=" or select a road to build"></Label>

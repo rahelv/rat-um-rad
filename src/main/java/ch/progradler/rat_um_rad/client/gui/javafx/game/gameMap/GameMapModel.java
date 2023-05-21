@@ -78,4 +78,12 @@ public class GameMapModel {
         }
         return clientGame.getOwnPlayer().getColor();
     }
+
+    public boolean isPlayersTurn() {
+        int turn = this.clientGame.getTurn();
+        int playerCount = this.clientGame.getRequiredPlayerCount();
+        int playerOrder = this.clientGame.getOwnPlayer().getPlayingOrder();
+
+        return turn % playerCount == playerOrder;
+    }
 }
